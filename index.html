@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbex — Chain, shoot, defeat | Pixel-art puzzle for Android</title>
+<meta name="description" content="Orbex is a pixel-art orb puzzle for Android. 10 historical worlds, 50 levels, one boss per world. Pure skill, no aggressive ads. Download on Google Play.">
+<meta name="theme-color" content="#c08820">
+<link rel="canonical" href="https://orbex.aleixaj.com/">
+<link rel="alternate" hreflang="en" href="https://orbex.aleixaj.com/">
+<link rel="alternate" hreflang="es" href="https://orbex.aleixaj.com/">
+<link rel="alternate" hreflang="x-default" href="https://orbex.aleixaj.com/">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/images/placeholders/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/images/placeholders/favicon-192.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Orbex">
+<meta property="og:title" content="Orbex — Chain, shoot, defeat">
+<meta property="og:description" content="A pixel-art orb puzzle for Android. 10 worlds, 50 levels, one player against history.">
+<meta property="og:url" content="https://orbex.aleixaj.com">
+<meta property="og:image" content="https://orbex.aleixaj.com/assets/images/placeholders/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="es_ES">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Orbex — Chain, shoot, defeat">
+<meta name="twitter:description" content="A pixel-art orb puzzle for Android. 10 worlds, 50 levels.">
+<meta name="twitter:image" content="https://orbex.aleixaj.com/assets/images/placeholders/og-image.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  // theme + lang bootstrap (before paint to avoid flash)
+  (function(){
+    try {
+      var t = localStorage.getItem('orbex-theme');
+      t = (t === 'dark' || t === 'light')
+        ? t
+        : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', t);
+      var l = localStorage.getItem('orbex-lang');
+      if (l === 'en' || l === 'es') document.documentElement.setAttribute('lang', l);
+    } catch(e){}
+  })();
+</script>
+<style>
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Space Grotesk',system-ui,sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;overflow-x:hidden}
+  ::selection{background:#c08820;color:#fff8ec}
+
+  /* ---- Theme tokens ---- */
+  :root,[data-theme="light"]{
+    --paper:#efe3cf; --paper2:#e5d7c1; --panel:#f8f0e0; --panel-inner:#ddd0ba;
+    --hi:#fff8ec; --frame:#b89060; --frame-soft:rgba(184,144,96,.4);
+    --ink:#3b2b18; --ink-dim:#7c6544; --title:#1a0c02;
+    --gold:#c08820; --gold-br:#e8b747; --gold-dk:#8a5f18;
+    --btn-gold:#dca933; --btn-gold-edge:#7e5210;
+    --overlay:rgba(28,16,4,.5); --shadow:rgba(36,18,0,.24);
+    --forge-a:#efe3cf; --forge-b:#e6cea2; --grain:rgba(90,56,8,.05);
+  }
+  [data-theme="dark"]{
+    --paper:#1a1410; --paper2:#221a12; --panel:#251d13; --panel-inner:#120c07;
+    --hi:#3c2d1b; --frame:#5c4626; --frame-soft:rgba(216,164,58,.22);
+    --ink:#ecdfc6; --ink-dim:#ab9270; --title:#ffe9bf;
+    --gold:#d9a43a; --gold-br:#ffce47; --gold-dk:#b07e28;
+    --btn-gold:#d9a43a; --btn-gold-edge:#5e3c10;
+    --overlay:rgba(0,0,0,.6); --shadow:rgba(0,0,0,.5);
+    --forge-a:#1a1410; --forge-b:#3a2810; --grain:rgba(216,164,58,.05);
+  }
+  :root{--r-common:#4a9d5e; --r-rare:#3e7ab8; --r-epic:#8b4fbf; --r-legendary:#e8b747;}
+  a{color:var(--gold);text-decoration-color:var(--frame-soft);text-underline-offset:3px}
+  a:hover{color:var(--gold-dk)}
+  ::-webkit-scrollbar{width:12px;height:12px}
+  ::-webkit-scrollbar-track{background:var(--paper2)}
+  ::-webkit-scrollbar-thumb{background:var(--frame);border:3px solid var(--paper2);border-radius:8px}
+
+  /* ---- i18n ---- */
+  html[lang="en"] [data-lang="es"]{display:none !important}
+  html[lang="es"] [data-lang="en"]{display:none !important}
+
+  /* ---- keyframes ---- */
+  @keyframes orbFloat{0%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-22px) rotate(180deg)}100%{transform:translateY(0) rotate(360deg)}}
+  @keyframes logoPulse{0%,100%{filter:drop-shadow(0 0 12px rgba(192,136,32,.45))}50%{filter:drop-shadow(0 0 36px rgba(232,183,71,.85))}}
+  @keyframes cueBounce{0%,100%{transform:translateY(0);opacity:.55}50%{transform:translateY(10px);opacity:1}}
+  @keyframes forgeShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+  @keyframes trailFade{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(.2)}}
+  @keyframes modalIn{0%{opacity:0;transform:translateY(20px) scale(.97)}100%{opacity:1;transform:none}}
+  .float-orb{animation:orbFloat linear infinite;will-change:transform}
+  .logo-pulse{animation:logoPulse 3s ease-in-out infinite}
+  .scroll-cue{animation:cueBounce 1.8s ease-in-out infinite}
+  .forge-anim{background-size:220% 220%;animation:forgeShift 16s ease-in-out infinite}
+
+  /* ---- scroll reveal ---- */
+  .orbex-reveal{opacity:0;transform:translateY(30px);transition:opacity .7s cubic-bezier(.22,.61,.36,1),transform .7s cubic-bezier(.22,.61,.36,1)}
+  .orbex-reveal.in{opacity:1;transform:none}
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    .float-orb,.logo-pulse,.scroll-cue,.forge-anim{animation:none !important}
+    .orbex-reveal{opacity:1 !important;transform:none !important;transition:none !important}
+  }
+
+  #orbex-trail{position:fixed;inset:0;pointer-events:none;z-index:90}
+  #orbex-trail span{position:absolute;width:9px;height:9px;border-radius:50%;background:radial-gradient(circle,#ffe9a8,#c08820 60%,rgba(192,136,32,0));animation:trailFade .7s ease-out forwards}
+
+  /* ---- header ---- */
+  .nav-header{position:fixed;top:0;left:0;right:0;z-index:80;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px clamp(16px,4vw,40px);background:color-mix(in srgb,var(--paper) 82%,transparent);backdrop-filter:blur(10px);border-bottom:2px solid var(--frame-soft)}
+  .navlink{display:none;font-size:13px;font-weight:600;color:var(--ink);text-decoration:none;letter-spacing:.02em}
+  .navlink:hover{color:var(--gold)}
+  @media (min-width: 860px){ .navlink{display:inline-block} }
+
+  /* ---- theme + lang toggles ---- */
+  .icon-btn{width:44px;height:44px;flex:none;display:grid;place-items:center;border:2px solid var(--frame);background:var(--panel);color:var(--gold);border-radius:10px;cursor:pointer;line-height:0;box-shadow:0 3px 0 var(--frame-soft);transition:background .15s;padding:0}
+  .icon-btn:hover{background:var(--hi)}
+  [data-theme="light"] .icon-sun{display:none}
+  [data-theme="dark"] .icon-moon{display:none}
+  .lang-btn{gap:6px;padding:0 10px;width:auto;min-width:44px;font-family:'Press Start 2P',monospace;font-size:10px;letter-spacing:.06em;color:var(--ink)}
+  .lang-btn img{width:22px;height:auto;image-rendering:pixelated;display:block}
+  html[lang="en"] .lang-when-es,html[lang="es"] .lang-when-en{display:none}
+  .lang-when-en,.lang-when-es{display:inline-flex;align-items:center;gap:6px}
+
+  /* ---- buttons ---- */
+  .btn-play-nav{display:inline-flex;align-items:center;gap:8px;font-family:'Press Start 2P',monospace;font-size:11px;letter-spacing:.04em;color:#fff8ec;text-shadow:0 2px 0 #5a3808;background:var(--btn-gold);border-bottom:5px solid var(--btn-gold-edge);border-radius:10px;padding:12px 16px;text-decoration:none;box-shadow:0 4px 10px var(--shadow);transition:transform .12s,border-bottom-width .12s}
+  .btn-play-nav:hover{transform:translateY(-1px);color:#fff8ec}
+  .btn-play-nav:active{transform:translateY(2px);border-bottom-width:2px}
+
+  .btn-hero-play{display:inline-flex;align-items:center;gap:12px;font-family:'Press Start 2P',monospace;font-size:clamp(11px,1.6vw,14px);letter-spacing:.04em;color:#fff8ec;text-shadow:0 2px 0 #5a3808;background:var(--btn-gold);border:none;border-bottom:6px solid var(--btn-gold-edge);border-radius:12px;padding:20px 26px;text-decoration:none;box-shadow:0 8px 18px rgba(0,0,0,.4);transition:transform .12s,box-shadow .12s,border-bottom-width .12s}
+  .btn-hero-play:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 12px 24px rgba(0,0,0,.5);color:#fff8ec}
+  .btn-hero-play:active{transform:translateY(2px);border-bottom-width:2px}
+
+  .btn-hero-trailer{display:inline-flex;align-items:center;gap:11px;font-family:'Press Start 2P',monospace;font-size:clamp(11px,1.6vw,14px);letter-spacing:.04em;color:#fff8ec;text-shadow:0 2px 0 #000;background:rgba(20,12,4,.35);border:3px solid var(--gold-br);border-bottom-width:6px;border-radius:12px;padding:18px 24px;cursor:pointer;backdrop-filter:blur(4px);transition:transform .12s,background .2s,border-bottom-width .12s}
+  .btn-hero-trailer:hover{transform:translateY(-2px) scale(1.02);background:rgba(20,12,4,.55)}
+  .btn-hero-trailer:active{transform:translateY(2px);border-bottom-width:3px}
+
+  .btn-download{display:inline-flex;align-items:center;gap:14px;font-family:'Press Start 2P',monospace;font-size:clamp(12px,1.8vw,15px);letter-spacing:.04em;color:#3b2b18;text-shadow:0 1px 0 rgba(255,255,255,.4);background:var(--gold-br);border:none;border-bottom:6px solid #a5771c;border-radius:14px;padding:22px 30px;text-decoration:none;box-shadow:0 10px 22px rgba(30,18,4,.4);transition:transform .12s,border-bottom-width .12s}
+  .btn-download:hover{transform:translateY(-2px) scale(1.02);color:#3b2b18}
+  .btn-download:active{transform:translateY(2px);border-bottom-width:2px}
+
+  /* ---- cards ---- */
+  .world-card{position:relative;background:var(--panel);border:3px solid var(--frame);border-radius:12px;overflow:hidden;box-shadow:0 6px 16px var(--shadow),inset 2px 2px 0 var(--hi),inset -2px -2px 0 var(--panel-inner);transition:transform .28s ease,box-shadow .28s ease}
+  .world-card:hover{transform:translateY(-8px);box-shadow:0 18px 34px var(--shadow),0 0 0 3px var(--gold),inset 2px 2px 0 var(--hi)}
+  .world-card:hover .world-crest{transform:scale(1.08)}
+  .world-card h3{text-transform:uppercase;text-align:center}
+  .world-card p{text-align:center}
+  .world-crest{width:74%;height:74%;object-fit:contain;transition:transform .3s ease;filter:drop-shadow(0 6px 10px rgba(0,0,0,.3))}
+  .worlds-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(12px,1.6vw,20px)}
+  @media (min-width: 700px){ .worlds-grid{grid-template-columns:repeat(3,minmax(0,1fr))} }
+  @media (min-width: 980px){ .worlds-grid{grid-template-columns:repeat(5,minmax(0,1fr))} }
+
+  .feature-card{display:flex;gap:16px;background:var(--panel);border:3px solid var(--frame);border-radius:12px;padding:22px;box-shadow:0 5px 14px var(--shadow),inset 2px 2px 0 var(--hi),inset -2px -2px 0 var(--panel-inner);transition:transform .24s ease,box-shadow .24s ease}
+  .feature-card:hover{transform:translateY(-4px);box-shadow:0 14px 26px var(--shadow),inset 2px 2px 0 var(--hi)}
+  .feature-icon{flex:none;width:56px;height:56px;display:grid;place-items:center;background:var(--paper2);border:2px solid var(--frame);border-radius:10px;box-shadow:inset 1px 1px 0 var(--hi)}
+
+  .gallery-card{position:relative;padding:0;border:3px solid var(--frame);border-radius:12px;overflow:hidden;cursor:pointer;background:var(--panel);box-shadow:0 5px 14px var(--shadow);transition:transform .26s ease,box-shadow .26s ease}
+  .gallery-card:hover{transform:scale(1.02);box-shadow:0 14px 26px var(--shadow),0 0 0 3px var(--gold)}
+  .gallery-card img{width:100%;height:100%;object-fit:cover;display:block}
+  .gallery-tag{position:absolute;inset:auto 0 0 0;padding:26px 12px 10px;font-size:11px;font-weight:600;color:#fff2dc;text-align:left;background:linear-gradient(transparent,rgba(0,0,0,.7))}
+  .gallery-play{position:absolute;inset:0;display:grid;place-items:center}
+  .gallery-play-inner{width:56px;height:56px;display:grid;place-items:center;border-radius:50%;background:rgba(20,12,4,.55);border:3px solid var(--gold-br);color:var(--gold-br);font-size:18px;backdrop-filter:blur(2px)}
+
+  .footer-social{width:44px;height:44px;display:grid;place-items:center;background:var(--panel);border:2px solid var(--frame);border-radius:10px;color:var(--ink);text-decoration:none;transition:color .18s,border-color .18s}
+  .footer-social:hover{color:var(--gold);border-color:var(--gold)}
+
+  /* ---- flags section ---- */
+  .flags-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:clamp(10px,1.5vw,18px);max-width:820px;margin:0 auto}
+  @media (max-width: 640px){ .flags-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:8px} }
+  .flag-card{display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px 6px;background:var(--panel);border:2px solid var(--frame);border-radius:10px;text-align:center;box-shadow:0 3px 8px var(--shadow),inset 1px 1px 0 var(--hi);transition:transform .2s,box-shadow .2s}
+  .flag-card:hover{transform:translateY(-3px);box-shadow:0 8px 16px var(--shadow),0 0 0 2px var(--gold)}
+  .flag-card img{width:clamp(36px,6vw,54px);height:auto;image-rendering:pixelated;display:block;filter:drop-shadow(0 2px 3px rgba(0,0,0,.25))}
+  .flag-card span{font-family:'Press Start 2P',monospace;font-size:9px;letter-spacing:.06em;color:var(--ink-dim);line-height:1.4}
+
+  /* ---- grids ---- */
+  .jg-grid{display:grid;grid-template-columns:1fr;gap:clamp(32px,6vw,64px);align-items:center}
+  .ft-grid{display:grid;grid-template-columns:1fr;gap:34px}
+  @media (min-width: 780px){
+    .jg-grid{grid-template-columns:1fr 1fr}
+    .ft-grid{grid-template-columns:1.6fr 1fr 1fr}
+  }
+
+  .eyebrow{display:inline-block;font-family:'Press Start 2P',monospace;font-size:11px;letter-spacing:.1em;color:var(--gold);border:2px solid var(--frame);border-radius:6px;padding:7px 12px;margin-bottom:18px}
+  .section-h2{font-family:'Press Start 2P',monospace;color:var(--title);letter-spacing:.02em}
+
+  /* ---- modals ---- */
+  .modal-backdrop{position:fixed;inset:0;z-index:100;display:none;place-items:center;padding:20px;background:rgba(10,6,2,.8);backdrop-filter:blur(6px)}
+  .modal-backdrop.open{display:grid}
+  .modal-body{position:relative;animation:modalIn .3s ease}
+  .modal-close{position:absolute;top:-14px;right:-14px;z-index:2;width:44px;height:44px;border-radius:50%;background:var(--btn-gold);border:3px solid #fff8ec;border-bottom-width:5px;color:#fff8ec;font-size:20px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.5)}
+
+  .gallery-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));grid-auto-rows:180px;gap:14px}
+</style>
+</head>
+<body>
+
+  <!-- ============ NAV ============ -->
+  <header class="nav-header">
+    <a href="#inicio" aria-label="Orbex — home" style="display:flex;align-items:center;gap:10px;text-decoration:none">
+      <img src="assets/images/orbex-title.png" alt="Orbex" style="height:26px;width:auto;display:block">
+    </a>
+    <nav aria-label="Main navigation" style="display:flex;align-items:center;gap:clamp(6px,2vw,26px)">
+      <a href="#juego" class="navlink"><span data-lang="en">The game</span><span data-lang="es">El juego</span></a>
+      <a href="#mundos" class="navlink"><span data-lang="en">Worlds</span><span data-lang="es">Mundos</span></a>
+      <a href="#caracteristicas" class="navlink"><span data-lang="en">Features</span><span data-lang="es">Características</span></a>
+      <a href="#galeria" class="navlink"><span data-lang="en">Gallery</span><span data-lang="es">Galería</span></a>
+
+      <button type="button" class="icon-btn lang-btn" onclick="toggleLang()" aria-label="Switch language">
+        <span class="lang-when-en"><img src="assets/images/flags/Icon_LanguageFlag_Large_Esp.png" alt="">ES</span>
+        <span class="lang-when-es"><img src="assets/images/flags/Icon_LanguageFlag_Large_Eng.png" alt="">EN</span>
+      </button>
+
+      <button type="button" class="icon-btn" onclick="toggleTheme()" aria-label="Toggle light / dark mode" title="Light / dark">
+        <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8 6 18M18 6l1.8-1.8"/></svg>
+        <svg class="icon-sun" width="19" height="19" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+      </button>
+
+      <a href="#PLACEHOLDER-play-store" class="btn-play-nav"><span data-lang="en">PLAY</span><span data-lang="es">JUGAR</span></a>
+    </nav>
+  </header>
+
+  <!-- ============ 1. HERO ============ -->
+  <section id="inicio" style="position:relative;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:96px 20px 60px;overflow:hidden">
+    <div id="orbex-hero-bg" style="position:absolute;inset:-8% 0 0 0;z-index:0;will-change:transform">
+      <img src="assets/images/bg/espacio.jpg" alt="" aria-hidden="true" style="width:100%;height:112%;object-fit:cover;display:block">
+    </div>
+    <div style="position:absolute;inset:0;z-index:1;background:radial-gradient(120% 90% at 50% 30%,transparent 20%,var(--overlay) 70%,var(--paper) 108%)"></div>
+    <div style="position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(20,12,4,.55),transparent 30%,transparent 60%,rgba(20,12,4,.35))"></div>
+
+    <img src="assets/images/orbs/red.png" alt="" aria-hidden="true" class="float-orb" style="position:absolute;top:16%;left:8%;width:54px;z-index:2;animation-duration:13s;opacity:.85">
+    <img src="assets/images/orbs/blue.png" alt="" aria-hidden="true" class="float-orb" style="position:absolute;top:24%;right:11%;width:44px;z-index:2;animation-duration:17s;animation-delay:-4s;opacity:.85">
+    <img src="assets/images/orbs/green.png" alt="" aria-hidden="true" class="float-orb" style="position:absolute;bottom:20%;left:14%;width:38px;z-index:2;animation-duration:15s;animation-delay:-7s;opacity:.8">
+
+    <div style="position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;max-width:900px">
+      <img src="assets/images/orbex-title.png" alt="ORBEX" class="logo-pulse" style="width:min(78vw,560px);height:auto;display:block;margin-bottom:10px">
+      <p style="font-size:clamp(15px,2.4vw,21px);font-weight:500;line-height:1.5;color:#fff2dc;text-shadow:0 2px 8px rgba(0,0,0,.7);max-width:640px;margin:8px 0 30px">
+        <span data-lang="en">Chain, shoot, defeat. <strong style="color:var(--gold-br)">10 worlds. 50 levels.</strong> One player against history.</span>
+        <span data-lang="es">Encadena, dispara, derrota. <strong style="color:var(--gold-br)">10 mundos. 50 niveles.</strong> Un solo jugador contra la historia.</span>
+      </p>
+
+      <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center">
+        <a href="#PLACEHOLDER-play-store" class="btn-hero-play">
+          <svg width="20" height="22" viewBox="0 0 20 22" fill="none" aria-hidden="true" style="flex:none"><path d="M1 1.5 11.5 11 1 20.5V1.5Z" fill="#fff8ec"/><path d="M1 1.5 11.5 11 15 7.6 3 1z" fill="#8ee6ff" opacity=".9"/><path d="M11.5 11 1 20.5 3 21 15 14.4z" fill="#ffd36e" opacity=".9"/><path d="m11.5 11 3.5-3.4 4 2.3c1.3.8 1.3 1.4 0 2.2l-4 2.3z" fill="#5ee08a"/></svg>
+          <span data-lang="en">PLAY ON GOOGLE PLAY</span><span data-lang="es">JUGAR EN GOOGLE PLAY</span>
+        </a>
+        <button type="button" class="btn-hero-trailer" onclick="openTrailer()">
+          <span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--gold-br);color:#3b2b18;font-size:9px">&#9654;</span>
+          <span data-lang="en">WATCH TRAILER</span><span data-lang="es">VER TRÁILER</span>
+        </button>
+      </div>
+
+      <ul style="list-style:none;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:0;margin:26px 0 0">
+        <li style="font-family:'Space Grotesk';font-size:12px;font-weight:600;letter-spacing:.02em;color:#fff2dc;background:rgba(20,12,4,.4);border:2px solid var(--gold-br);border-radius:999px;padding:8px 15px;backdrop-filter:blur(4px)">PEGI 3</li>
+        <li style="font-family:'Space Grotesk';font-size:12px;font-weight:600;letter-spacing:.02em;color:#fff2dc;background:rgba(20,12,4,.4);border:2px solid var(--gold-br);border-radius:999px;padding:8px 15px;backdrop-filter:blur(4px)"><span data-lang="en">No ads (for now)</span><span data-lang="es">Sin anuncios (por ahora)</span></li>
+        <li style="font-family:'Space Grotesk';font-size:12px;font-weight:600;letter-spacing:.02em;color:#fff2dc;background:rgba(20,12,4,.4);border:2px solid var(--gold-br);border-radius:999px;padding:8px 15px;backdrop-filter:blur(4px)"><span data-lang="en">10 languages</span><span data-lang="es">10 idiomas</span></li>
+      </ul>
+    </div>
+
+    <a href="#juego" aria-label="Scroll to: the game" class="scroll-cue" style="position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:3;color:#fff2dc;text-decoration:none">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </a>
+  </section>
+
+  <!-- ============ 2. THE GAME ============ -->
+  <section id="juego" style="position:relative;padding:clamp(64px,10vw,120px) clamp(20px,5vw,64px);background:var(--paper)">
+    <img src="assets/images/orbs/purple.png" alt="" aria-hidden="true" class="float-orb" style="position:absolute;top:8%;right:6%;width:40px;animation-duration:19s;opacity:.5">
+    <div class="jg-grid" style="max-width:1140px;margin:0 auto">
+      <div class="orbex-reveal" style="display:flex;justify-content:center">
+        <div style="position:relative;width:min(100%,520px);aspect-ratio:19.5/9;background:#0c0906;border:10px solid #16110b;border-radius:34px;box-shadow:0 22px 50px var(--shadow),inset 0 0 0 2px #322414;overflow:hidden">
+          <img src="assets/images/bg/dinosaurios.jpg" alt="PLACEHOLDER — gameplay capture from the Dinosaurs world" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+          <div style="position:absolute;inset:0;background:radial-gradient(120% 100% at 50% 40%,transparent 40%,rgba(0,0,0,.5))"></div>
+          <img src="assets/images/orbs/red.png" alt="" aria-hidden="true" style="position:absolute;left:50%;top:52%;width:11%;transform:translate(-50%,-50%)">
+          <img src="assets/images/orbs/yellow.png" alt="" aria-hidden="true" style="position:absolute;left:38%;top:66%;width:9%">
+          <img src="assets/images/orbs/blue.png" alt="" aria-hidden="true" style="position:absolute;left:60%;top:66%;width:9%">
+          <div style="position:absolute;top:50%;left:8px;transform:translateY(-50%);width:8px;height:56px;background:#000;border-radius:8px;opacity:.5"></div>
+        </div>
+      </div>
+      <div class="orbex-reveal" style="transition-delay:.12s">
+        <span class="eyebrow"><span data-lang="en">THE GAME</span><span data-lang="es">EL JUEGO</span></span>
+        <h2 class="section-h2" style="font-size:clamp(18px,3vw,28px);line-height:1.45;margin:0 0 22px;text-wrap:balance">
+          <span data-lang="en">Aim from the center.<br>Chain. Crush the boss.</span>
+          <span data-lang="es">Apunta desde el centro.<br>Encadena. Revienta al jefe.</span>
+        </h2>
+        <p style="font-size:clamp(15px,1.9vw,18px);line-height:1.7;color:var(--ink);max-width:44ch;margin:0 0 16px">
+          <span data-lang="en">You launch colored orbs from the center and chain combos of <strong>3 or more of the same color</strong> on a chain that moves along the path. Drain the boss's health before the chain reaches the end.</span>
+          <span data-lang="es">Lanzas orbes de colores desde el centro y encadenas combos de <strong>3 o más del mismo color</strong> en una cadena que avanza por el camino. Vacía la vida del jefe antes de que la cadena llegue al final del recorrido.</span>
+        </p>
+        <p style="font-size:clamp(15px,1.9vw,18px);line-height:1.7;color:var(--ink-dim);max-width:44ch;margin:0">
+          <span data-lang="en">No RNG, no paywalls: <strong style="color:var(--gold-dk)">pure skill</strong>. Every boss has its own attack, character and music.</span>
+          <span data-lang="es">Sin azar, sin muros de pago: <strong style="color:var(--gold-dk)">puro skill</strong>. Cada jefe tiene su propio ataque, su personaje y su música.</span>
+        </p>
+        <div style="display:flex;gap:26px;flex-wrap:wrap;margin-top:30px">
+          <div><div style="font-family:'Press Start 2P',monospace;font-size:22px;color:var(--gold)">10</div><div style="font-size:13px;color:var(--ink-dim);margin-top:6px"><span data-lang="en">worlds</span><span data-lang="es">mundos</span></div></div>
+          <div><div style="font-family:'Press Start 2P',monospace;font-size:22px;color:var(--gold)">50</div><div style="font-size:13px;color:var(--ink-dim);margin-top:6px"><span data-lang="en">levels</span><span data-lang="es">niveles</span></div></div>
+          <div><div style="font-family:'Press Start 2P',monospace;font-size:22px;color:var(--gold)">16</div><div style="font-size:13px;color:var(--ink-dim);margin-top:6px"><span data-lang="en">bosses &amp; phases</span><span data-lang="es">jefes y fases</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 3. THE 10 WORLDS ============ -->
+  <section id="mundos" style="position:relative;padding:clamp(64px,10vw,120px) 0;background:var(--paper2);overflow:hidden">
+    <div style="position:absolute;inset:0;opacity:.5;background-image:radial-gradient(var(--grain) 1px,transparent 1px);background-size:5px 5px;pointer-events:none"></div>
+    <img src="assets/images/orbs/green.png" alt="" aria-hidden="true" class="float-orb" style="position:absolute;top:6%;left:4%;width:46px;animation-duration:21s;opacity:.5">
+    <img src="assets/images/orbs/yellow.png" alt="" aria-hidden="true" class="float-orb" style="position:absolute;bottom:8%;right:5%;width:52px;animation-duration:18s;animation-delay:-6s;opacity:.5">
+    <div style="position:relative;max-width:1200px;margin:0 auto;padding:0 clamp(20px,5vw,64px)">
+      <div class="orbex-reveal" style="text-align:center;margin-bottom:clamp(36px,5vw,56px)">
+        <span class="eyebrow"><span data-lang="en">10 WORLDS</span><span data-lang="es">10 MUNDOS</span></span>
+        <h2 class="section-h2" style="font-size:clamp(20px,3.4vw,34px);margin:0 0 14px">
+          <span data-lang="en">A journey through history</span><span data-lang="es">Un viaje por la historia</span>
+        </h2>
+        <p style="font-size:clamp(15px,1.9vw,18px);color:var(--ink-dim);max-width:52ch;margin:0 auto">
+          <span data-lang="en">From dinosaurs to deep space. Each world brings 5 levels, a boss with its own attack, and a new playable character.</span>
+          <span data-lang="es">De los dinosaurios al espacio profundo. Cada mundo trae 5 niveles, un jefe con su propio ataque y un personaje jugable nuevo.</span>
+        </p>
+      </div>
+      <div class="worlds-grid">
+
+        <article class="orbex-reveal world-card">
+          <div style="height:6px;background:#4a9d5e"></div>
+          <div style="position:relative;aspect-ratio:1/1;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,color-mix(in srgb,#4a9d5e 22%,var(--panel)),var(--panel) 72%);overflow:hidden">
+            <span style="position:absolute;top:10px;left:12px;font-family:'Press Start 2P',monospace;font-size:11px;color:var(--gold-dk);opacity:.7">01</span>
+            <img src="assets/images/zones/dinosaurios.png" alt="Dinosaurs world crest" loading="lazy" class="world-crest">
+          </div>
+          <div style="padding:16px 18px 20px">
+            <h3 style="font-family:'Press Start 2P',monospace;font-size:12px;line-height:1.5;color:var(--title);letter-spacing:.02em;margin:0 0 10px">
+              <span data-lang="en">Dinosaurs</span><span data-lang="es">Dinosaurios</span>
+            </h3>
+            <p style="font-size:14px;line-height:1.55;color:var(--ink-dim);margin:0">
+              <span data-lang="en">Where it all begins: bones, ferns and a furious T-Rex.</span>
+              <span data-lang="es">Donde todo empieza: huesos, helechos y un T-Rex furioso.</span>
+            </p>
+          </div>
+        </article>
+
+        <article class="orbex-reveal world-card">
+          <div style="height:6px;background:#e8b747"></div>
+          <div style="position:relative;aspect-ratio:1/1;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,color-mix(in srgb,#e8b747 22%,var(--panel)),var(--panel) 72%);overflow:hidden">
+            <span style="position:absolute;top:10px;left:12px;font-family:'Press Start 2P',monospace;font-size:11px;color:var(--gold-dk);opacity:.7">02</span>
+            <img src="assets/images/zones/egipto.png" alt="Egypt world crest" loading="lazy" class="world-crest">
+          </div>
+          <div style="padding:16px 18px 20px">
+            <h3 style="font-family:'Press Start 2P',monospace;font-size:12px;line-height:1.5;color:var(--title);letter-spacing:.02em;margin:0 0 10px">
+              <span data-lang="en">Egypt</span><span data-lang="es">Egipto</span>
+            </h3>
+            <p style="font-size:14px;line-height:1.55;color:var(--ink-dim);margin:0">
+              <span data-lang="en">Sand, gold and jackal-headed gods.</span>
+              <span data-lang="es">Arena, oro y dioses con cabeza de chacal.</span>
+            </p>
+          </div>
+        </article>
+
+        <article class="orbex-reveal world-card">
+          <div style="height:6px;background:#3e7ab8"></div>
+          <div style="position:relative;aspect-ratio:1/1;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,color-mix(in srgb,#3e7ab8 22%,var(--panel)),var(--panel) 72%);overflow:hidden">
+            <span style="position:absolute;top:10px;left:12px;font-family:'Press Start 2P',monospace;font-size:11px;color:var(--gold-dk);opacity:.7">03</span>
+            <img src="assets/images/zones/grecia.png" alt="Greece world crest" loading="lazy" class="world-crest">
+          </div>
+          <div style="padding:16px 18px 20px">
+            <h3 style="font-family:'Press Start 2P',monospace;font-size:12px;line-height:1.5;color:var(--title);letter-spacing:.02em;margin:0 0 10px">
+              <span data-lang="en">Greece</span><span data-lang="es">Grecia</span>
+            </h3>
+            <p style="font-size:14px;line-height:1.55;color:var(--ink-dim);margin:0">
+              <span data-lang="en">Columns, myths and the titans' thunderbolt.</span>
+              <span data-lang="es">Columnas, mitos y el rayo de los titanes.</span>
+            </p>
+          </div>
+        </article>
+
+        <article class="orbex-reveal world-card">
+          <div style="height:6px;background:#2fa79b"></div>
+          <div style="position:relative;aspect-ratio:1/1;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,color-mix(in srgb,#2fa79b 22%,var(--panel)),var(--panel) 72%);overflow:hidden">
+            <span style="position:absolute;top:10px;left:12px;font-family:'Press Start 2P',monospace;font-size:11px;color:var(--gold-dk);opacity:.7">04</span>
+            <img src="assets/images/zones/atlantis.png" alt="Atlantis world crest" loading="lazy" class="world-crest">
+          </div>
+          <div style="padding:16px 18px 20px">
+            <h3 style="font-family:'Press Start 2P',monospace;font-size:12px;line-height:1.5;color:var(--title);letter-spacing:.02em;margin:0 0 10px">
+              <span data-lang="en">Atlantis</span><span data-lang="es">Atlantis</span>
+            </h3>
+            <p style="font-size:14px;line-height:1.55;color:var(--ink-dim);margin:0">
+              <span data-lang="en">Under the sea, a city that shouldn't exist.</span>
+              <span data-lang="es">Bajo el mar, una ciudad que no debería existir.</span>
+            </p>
+          </div>
+        </article>
+
+        <article class="orbex-reveal world-card">
+          <div style="height:6px;background:#8a8078"></div>
+          <div style="position:relative;aspect-ratio:1/1;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,color-mix(in srgb,#8a8078 22%,var(--panel)),var(--panel) 72%);overflow:hidden">
+            <span style="position:absolute;top:10px;left:12px;font-family:'Press Start 2P',monospace;font-size:11px;color:var(--gold-dk);opacity:.7">05</span>
+            <img src="assets/images/zones/medieval.png" alt="Medieval world crest" loading="lazy" class="world-crest">
+          </div>
+          <div style="padding:16px 18px 20px">
+            <h3 style="font-family:'Press Start 2P',monospace;font-size:12px;line-height:1.5;color:var(--title);letter-spacing:.02em;margin:0 0 10px">
+              <span data-lang="en">Medieval</span><span data-lang="es">Medieval</span>
+            </h3>
+            <p style="font-size:14px;line-height:1.55;color:var(--ink-dim);margin:0">
+              <span data-lang="en">Castles, dragons and forged steel.</span>
+              <span data-lang="es">Castillos, dragones y acero forjado.</span>
+            </p>
+          </div>
+        </article>
+
+        <article class="orbex-reveal world-card">
+          <div style="height:6px;background:#5888ff"></div>
+          <div style="position:relative;aspect-ratio:1/1;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,color-mix(in srgb,#5888ff 22%,var(--panel)),var(--panel) 72%);overflow:hidden">
+            <span style="position:absolute;top:10px;left:12px;font-family:'Press Start 2P',monospace;font-size:11px;color:var(--gold-dk);opacity:.7">06</span>
+            <img src="assets/images/zones/nordico.png" alt="Nordic world crest" loading="lazy" class="world-crest">
+          </div>
+          <div style="padding:16px 18px 20px">
+            <h3 style="font-family:'Press Start 2P',monospace;font-size:12px;line-height:1.5;color:var(--title);letter-spacing:.02em;margin:0 0 10px">
+              <span data-lang="en">Nordic</span><span data-lang="es">Nórdico</span>
+            </h3>
+            <p style="font-size:14px;line-height:1.55;color:var(--ink-dim);margin:0">
+              <span data-lang="en">Ice, runes and the wrath of the northern gods.</span>
+              <span data-lang="es">Hielo, runas y la ira de los dioses del norte.</span>
+            </p>
+          </div>
+        </article>
+
+        <article class="orbex-reveal world-card">
+          <div style="height:6px;background:#dd2828"></div>
+          <div style="position:relative;aspect-ratio:1/1;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,color-mix(in srgb,#dd2828 22%,var(--panel)),var(--panel) 72%);overflow:hidden">
+            <span style="position:absolute;top:10px;left:12px;font-family:'Press Start 2P',monospace;font-size:11px;color:var(--gold-dk);opacity:.7">07</span>
+            <img src="assets/images/zones/asiatico.png" alt="Asian world crest" loading="lazy" class="world-crest">
+          </div>
+          <div style="padding:16px 18px 20px">
+            <h3 style="font-family:'Press Start 2P',monospace;font-size:12px;line-height:1.5;color:var(--title);letter-spacing:.02em;margin:0 0 10px">
+              <span data-lang="en">Asian</span><span data-lang="es">Asiático</span>
+            </h3>
+            <p style="font-size:14px;line-height:1.55;color:var(--ink-dim);margin:0">
+              <span data-lang="en">Temples, lanterns and a jade dragon.</span>
+              <span data-lang="es">Templos, farolillos y un dragón de jade.</span>
+            </p>
+          </div>
+        </article>
+
+        <article class="orbex-reveal world-card">
+          <div style="height:6px;background:#c05828"></div>
+          <div style="position:relative;aspect-ratio:1/1;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,color-mix(in srgb,#c05828 22%,var(--panel)),var(--panel) 72%);overflow:hidden">
+            <span style="position:absolute;top:10px;left:12px;font-family:'Press Start 2P',monospace;font-size:11px;color:var(--gold-dk);opacity:.7">08</span>
+            <img src="assets/images/zones/pirata.png" alt="Pirate world crest" loading="lazy" class="world-crest">
+          </div>
+          <div style="padding:16px 18px 20px">
+            <h3 style="font-family:'Press Start 2P',monospace;font-size:12px;line-height:1.5;color:var(--title);letter-spacing:.02em;margin:0 0 10px">
+              <span data-lang="en">Pirate</span><span data-lang="es">Pirata</span>
+            </h3>
+            <p style="font-size:14px;line-height:1.55;color:var(--ink-dim);margin:0">
+              <span data-lang="en">Cannons, treasure and raging seas.</span>
+              <span data-lang="es">Cañones, tesoros y mares embravecidos.</span>
+            </p>
+          </div>
+        </article>
+
+        <article class="orbex-reveal world-card">
+          <div style="height:6px;background:#8b4fbf"></div>
+          <div style="position:relative;aspect-ratio:1/1;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,color-mix(in srgb,#8b4fbf 22%,var(--panel)),var(--panel) 72%);overflow:hidden">
+            <span style="position:absolute;top:10px;left:12px;font-family:'Press Start 2P',monospace;font-size:11px;color:var(--gold-dk);opacity:.7">09</span>
+            <img src="assets/images/zones/actualidad.png" alt="Present Day world crest" loading="lazy" class="world-crest">
+          </div>
+          <div style="padding:16px 18px 20px">
+            <h3 style="font-family:'Press Start 2P',monospace;font-size:12px;line-height:1.5;color:var(--title);letter-spacing:.02em;margin:0 0 10px">
+              <span data-lang="en">Present Day</span><span data-lang="es">Actualidad</span>
+            </h3>
+            <p style="font-size:14px;line-height:1.55;color:var(--ink-dim);margin:0">
+              <span data-lang="en">Neon, concrete and the chaos of the big city.</span>
+              <span data-lang="es">Neón, hormigón y el caos de la gran ciudad.</span>
+            </p>
+          </div>
+        </article>
+
+        <article class="orbex-reveal world-card">
+          <div style="height:6px;background:#a870ee"></div>
+          <div style="position:relative;aspect-ratio:1/1;display:grid;place-items:center;background:radial-gradient(circle at 50% 42%,color-mix(in srgb,#a870ee 22%,var(--panel)),var(--panel) 72%);overflow:hidden">
+            <span style="position:absolute;top:10px;left:12px;font-family:'Press Start 2P',monospace;font-size:11px;color:var(--gold-dk);opacity:.7">10</span>
+            <img src="assets/images/zones/espacio.png" alt="Space world crest" loading="lazy" class="world-crest">
+          </div>
+          <div style="padding:16px 18px 20px">
+            <h3 style="font-family:'Press Start 2P',monospace;font-size:12px;line-height:1.5;color:var(--title);letter-spacing:.02em;margin:0 0 10px">
+              <span data-lang="en">Space</span><span data-lang="es">Espacio</span>
+            </h3>
+            <p style="font-size:14px;line-height:1.55;color:var(--ink-dim);margin:0">
+              <span data-lang="en">The final leap: stars, void and a black hole.</span>
+              <span data-lang="es">El último salto: estrellas, vacío y un agujero negro.</span>
+            </p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. FEATURES ============ -->
+  <section id="caracteristicas" style="position:relative;padding:clamp(64px,10vw,120px) clamp(20px,5vw,64px);background:var(--paper)">
+    <div style="max-width:1120px;margin:0 auto">
+      <div class="orbex-reveal" style="text-align:center;margin-bottom:clamp(36px,5vw,56px)">
+        <span class="eyebrow"><span data-lang="en">FEATURES</span><span data-lang="es">CARACTERÍSTICAS</span></span>
+        <h2 class="section-h2" style="font-size:clamp(20px,3.4vw,34px);margin:0">
+          <span data-lang="en">Everything Orbex has to offer</span><span data-lang="es">Todo lo que trae Orbex</span>
+        </h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:clamp(16px,2.4vw,22px)">
+
+        <div class="orbex-reveal feature-card">
+          <div class="feature-icon"><img src="assets/images/icons/map.png" alt="" aria-hidden="true" style="width:38px;height:38px;object-fit:contain"></div>
+          <div>
+            <h3 style="font-family:'Space Grotesk';font-weight:700;font-size:17px;color:var(--title);margin:2px 0 8px">
+              <span data-lang="en">Single-player mode</span><span data-lang="es">Modo un jugador</span>
+            </h3>
+            <p style="font-size:14.5px;line-height:1.55;color:var(--ink-dim);margin:0">
+              <span data-lang="en">50 levels + tutorial and 6 extra boss phases. A challenge that grows with you.</span>
+              <span data-lang="es">50 niveles + tutorial y 6 fases extra de jefe. Un reto que crece contigo.</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="orbex-reveal feature-card">
+          <div class="feature-icon"><img src="assets/images/icons/ranking.png" alt="" aria-hidden="true" style="width:38px;height:38px;object-fit:contain"></div>
+          <div>
+            <h3 style="font-family:'Space Grotesk';font-weight:700;font-size:17px;color:var(--title);margin:2px 0 8px">
+              <span data-lang="en">Global online ranking</span><span data-lang="es">Ranking global online</span>
+            </h3>
+            <p style="font-size:14.5px;line-height:1.55;color:var(--ink-dim);margin:0">
+              <span data-lang="en">Compete for the podium. Pure skill: no purchase affects your score.</span>
+              <span data-lang="es">Compite por el podio. Puro skill: ninguna compra afecta tu puntuación.</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="orbex-reveal feature-card">
+          <div class="feature-icon"><img src="assets/images/orbs/purple.png" alt="" aria-hidden="true" style="width:38px;height:38px;object-fit:contain"></div>
+          <div>
+            <h3 style="font-family:'Space Grotesk';font-weight:700;font-size:17px;color:var(--title);margin:2px 0 8px">
+              <span data-lang="en">9 strategic power-ups</span><span data-lang="es">9 power-ups estratégicos</span>
+            </h3>
+            <p style="font-size:14.5px;line-height:1.55;color:var(--ink-dim);margin:0">
+              <span data-lang="en">Freeze, bomb, wildcard, nitro… use skill, not luck.</span>
+              <span data-lang="es">Congelar, bomba, comodín, nitro… usa la habilidad, no el azar.</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="orbex-reveal feature-card">
+          <div class="feature-icon"><img src="assets/images/avatars/1.png" alt="" aria-hidden="true" style="width:38px;height:38px;object-fit:contain"></div>
+          <div>
+            <h3 style="font-family:'Space Grotesk';font-weight:700;font-size:17px;color:var(--title);margin:2px 0 8px">
+              <span data-lang="en">Customization</span><span data-lang="es">Personalización</span>
+            </h3>
+            <p style="font-size:14.5px;line-height:1.55;color:var(--ink-dim);margin:0">
+              <span data-lang="en">55 profile avatars, orb skins per world and themed menu backgrounds.</span>
+              <span data-lang="es">55 avatares de perfil, skins de orbe por mundo y fondos temáticos del menú.</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="orbex-reveal feature-card">
+          <div class="feature-icon"><img src="assets/images/icons/gift.png" alt="" aria-hidden="true" style="width:38px;height:38px;object-fit:contain"></div>
+          <div>
+            <h3 style="font-family:'Space Grotesk';font-weight:700;font-size:17px;color:var(--title);margin:2px 0 8px">
+              <span data-lang="en">Daily reward + free chest</span><span data-lang="es">Recompensa diaria + cofre gratis</span>
+            </h3>
+            <p style="font-size:14.5px;line-height:1.55;color:var(--ink-dim);margin:0">
+              <span data-lang="en">Come back every day, earn something every day. 7-day streak and a free chest.</span>
+              <span data-lang="es">Entra cada día, gana algo cada día. Racha de 7 días y cofre gratuito.</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="orbex-reveal feature-card">
+          <div class="feature-icon"><span style="font-family:'Press Start 2P',monospace;font-size:16px;color:var(--gold)">10</span></div>
+          <div>
+            <h3 style="font-family:'Space Grotesk';font-weight:700;font-size:17px;color:var(--title);margin:2px 0 8px">
+              <span data-lang="en">10 languages</span><span data-lang="es">10 idiomas</span>
+            </h3>
+            <p style="font-size:14.5px;line-height:1.55;color:var(--ink-dim);margin:0">
+              <span data-lang="en">Auto-detects yours on launch. English, Spanish and 8 more.</span>
+              <span data-lang="es">Auto-detecta el tuyo al abrir el juego. Español, English y 8 más.</span>
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 5. GALLERY ============ -->
+  <section id="galeria" style="position:relative;padding:clamp(64px,10vw,120px) clamp(20px,5vw,64px);background:var(--paper2)">
+    <div style="max-width:1160px;margin:0 auto">
+      <div class="orbex-reveal" style="text-align:center;margin-bottom:clamp(36px,5vw,56px)">
+        <span class="eyebrow"><span data-lang="en">GALLERY</span><span data-lang="es">GALERÍA</span></span>
+        <h2 class="section-h2" style="font-size:clamp(20px,3.4vw,34px);margin:0 0 14px">
+          <span data-lang="en">See it in action</span><span data-lang="es">Míralo en movimiento</span>
+        </h2>
+        <p style="font-size:clamp(15px,1.9vw,18px);color:var(--ink-dim);max-width:48ch;margin:0 auto">
+          <span data-lang="en">Tap any image to enlarge.</span><span data-lang="es">Toca cualquier imagen para ampliarla.</span>
+        </p>
+      </div>
+      <div class="gallery-grid">
+
+        <button type="button" class="orbex-reveal gallery-card" style="grid-row:span 2" onclick="openLightbox('assets/images/bg/espacio.jpg','Space world')" aria-label="Space world capture">
+          <img src="assets/images/bg/espacio.jpg" alt="Space world capture" loading="lazy">
+          <span class="gallery-tag"><span data-lang="en">World · Space</span><span data-lang="es">Mundo · Espacio</span></span>
+        </button>
+
+        <button type="button" class="orbex-reveal gallery-card" style="grid-row:span 1" onclick="openLightbox('assets/images/placeholders/gameplay-1.png','Gameplay')" aria-label="PLACEHOLDER — gameplay capture">
+          <img src="assets/images/placeholders/gameplay-1.png" alt="PLACEHOLDER — gameplay capture" loading="lazy">
+          <span class="gallery-tag">PLACEHOLDER · Gameplay</span>
+        </button>
+
+        <button type="button" class="orbex-reveal gallery-card" style="grid-row:span 1" onclick="openLightbox('assets/images/bg/grecia.jpg','Greece world')" aria-label="Greece world capture">
+          <img src="assets/images/bg/grecia.jpg" alt="Greece world capture" loading="lazy">
+          <span class="gallery-tag"><span data-lang="en">World · Greece</span><span data-lang="es">Mundo · Grecia</span></span>
+        </button>
+
+        <button type="button" class="orbex-reveal gallery-card" style="grid-row:span 1" onclick="openTrailer()" aria-label="Watch Orbex trailer">
+          <img src="assets/images/placeholders/hero-gameplay.png" alt="Watch Orbex trailer" loading="lazy">
+          <span class="gallery-tag"><span data-lang="en">Video · Trailer</span><span data-lang="es">Vídeo · Tráiler</span></span>
+          <span class="gallery-play"><span class="gallery-play-inner">&#9654;</span></span>
+        </button>
+
+        <button type="button" class="orbex-reveal gallery-card" style="grid-row:span 2" onclick="openLightbox('assets/images/bg/dinosaurios.jpg','Dinosaurs world')" aria-label="Dinosaurs world capture">
+          <img src="assets/images/bg/dinosaurios.jpg" alt="Dinosaurs world capture" loading="lazy">
+          <span class="gallery-tag"><span data-lang="en">World · Dinosaurs</span><span data-lang="es">Mundo · Dinosaurios</span></span>
+        </button>
+
+        <button type="button" class="orbex-reveal gallery-card" style="grid-row:span 1" onclick="openLightbox('assets/images/placeholders/gameplay-2.png','Gameplay')" aria-label="PLACEHOLDER — gameplay capture">
+          <img src="assets/images/placeholders/gameplay-2.png" alt="PLACEHOLDER — gameplay capture" loading="lazy">
+          <span class="gallery-tag">PLACEHOLDER · Gameplay</span>
+        </button>
+
+        <button type="button" class="orbex-reveal gallery-card" style="grid-row:span 1" onclick="openLightbox('assets/images/placeholders/gameplay-3.png','Gameplay')" aria-label="PLACEHOLDER — gameplay capture">
+          <img src="assets/images/placeholders/gameplay-3.png" alt="PLACEHOLDER — gameplay capture" loading="lazy">
+          <span class="gallery-tag">PLACEHOLDER · Gameplay</span>
+        </button>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6. LANGUAGES ============ -->
+  <section id="idiomas" style="position:relative;padding:clamp(56px,8vw,96px) clamp(20px,5vw,64px);background:var(--paper)">
+    <div style="max-width:1080px;margin:0 auto">
+      <div class="orbex-reveal" style="text-align:center;margin-bottom:clamp(28px,4vw,44px)">
+        <span class="eyebrow"><span data-lang="en">10 LANGUAGES</span><span data-lang="es">10 IDIOMAS</span></span>
+        <h2 class="section-h2" style="font-size:clamp(20px,3vw,30px);margin:0 0 14px">
+          <span data-lang="en">Play in your language</span><span data-lang="es">Juega en tu idioma</span>
+        </h2>
+        <p style="font-size:clamp(15px,1.7vw,17px);color:var(--ink-dim);max-width:52ch;margin:0 auto">
+          <span data-lang="en">Orbex is fully translated. It auto-detects your device language on first launch.</span>
+          <span data-lang="es">Orbex está totalmente traducido. Detecta el idioma de tu dispositivo la primera vez que abres el juego.</span>
+        </p>
+      </div>
+      <div class="orbex-reveal flags-grid">
+        <div class="flag-card"><img src="assets/images/flags/Icon_LanguageFlag_Large_Eng.png" alt="English"><span>ENGLISH</span></div>
+        <div class="flag-card"><img src="assets/images/flags/Icon_LanguageFlag_Large_Esp.png" alt="Español"><span>ESPAÑOL</span></div>
+        <div class="flag-card"><img src="assets/images/flags/Icon_LanguageFlag_Large_Cat.png" alt="Català"><span>CATALÀ</span></div>
+        <div class="flag-card"><img src="assets/images/flags/Icon_LanguageFlag_Large_Prt.png" alt="Português"><span>PORTUGUÊS</span></div>
+        <div class="flag-card"><img src="assets/images/flags/Icon_LanguageFlag_Large_Fra.png" alt="Français"><span>FRANÇAIS</span></div>
+        <div class="flag-card"><img src="assets/images/flags/Icon_LanguageFlag_Large_Ita.png" alt="Italiano"><span>ITALIANO</span></div>
+        <div class="flag-card"><img src="assets/images/flags/Icon_LanguageFlag_Large_Deu.png" alt="Deutsch"><span>DEUTSCH</span></div>
+        <div class="flag-card"><img src="assets/images/flags/Icon_LanguageFlag_Large_Jpn.png" alt="日本語"><span>日本語</span></div>
+        <div class="flag-card"><img src="assets/images/flags/Icon_LanguageFlag_Large_Kor.png" alt="한국어"><span>한국어</span></div>
+        <div class="flag-card"><img src="assets/images/flags/Icon_LanguageFlag_Large_Rus.png" alt="Русский"><span>РУССКИЙ</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7. DOWNLOAD ============ -->
+  <section id="descarga" style="position:relative;padding:clamp(64px,10vw,120px) clamp(20px,5vw,64px);background:var(--forge-a);overflow:hidden">
+    <div class="forge-anim" style="position:absolute;inset:0;background:linear-gradient(120deg,var(--forge-a),var(--forge-b),#8a5f18,var(--forge-a));opacity:.9"></div>
+    <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 20%,rgba(232,183,71,.18),transparent 60%)"></div>
+    <img src="assets/images/orbs/red.png" alt="" aria-hidden="true" class="float-orb" style="position:absolute;top:14%;left:8%;width:44px;animation-duration:16s;opacity:.5">
+    <img src="assets/images/orbs/blue.png" alt="" aria-hidden="true" class="float-orb" style="position:absolute;bottom:16%;right:9%;width:50px;animation-duration:20s;animation-delay:-5s;opacity:.5">
+    <div class="orbex-reveal" style="position:relative;max-width:900px;margin:0 auto;text-align:center;color:#fff8ec">
+      <h2 style="font-family:'Press Start 2P',monospace;font-size:clamp(20px,4vw,38px);line-height:1.4;letter-spacing:.02em;margin:0 0 16px;color:#fff8ec;text-shadow:0 3px 0 rgba(60,36,4,.6)">
+        <span data-lang="en">Download it now</span><span data-lang="es">Descárgalo ahora</span>
+      </h2>
+      <p style="font-size:clamp(15px,2vw,19px);line-height:1.6;color:#fff2dc;max-width:44ch;margin:0 auto 34px">
+        <span data-lang="en">Free on Google Play. 10 worlds, 50 levels and a boss waiting for you in every era.</span>
+        <span data-lang="es">Gratis en Google Play. 10 mundos, 50 niveles y un jefe esperándote en cada época.</span>
+      </p>
+      <div style="display:flex;flex-wrap:wrap;gap:32px;align-items:center;justify-content:center">
+        <div style="display:flex;flex-direction:column;gap:16px;align-items:center">
+          <a href="#PLACEHOLDER-play-store" class="btn-download" aria-label="Get it on Google Play">
+            <svg width="24" height="26" viewBox="0 0 20 22" fill="none" aria-hidden="true" style="flex:none"><path d="M1 1.5 11.5 11 1 20.5V1.5Z" fill="#3b2b18"/><path d="M1 1.5 11.5 11 15 7.6 3 1z" fill="#1e6fa0"/><path d="M11.5 11 1 20.5 3 21 15 14.4z" fill="#a5771c"/><path d="m11.5 11 3.5-3.4 4 2.3c1.3.8 1.3 1.4 0 2.2l-4 2.3z" fill="#2c7a3e"/></svg>
+            <span data-lang="en">PLAY ON GOOGLE PLAY</span><span data-lang="es">JUGAR EN GOOGLE PLAY</span>
+          </a>
+          <img src="assets/images/placeholders/google-play-badge.png" alt="PLACEHOLDER — official Google Play badge" style="height:52px;width:auto;opacity:.9">
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+          <div style="background:#fff8ec;padding:12px;border-radius:12px;border:3px solid #a5771c;box-shadow:0 8px 18px rgba(30,18,4,.35)">
+            <img src="assets/images/placeholders/qr.png" alt="PLACEHOLDER — download QR" style="width:120px;height:120px;display:block;image-rendering:pixelated">
+          </div>
+          <span style="font-size:12px;color:#fff2dc;opacity:.85">
+            <span data-lang="en">Scan from desktop</span><span data-lang="es">Escanea desde escritorio</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 8. FOOTER ============ -->
+  <footer style="background:var(--paper);border-top:3px solid var(--frame);padding:clamp(44px,7vw,72px) clamp(20px,5vw,64px) 40px">
+    <div style="max-width:1120px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:34px">
+      <div class="ft-grid">
+        <div>
+          <img src="assets/images/orbex-title.png" alt="Orbex" style="height:30px;width:auto;margin-bottom:16px">
+          <p style="font-size:14px;line-height:1.6;color:var(--ink-dim);max-width:34ch;margin:0 0 16px">
+            <span data-lang="en">A pixel-art orb puzzle for Android. Chain, shoot, defeat.</span>
+            <span data-lang="es">Un puzzle pixel-art de orbes para Android. Encadena, dispara, derrota.</span>
+          </p>
+          <p style="font-size:13px;color:var(--ink-dim);margin:0"><span data-lang="en">Contact:</span><span data-lang="es">Contacto:</span> <a href="mailto:aleixauque@gmail.com">aleixauque@gmail.com</a></p>
+        </div>
+        <nav aria-label="Legal and support links">
+          <h4 style="font-family:'Press Start 2P',monospace;font-size:10px;letter-spacing:.08em;color:var(--gold);margin:0 0 16px">
+            <span data-lang="en">LINKS</span><span data-lang="es">ENLACES</span>
+          </h4>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:11px;font-size:14px">
+            <li><a href="/privacy"><span data-lang="en">Privacy policy</span><span data-lang="es">Política de privacidad</span></a></li>
+            <li><a href="#PLACEHOLDER-terminos"><span data-lang="en">Terms of use</span><span data-lang="es">Términos de uso</span></a></li>
+            <li><a href="mailto:aleixauque@gmail.com"><span data-lang="en">Support</span><span data-lang="es">Soporte</span></a></li>
+            <li><a href="#PLACEHOLDER-borrar-cuenta"><span data-lang="en">How to delete my account</span><span data-lang="es">Cómo borrar mi cuenta</span></a></li>
+            <li><a href="https://aleixaj.com" target="_blank" rel="noopener"><span data-lang="en">About the developer</span><span data-lang="es">Sobre el desarrollador</span></a></li>
+          </ul>
+        </nav>
+        <div>
+          <h4 style="font-family:'Press Start 2P',monospace;font-size:10px;letter-spacing:.08em;color:var(--gold);margin:0 0 16px">
+            <span data-lang="en">FOLLOW ME</span><span data-lang="es">SÍGUEME</span>
+          </h4>
+          <div style="display:flex;gap:12px">
+            <a href="#PLACEHOLDER-x" aria-label="X (Twitter)" class="footer-social"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 2h3.3l-7.2 8.3L23.7 22h-6.6l-5.2-6.8L5.9 22H2.6l7.7-8.8L2 2h6.8l4.7 6.2L18.9 2Zm-1.2 18h1.8L7.4 3.9H5.5L17.7 20Z"/></svg></a>
+            <a href="#PLACEHOLDER-github" aria-label="GitHub" class="footer-social"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49l-.01-1.72c-2.78.62-3.37-1.37-3.37-1.37-.46-1.18-1.11-1.5-1.11-1.5-.9-.63.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.89 1.57 2.34 1.12 2.91.86.09-.66.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.7 0 0 .84-.28 2.75 1.05a9.36 9.36 0 0 1 5 0c1.91-1.33 2.75-1.05 2.75-1.05.55 1.4.2 2.44.1 2.7.64.72 1.03 1.63 1.03 2.75 0 3.93-2.35 4.8-4.58 5.05.36.32.68.94.68 1.9l-.01 2.82c0 .27.18.6.69.49A10.26 10.26 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z"/></svg></a>
+            <a href="#PLACEHOLDER-itch" aria-label="itch.io" class="footer-social"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.5 4.2C2.6 4.8 1 6.9 1 7.6v1c0 1.3 1.2 2.4 2.3 2.4 1.3 0 2.4-1.1 2.4-2.4 0 1.3 1 2.4 2.4 2.4 1.3 0 2.3-1.1 2.3-2.4 0 1.3 1.1 2.4 2.4 2.4h.4c1.3 0 2.4-1.1 2.4-2.4 0 1.3 1 2.4 2.3 2.4 1.4 0 2.4-1.1 2.4-2.4 0 1.3 1.1 2.4 2.4 2.4 1.1 0 2.3-1.1 2.3-2.4v-1c0-.7-1.6-2.8-2.5-3.4-2.8-.3-5-.4-8.5-.4s-6.6.1-8.5.4Zm6.9 6.6c-.5.8-1.4 1.4-2.4 1.4-1 0-1.9-.5-2.4-1.3-.2 3.2-.4 6-.4 7.6 0 .9.6 1.5 1.6 1.7 1.4.2 3.3.3 5.2.3s3.8-.1 5.2-.3c1-.2 1.6-.8 1.6-1.7 0-1.6-.2-4.4-.4-7.6-.5.8-1.4 1.3-2.4 1.3s-1.9-.6-2.4-1.4c-.4.6-1 1-1.9 1-.8 0-1.5-.4-1.9-1Zm-1 1.7 2.6 0c.6 0 1 .1 1 .7 0 .5-.3.8-.9.8h-.3l-.6 1.8-.9-1.8h-.3c-.6 0-.9-.3-.9-.8 0-.6.4-.7.9-.7Z"/></svg></a>
+          </div>
+        </div>
+      </div>
+      <div style="border-top:2px solid var(--frame-soft);padding-top:22px;display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center">
+        <p style="font-size:13px;color:var(--ink-dim);margin:0">
+          <span data-lang="en">Made by one person with <a href="https://godotengine.org" target="_blank" rel="noopener">Godot 4.6</a>.</span>
+          <span data-lang="es">Hecho por una persona con <a href="https://godotengine.org" target="_blank" rel="noopener">Godot 4.6</a>.</span>
+        </p>
+        <p style="font-size:12px;color:var(--ink-dim);margin:0">
+          <span data-lang="en">© <span id="year">2026</span> Orbex · PEGI 3 · No gambling, no real violence</span>
+          <span data-lang="es">© <span id="year-es">2026</span> Orbex · PEGI 3 · Sin gambling, sin violencia real</span>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============ TRAILER MODAL ============ -->
+  <div id="trailer-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Orbex trailer" onclick="closeTrailer()">
+    <div class="modal-body" style="width:min(94vw,900px)" onclick="event.stopPropagation()">
+      <button type="button" class="modal-close" onclick="closeTrailer()" aria-label="Close trailer">&times;</button>
+      <div style="border:5px solid var(--gold);border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6);background:#000">
+        <video id="trailer-video" controls playsinline preload="none" poster="assets/images/placeholders/hero-gameplay.png" style="width:100%;display:block;aspect-ratio:16/9;background:#000">
+          <source src="assets/videos/trailer.mp4" type="video/mp4">
+          <span data-lang="en">Your browser doesn't support video.</span><span data-lang="es">Tu navegador no admite el vídeo.</span>
+          <a href="assets/videos/trailer.mp4"><span data-lang="en">Download trailer</span><span data-lang="es">Descargar tráiler</span>.</a>
+        </video>
+      </div>
+      <p style="text-align:center;color:#fff2dc;font-size:13px;margin:14px 0 0">PLACEHOLDER — <span data-lang="en">put</span><span data-lang="es">coloca aquí</span> <code>assets/videos/trailer.mp4</code></p>
+    </div>
+  </div>
+
+  <!-- ============ LIGHTBOX ============ -->
+  <div id="lightbox" class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Enlarged image" onclick="closeLightbox()">
+    <div class="modal-body" onclick="event.stopPropagation()">
+      <button type="button" class="modal-close" onclick="closeLightbox()" aria-label="Close image">&times;</button>
+      <img id="lightbox-img" src="" alt="" style="max-width:92vw;max-height:82vh;display:block;border:5px solid var(--gold);border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.6)">
+    </div>
+  </div>
+
+  <div id="orbex-trail" aria-hidden="true"></div>
+
+<script>
+  // ---- meta swap per lang ----
+  var META = {
+    en: {
+      title: "Orbex — Chain, shoot, defeat | Pixel-art puzzle for Android",
+      desc: "Orbex is a pixel-art orb puzzle for Android. 10 historical worlds, 50 levels, one boss per world. Pure skill, no aggressive ads. Download on Google Play."
+    },
+    es: {
+      title: "Orbex — Encadena, dispara, derrota | Puzzle pixel-art para Android",
+      desc: "Orbex es un juego pixel-art de orbes tipo Zuma-con-jefe para Android. 10 mundos históricos, 50 niveles, un jefe por mundo. Puro skill, sin anuncios agresivos. Descárgalo en Google Play."
+    }
+  };
+  function applyMetaForLang(lang){
+    var m = META[lang] || META.en;
+    document.title = m.title;
+    var d = document.querySelector('meta[name="description"]');
+    if (d) d.setAttribute('content', m.desc);
+  }
+  function toggleLang(){
+    var cur = document.documentElement.getAttribute('lang') || 'en';
+    var next = cur === 'es' ? 'en' : 'es';
+    document.documentElement.setAttribute('lang', next);
+    try { localStorage.setItem('orbex-lang', next); } catch(e){}
+    applyMetaForLang(next);
+  }
+  function toggleTheme(){
+    var cur = document.documentElement.getAttribute('data-theme');
+    var next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('orbex-theme', next); } catch(e){}
+  }
+  function openTrailer(){
+    document.getElementById('trailer-modal').classList.add('open');
+    var v = document.getElementById('trailer-video');
+    if (v) { try { v.play(); } catch(e){} }
+  }
+  function closeTrailer(){
+    var m = document.getElementById('trailer-modal');
+    if (!m) return;
+    m.classList.remove('open');
+    var v = document.getElementById('trailer-video');
+    if (v) { try { v.pause(); } catch(e){} }
+  }
+  function openLightbox(src, alt){
+    var img = document.getElementById('lightbox-img');
+    img.src = src; img.alt = alt || '';
+    document.getElementById('lightbox').classList.add('open');
+  }
+  function closeLightbox(){
+    document.getElementById('lightbox').classList.remove('open');
+  }
+
+  (function(){
+    var yr = new Date().getFullYear();
+    ['year','year-es'].forEach(function(id){ var e = document.getElementById(id); if (e) e.textContent = yr; });
+
+    // sync meta if lang was overridden from localStorage
+    var initLang = document.documentElement.getAttribute('lang');
+    if (initLang && initLang !== 'en') applyMetaForLang(initLang);
+
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function revealAll(){
+      document.querySelectorAll('.orbex-reveal').forEach(function(el){ el.classList.add('in'); });
+    }
+    if (reduce || !('IntersectionObserver' in window)){
+      revealAll();
+    } else {
+      var io = new IntersectionObserver(function(entries, obs){
+        entries.forEach(function(en){
+          if (en.isIntersecting){ en.target.classList.add('in'); obs.unobserve(en.target); }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+      requestAnimationFrame(function(){
+        document.querySelectorAll('.orbex-reveal').forEach(function(el, i){
+          el.style.transitionDelay = (Math.min(i % 6, 5) * 0.07) + 's';
+          io.observe(el);
+        });
+      });
+      setTimeout(revealAll, 4000);
+    }
+
+    if (!reduce){
+      window.addEventListener('scroll', function(){
+        var bg = document.getElementById('orbex-hero-bg');
+        if (bg) bg.style.transform = 'translateY(' + (window.scrollY * 0.2) + 'px)';
+      }, { passive: true });
+    }
+
+    var fine = window.matchMedia && window.matchMedia('(pointer: fine)').matches;
+    if (fine && !reduce){
+      var last = 0;
+      window.addEventListener('mousemove', function(e){
+        var now = performance.now();
+        if (now - last < 28) return;
+        last = now;
+        var layer = document.getElementById('orbex-trail');
+        if (!layer) return;
+        var s = document.createElement('span');
+        var size = 6 + Math.random() * 8;
+        s.style.width = s.style.height = size + 'px';
+        s.style.left = (e.clientX - size / 2) + 'px';
+        s.style.top = (e.clientY - size / 2) + 'px';
+        layer.appendChild(s);
+        setTimeout(function(){ s.remove(); }, 720);
+      }, { passive: true });
+    }
+
+    window.addEventListener('keydown', function(e){
+      if (e.key === 'Escape'){ closeTrailer(); closeLightbox(); }
+    });
+  })();
+</script>
+</body>
+</html>

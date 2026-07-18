@@ -1,0 +1,17 @@
+.DS_Store
+Thumbs.db
+node_modules/
+.env
+.env.local
+
+# Editor / IDE
+.vscode/
+.idea/
+
+# Deploy artifacts
+.netlify/
+.vercel/
+.wrangler/
+
+# Originales del design-component (no forman parte del sitio desplegado)
+_source/

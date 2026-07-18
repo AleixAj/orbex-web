@@ -1,0 +1,10 @@
+# Cloudflare Pages / Netlify redirects & rewrites
+# Ruta limpia /privacy → sirve privacy/index.html (automático, esto es solo alias legacy)
+/privacy.html   /privacy   301
+
+# Legacy: cualquiera con la URL antigua .dc.html va al destino correcto
+/Orbex%20Landing.dc.html   /            301
+/Orbex%20Privacy.dc.html   /privacy     301
+
+# 404 → landing
+/*   /index.html   200

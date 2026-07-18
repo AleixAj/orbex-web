@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy policy — Orbex</title>
+<meta name="description" content="Orbex privacy policy — what data we collect, why, how it's deleted and how to contact us.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://orbex.aleixaj.com/privacy">
+<link rel="alternate" hreflang="en" href="https://orbex.aleixaj.com/privacy">
+<link rel="alternate" hreflang="es" href="https://orbex.aleixaj.com/privacy">
+<link rel="alternate" hreflang="x-default" href="https://orbex.aleixaj.com/privacy">
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/images/placeholders/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="../assets/images/placeholders/favicon-192.png">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Privacy policy — Orbex">
+<meta property="og:description" content="What data we collect, why, how it's deleted and how to contact us.">
+<meta property="og:url" content="https://orbex.aleixaj.com/privacy">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="es_ES">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  (function(){
+    try {
+      var t = localStorage.getItem('orbex-theme');
+      t = (t === 'dark' || t === 'light')
+        ? t
+        : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', t);
+      var l = localStorage.getItem('orbex-lang');
+      if (l === 'en' || l === 'es') document.documentElement.setAttribute('lang', l);
+    } catch(e){}
+  })();
+</script>
+<style>
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Space Grotesk',system-ui,sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;font-size:16px;line-height:1.7}
+  ::selection{background:#c08820;color:#fff8ec}
+  :root,[data-theme="light"]{
+    --paper:#efe3cf; --paper2:#e5d7c1; --panel:#f8f0e0; --hi:#fff8ec;
+    --frame:#b89060; --frame-soft:rgba(184,144,96,.4);
+    --ink:#3b2b18; --ink-dim:#7c6544; --title:#1a0c02;
+    --gold:#c08820; --gold-dk:#8a5f18;
+  }
+  [data-theme="dark"]{
+    --paper:#1a1410; --paper2:#221a12; --panel:#251d13; --hi:#3c2d1b;
+    --frame:#5c4626; --frame-soft:rgba(216,164,58,.22);
+    --ink:#ecdfc6; --ink-dim:#ab9270; --title:#ffe9bf;
+    --gold:#d9a43a; --gold-dk:#c08820;
+  }
+  a{color:var(--gold);text-underline-offset:3px}
+  a:hover{color:var(--gold-dk)}
+  ::-webkit-scrollbar{width:12px}
+  ::-webkit-scrollbar-track{background:var(--paper2)}
+  ::-webkit-scrollbar-thumb{background:var(--frame);border:3px solid var(--paper2);border-radius:8px}
+  @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+
+  html[lang="en"] [data-lang="es"]{display:none !important}
+  html[lang="es"] [data-lang="en"]{display:none !important}
+
+  .icon-btn{width:42px;height:42px;flex:none;display:grid;place-items:center;border:2px solid var(--frame);background:var(--panel);color:var(--gold);border-radius:10px;cursor:pointer;line-height:0;transition:background .15s;padding:0}
+  .icon-btn:hover{background:var(--hi)}
+  [data-theme="light"] .icon-sun{display:none}
+  [data-theme="dark"] .icon-moon{display:none}
+  .lang-btn{gap:6px;padding:0 10px;width:auto;min-width:42px;font-family:'Press Start 2P',monospace;font-size:10px;letter-spacing:.06em;color:var(--ink)}
+  .lang-btn img{width:20px;height:auto;image-rendering:pixelated;display:block}
+  html[lang="en"] .lang-when-es,html[lang="es"] .lang-when-en{display:none}
+  .lang-when-en,.lang-when-es{display:inline-flex;align-items:center;gap:6px}
+
+  .pv-grid{display:grid;grid-template-columns:1fr;gap:clamp(28px,4vw,56px);align-items:start}
+  .pv-toc-desktop{display:none;border:2px solid var(--frame-soft);border-radius:10px;padding:18px 18px 20px;background:var(--panel)}
+  .pv-toc-mobile{display:block;border:2px solid var(--frame-soft);border-radius:10px;background:var(--panel);padding:0 16px}
+  @media (min-width: 820px){
+    .pv-grid{grid-template-columns:240px 1fr}
+    .pv-toc-desktop{display:block}
+    .pv-toc-mobile{display:none}
+  }
+  .pv-toc-desktop a,.pv-toc-mobile a{color:var(--ink);text-decoration:none;display:block}
+  .pv-toc-desktop a:hover{color:var(--gold)}
+  .sect-h2{font-family:'Space Grotesk';font-weight:700;font-size:clamp(19px,3vw,23px);color:var(--gold-dk);margin:0 0 12px;padding-bottom:8px;border-bottom:2px solid var(--frame-soft)}
+  .sect{scroll-margin-top:84px;margin:0 0 34px}
+  .sect p{margin:0 0 14px;color:var(--ink)}
+  .sect ul{margin:0 0 14px;padding-left:22px;color:var(--ink)}
+  .sect li{margin:0 0 7px}
+  .sect li strong{color:var(--title)}
+  .sect h3{font-family:'Space Grotesk';font-weight:600;font-size:16px;color:var(--title);margin:18px 0 8px}
+</style>
+</head>
+<body>
+
+  <header style="position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px clamp(16px,4vw,32px);background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(8px);border-bottom:2px solid var(--frame-soft)">
+    <a href="/" style="display:inline-flex;align-items:center;gap:9px;font-size:13px;font-weight:600;color:var(--ink);text-decoration:none">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      <img src="../assets/images/orbex-title.png" alt="Orbex" style="height:22px;width:auto">
+    </a>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button type="button" class="icon-btn lang-btn" onclick="toggleLang()" aria-label="Switch language">
+        <span class="lang-when-en"><img src="../assets/images/flags/Icon_LanguageFlag_Large_Esp.png" alt="">ES</span>
+        <span class="lang-when-es"><img src="../assets/images/flags/Icon_LanguageFlag_Large_Eng.png" alt="">EN</span>
+      </button>
+      <button type="button" class="icon-btn" onclick="toggleTheme()" aria-label="Toggle light / dark mode">
+        <svg class="icon-moon" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8 6 18M18 6l1.8-1.8"/></svg>
+        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="pv-grid" style="max-width:1080px;margin:0 auto;padding:clamp(28px,5vw,56px) clamp(18px,5vw,32px)">
+
+    <aside style="position:sticky;top:76px">
+      <nav aria-label="Contents" class="pv-toc-desktop">
+        <h2 style="font-family:'Press Start 2P',monospace;font-size:10px;letter-spacing:.06em;color:var(--gold);margin:0 0 14px">
+          <span data-lang="en">CONTENTS</span><span data-lang="es">ÍNDICE</span>
+        </h2>
+        <ol style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px;font-size:13.5px">
+          <li><a href="#introduccion"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">1.</span> <span data-lang="en">Introduction</span><span data-lang="es">Introducción</span></a></li>
+          <li><a href="#datos"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">2.</span> <span data-lang="en">What data we collect</span><span data-lang="es">Qué datos recogemos</span></a></li>
+          <li><a href="#proposito"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">3.</span> <span data-lang="en">Why we use it</span><span data-lang="es">Con qué propósito los usamos</span></a></li>
+          <li><a href="#base-legal"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">4.</span> <span data-lang="en">Legal basis</span><span data-lang="es">Base legal</span></a></li>
+          <li><a href="#compartir"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">5.</span> <span data-lang="en">Who we share it with</span><span data-lang="es">Con quién los compartimos</span></a></li>
+          <li><a href="#conservacion"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">6.</span> <span data-lang="en">How long we keep it</span><span data-lang="es">Cuánto tiempo los conservamos</span></a></li>
+          <li><a href="#derechos"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">7.</span> <span data-lang="en">Data deletion and your rights</span><span data-lang="es">Cómo se borran tus datos y tus derechos</span></a></li>
+          <li><a href="#menores"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">8.</span> <span data-lang="en">Minors</span><span data-lang="es">Menores de edad</span></a></li>
+          <li><a href="#cambios"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">9.</span> <span data-lang="en">Changes to this policy</span><span data-lang="es">Cambios en esta política</span></a></li>
+          <li><a href="#contacto"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">10.</span> <span data-lang="en">Contact</span><span data-lang="es">Contacto</span></a></li>
+        </ol>
+      </nav>
+      <details class="pv-toc-mobile">
+        <summary style="cursor:pointer;list-style:none;font-family:'Press Start 2P',monospace;font-size:10px;letter-spacing:.06em;color:var(--gold);padding:16px 0">
+          <span data-lang="en">CONTENTS ▾</span><span data-lang="es">ÍNDICE ▾</span>
+        </summary>
+        <ol style="list-style:none;padding:0;margin:0 0 16px;display:flex;flex-direction:column;gap:9px;font-size:14px">
+          <li><a href="#introduccion"><span style="color:var(--gold-dk)">1.</span> <span data-lang="en">Introduction</span><span data-lang="es">Introducción</span></a></li>
+          <li><a href="#datos"><span style="color:var(--gold-dk)">2.</span> <span data-lang="en">What data we collect</span><span data-lang="es">Qué datos recogemos</span></a></li>
+          <li><a href="#proposito"><span style="color:var(--gold-dk)">3.</span> <span data-lang="en">Why we use it</span><span data-lang="es">Con qué propósito los usamos</span></a></li>
+          <li><a href="#base-legal"><span style="color:var(--gold-dk)">4.</span> <span data-lang="en">Legal basis</span><span data-lang="es">Base legal</span></a></li>
+          <li><a href="#compartir"><span style="color:var(--gold-dk)">5.</span> <span data-lang="en">Who we share it with</span><span data-lang="es">Con quién los compartimos</span></a></li>
+          <li><a href="#conservacion"><span style="color:var(--gold-dk)">6.</span> <span data-lang="en">How long we keep it</span><span data-lang="es">Cuánto tiempo los conservamos</span></a></li>
+          <li><a href="#derechos"><span style="color:var(--gold-dk)">7.</span> <span data-lang="en">Data deletion and your rights</span><span data-lang="es">Cómo se borran tus datos y tus derechos</span></a></li>
+          <li><a href="#menores"><span style="color:var(--gold-dk)">8.</span> <span data-lang="en">Minors</span><span data-lang="es">Menores de edad</span></a></li>
+          <li><a href="#cambios"><span style="color:var(--gold-dk)">9.</span> <span data-lang="en">Changes to this policy</span><span data-lang="es">Cambios en esta política</span></a></li>
+          <li><a href="#contacto"><span style="color:var(--gold-dk)">10.</span> <span data-lang="en">Contact</span><span data-lang="es">Contacto</span></a></li>
+        </ol>
+      </details>
+    </aside>
+
+    <article style="max-width:720px;width:100%">
+      <p style="font-family:'Press Start 2P',monospace;font-size:11px;letter-spacing:.1em;color:var(--gold);margin:0 0 14px">ORBEX</p>
+      <h1 style="font-family:'Space Grotesk';font-weight:700;font-size:clamp(28px,5vw,40px);line-height:1.2;color:var(--title);margin:0 0 10px;letter-spacing:-.01em">
+        <span data-lang="en">Privacy policy</span><span data-lang="es">Política de privacidad</span>
+      </h1>
+      <p style="color:var(--ink-dim);font-size:14px;margin:0 0 8px">
+        <span data-lang="en">Last updated: [DATE]</span><span data-lang="es">Última actualización: [FECHA]</span>
+      </p>
+
+      <div style="border:2px solid var(--gold);border-radius:10px;background:color-mix(in srgb,var(--gold) 10%,var(--panel));padding:14px 16px;margin:20px 0 32px;font-size:14px;color:var(--ink)">
+        <strong><span data-lang="en">Template —</span><span data-lang="es">Plantilla —</span></strong>
+        <span data-lang="en">the text below is a structured draft covering the sections Google Play usually requires. Replace it with your final policy (and get it reviewed by a professional).</span>
+        <span data-lang="es">el texto de abajo es un borrador estructurado con las secciones que Google Play suele exigir. Sustitúyelo por tu política definitiva (y revísala con un profesional).</span>
+      </div>
+
+      <section id="introduccion" class="sect">
+        <h2 class="sect-h2">1. <span data-lang="en">Introduction</span><span data-lang="es">Introducción</span></h2>
+        <p>
+          <span data-lang="en">This policy explains what information Orbex ("the app", "we") handles — an Android game developed by a single person — and how we process it. By installing and using the app you accept what's described here.</span>
+          <span data-lang="es">Esta política explica qué información maneja Orbex ("la app", "nosotros"), un juego para Android desarrollado por una sola persona, y cómo la tratamos. Al instalar y usar la app aceptas lo aquí descrito.</span>
+        </p>
+        <p>
+          <span data-lang="en">[PLACEHOLDER — briefly describe the game and who the data controller is: developer name and country.]</span>
+          <span data-lang="es">[PLACEHOLDER — describe brevemente el juego y quién es el responsable del tratamiento: nombre del desarrollador y país.]</span>
+        </p>
+      </section>
+
+      <section id="datos" class="sect">
+        <h2 class="sect-h2">2. <span data-lang="en">What data we collect</span><span data-lang="es">Qué datos recogemos</span></h2>
+        <p>
+          <span data-lang="en">Orbex is designed to ask for the minimum data possible. [PLACEHOLDER — adjust this list to what your app really collects.]</span>
+          <span data-lang="es">Orbex está diseñado para pedir el mínimo de datos posible. [PLACEHOLDER — ajusta esta lista a lo que tu app realmente recoge.]</span>
+        </p>
+        <ul>
+          <li>
+            <span data-lang="en"><strong>Player name and avatar: </strong>the alias and avatar you pick for the ranking. You enter them yourself.</span>
+            <span data-lang="es"><strong>Nombre de jugador y avatar: </strong>el alias y el avatar que eliges para el ranking. Los introduces tú.</span>
+          </li>
+          <li>
+            <span data-lang="en"><strong>Game progress: </strong>levels beaten, scores and settings, stored on your device and/or in the online ranking.</span>
+            <span data-lang="es"><strong>Progreso de juego: </strong>niveles superados, puntuaciones y ajustes, guardados en tu dispositivo y/o en el ranking online.</span>
+          </li>
+          <li>
+            <span data-lang="en"><strong>Technical data: </strong>device language and anonymous performance data to detect crashes.</span>
+            <span data-lang="es"><strong>Datos técnicos: </strong>idioma del dispositivo y datos de rendimiento anónimos para detectar fallos.</span>
+          </li>
+        </ul>
+        <p>
+          <span data-lang="en">We do not collect your real name, email, contacts, precise location, or advertising IDs. Orbex shows no ads and uses no third-party tracking.</span>
+          <span data-lang="es">No recogemos nombre real, correo, contactos, ubicación precisa ni identificadores publicitarios. Orbex no muestra anuncios ni utiliza tracking de terceros.</span>
+        </p>
+      </section>
+
+      <section id="proposito" class="sect">
+        <h2 class="sect-h2">3. <span data-lang="en">Why we use it</span><span data-lang="es">Con qué propósito los usamos</span></h2>
+        <ul>
+          <li>
+            <span data-lang="en"><strong>Save your progress </strong>and sync the online ranking.</span>
+            <span data-lang="es"><strong>Guardar tu progreso </strong>y sincronizar el ranking online.</span>
+          </li>
+          <li>
+            <span data-lang="en"><strong>Show your position </strong>in the global leaderboard alongside your alias and avatar.</span>
+            <span data-lang="es"><strong>Mostrar tu posición </strong>en la clasificación global junto a tu alias y avatar.</span>
+          </li>
+          <li>
+            <span data-lang="en"><strong>Detect and fix bugs </strong>to improve game stability.</span>
+            <span data-lang="es"><strong>Detectar y corregir errores </strong>para mejorar la estabilidad del juego.</span>
+          </li>
+        </ul>
+        <p>
+          <span data-lang="en">[PLACEHOLDER — add any other specific purpose.]</span>
+          <span data-lang="es">[PLACEHOLDER — añade cualquier otra finalidad concreta.]</span>
+        </p>
+      </section>
+
+      <section id="base-legal" class="sect">
+        <h2 class="sect-h2">4. <span data-lang="en">Legal basis</span><span data-lang="es">Base legal</span></h2>
+        <p>
+          <span data-lang="en">We process data based on your consent when using the app and our legitimate interest in keeping the game running and bug-free. [PLACEHOLDER — adapt to GDPR/legislation applicable in your region.]</span>
+          <span data-lang="es">Tratamos los datos sobre la base de tu consentimiento al usar la app y de nuestro interés legítimo en mantener el juego funcionando y libre de fallos. [PLACEHOLDER — adapta según RGPD/legislación aplicable en tu región.]</span>
+        </p>
+      </section>
+
+      <section id="compartir" class="sect">
+        <h2 class="sect-h2">5. <span data-lang="en">Who we share it with</span><span data-lang="es">Con quién los compartimos</span></h2>
+        <p>
+          <span data-lang="en">We don't sell your data. It's only shared with the providers strictly necessary to run the game. [PLACEHOLDER — list your services, e.g. backend/ranking provider, Google Play Services, crash reporting.]</span>
+          <span data-lang="es">No vendemos tus datos. Solo se comparten con los proveedores estrictamente necesarios para operar el juego. [PLACEHOLDER — enumera los servicios que uses, p. ej. el proveedor del backend/ranking, Google Play Services, servicio de crash reporting.]</span>
+        </p>
+        <ul>
+          <li>
+            <span data-lang="en"><strong>Google Play Services: </strong>Android platform distribution and basic services.</span>
+            <span data-lang="es"><strong>Google Play Services: </strong>distribución y servicios básicos de la plataforma Android.</span>
+          </li>
+          <li>
+            <span data-lang="en"><strong>[Ranking provider]: </strong>storage of the online leaderboard.</span>
+            <span data-lang="es"><strong>[Proveedor de ranking]: </strong>almacenamiento de la clasificación online.</span>
+          </li>
+        </ul>
+      </section>
+
+      <section id="conservacion" class="sect">
+        <h2 class="sect-h2">6. <span data-lang="en">How long we keep it</span><span data-lang="es">Cuánto tiempo los conservamos</span></h2>
+        <p>
+          <span data-lang="en">We keep your progress and ranking entry as long as your player account is active. Anonymous technical data is kept for a limited period. [PLACEHOLDER — state concrete retention windows.]</span>
+          <span data-lang="es">Conservamos tu progreso y tu entrada de ranking mientras tu cuenta de jugador esté activa. Los datos técnicos anónimos se conservan durante un periodo limitado. [PLACEHOLDER — indica plazos concretos.]</span>
+        </p>
+      </section>
+
+      <section id="derechos" class="sect">
+        <h2 class="sect-h2">7. <span data-lang="en">Data deletion and your rights</span><span data-lang="es">Cómo se borran tus datos y tus derechos</span></h2>
+        <p>
+          <span data-lang="en">You can request access, correction, or deletion of your data at any time.</span>
+          <span data-lang="es">Puedes solicitar el acceso, la corrección o el borrado de tus datos en cualquier momento.</span>
+        </p>
+        <h3><span data-lang="en">Delete your account and data</span><span data-lang="es">Borrar tu cuenta y tus datos</span></h3>
+        <ul>
+          <li>
+            <span data-lang="en"><strong>From the game: </strong>Settings → Account → "Delete account". This removes your progress and your ranking entry.</span>
+            <span data-lang="es"><strong>Desde el juego: </strong>Opciones → Cuenta → "Borrar cuenta". Esto elimina tu progreso y tu entrada del ranking.</span>
+          </li>
+          <li>
+            <span data-lang="en"><strong>By email: </strong>write to aleixauque@gmail.com and we'll process the deletion.</span>
+            <span data-lang="es"><strong>Por correo: </strong>escribe a aleixauque@gmail.com y tramitaremos la eliminación.</span>
+          </li>
+        </ul>
+        <p>
+          <span data-lang="en">[PLACEHOLDER — confirm the real deletion flow and the maximum response time.]</span>
+          <span data-lang="es">[PLACEHOLDER — confirma el flujo real de borrado y el plazo máximo de respuesta.]</span>
+        </p>
+      </section>
+
+      <section id="menores" class="sect">
+        <h2 class="sect-h2">8. <span data-lang="en">Minors</span><span data-lang="es">Menores de edad</span></h2>
+        <p>
+          <span data-lang="en">Orbex is PEGI 3-rated and suitable for all ages. We do not knowingly collect personal data from minors beyond the alias and avatar needed to play. [PLACEHOLDER — add COPPA / regional wording if applicable.]</span>
+          <span data-lang="es">Orbex tiene clasificación PEGI 3 y es apto para todos los públicos. No recopilamos conscientemente datos personales de menores más allá del alias y avatar necesarios para jugar. [PLACEHOLDER — añade el texto que exija COPPA / la normativa de tu región si procede.]</span>
+        </p>
+      </section>
+
+      <section id="cambios" class="sect">
+        <h2 class="sect-h2">9. <span data-lang="en">Changes to this policy</span><span data-lang="es">Cambios en esta política</span></h2>
+        <p>
+          <span data-lang="en">We may update this policy. The current version will be published on this same page and we'll state the last update date at the top.</span>
+          <span data-lang="es">Podemos actualizar esta política. Publicaremos la versión vigente en esta misma página e indicaremos la fecha de la última actualización arriba.</span>
+        </p>
+      </section>
+
+      <section id="contacto" class="sect">
+        <h2 class="sect-h2">10. <span data-lang="en">Contact</span><span data-lang="es">Contacto</span></h2>
+        <p>
+          <span data-lang="en">For any privacy question or to exercise your rights, write to <a href="mailto:aleixauque@gmail.com">aleixauque@gmail.com</a>.</span>
+          <span data-lang="es">Para cualquier duda sobre privacidad o para ejercer tus derechos, escríbenos a <a href="mailto:aleixauque@gmail.com">aleixauque@gmail.com</a>.</span>
+        </p>
+        <p>
+          <span data-lang="en">[PLACEHOLDER — add controller, postal address or any contact detail your jurisdiction requires.]</span>
+          <span data-lang="es">[PLACEHOLDER — añade responsable, dirección postal o cualquier dato de contacto que exija tu jurisdicción.]</span>
+        </p>
+      </section>
+
+      <div style="border-top:2px solid var(--frame-soft);margin-top:40px;padding-top:22px;display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center">
+        <a href="/" style="font-size:14px;font-weight:600;text-decoration:none">
+          <span data-lang="en">← Back to Orbex</span><span data-lang="es">← Volver a Orbex</span>
+        </a>
+        <p style="font-size:13px;color:var(--ink-dim);margin:0">© <span id="year">2026</span> Orbex · <a href="mailto:aleixauque@gmail.com">aleixauque@gmail.com</a></p>
+      </div>
+    </article>
+  </div>
+
+<script>
+  var META = {
+    en: {
+      title: "Privacy policy — Orbex",
+      desc: "Orbex privacy policy — what data we collect, why, how it's deleted and how to contact us."
+    },
+    es: {
+      title: "Política de privacidad — Orbex",
+      desc: "Política de privacidad de Orbex, juego pixel-art para Android. Qué datos recogemos, con qué propósito, cómo se borran y cómo contactarnos."
+    }
+  };
+  function applyMetaForLang(lang){
+    var m = META[lang] || META.en;
+    document.title = m.title;
+    var d = document.querySelector('meta[name="description"]');
+    if (d) d.setAttribute('content', m.desc);
+  }
+  function toggleLang(){
+    var cur = document.documentElement.getAttribute('lang') || 'en';
+    var next = cur === 'es' ? 'en' : 'es';
+    document.documentElement.setAttribute('lang', next);
+    try { localStorage.setItem('orbex-lang', next); } catch(e){}
+    applyMetaForLang(next);
+  }
+  function toggleTheme(){
+    var cur = document.documentElement.getAttribute('data-theme');
+    var next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('orbex-theme', next); } catch(e){}
+  }
+  (function(){
+    var y = document.getElementById('year');
+    if (y) y.textContent = new Date().getFullYear();
+    var initLang = document.documentElement.getAttribute('lang');
+    if (initLang && initLang !== 'en') applyMetaForLang(initLang);
+  })();
+</script>
+</body>
+</html>
