@@ -1,301 +1,255 @@
-# Orbex — Landing page
+# Orbex
 
-> Static landing page for **Orbex**, a pixel-art orb-shooter puzzle for Android.
-> Deployed at **[orbex.aleixaj.com](https://orbex.aleixaj.com)**.
+![Godot](https://img.shields.io/badge/Godot-4.6-478CBF?style=for-the-badge&logo=godotengine&logoColor=white&labelColor=2D2D2D)
+![GDScript](https://img.shields.io/badge/GDScript-static_typing-355170?style=for-the-badge&logo=godotengine&logoColor=white&labelColor=2D2D2D)
+![Android](https://img.shields.io/badge/Android-APK-3DDC84?style=for-the-badge&logo=android&logoColor=white&labelColor=2D2D2D)
+![Resolution](https://img.shields.io/badge/Base-1280x720-c08820?style=for-the-badge&labelColor=2D2D2D)
+![Pixel Art](https://img.shields.io/badge/Style-Pixel_Art-efe3cf?style=for-the-badge&labelColor=2D2D2D)
 
-Zero build step, zero JavaScript framework, zero runtime dependencies — just
-HTML + CSS + a small vanilla `<script>` for the theme toggle, language toggle
-and modals. Drop the folder on any static host and it works.
+**Orbex** es un juego pixel-art de acción y puntería para Android, desarrollado en **Godot 4.6** por una sola persona. Mecánica tipo *Zuma* con boss: lanzas orbes desde el centro, encadenas combos de 3+ del mismo color y vacías la vida del jefe antes de que la cadena hostil llegue al final del recorrido.
+
+10 mundos × 5 niveles ambientados en épocas históricas (dinosaurios → espacio). Proyecto a la vez juego y *showcase* técnico: motor de cadena propio, plugin de editor de paths, sistema de profundidad sin recortar PNGs, UI nativa completa y backend de ranking online.
+
+> 🌐 **Este repositorio (`orbex-web`) contiene la landing page pública** del juego, desplegada en **[orbex.aleixaj.com](https://orbex.aleixaj.com)**. Es un sitio estático (HTML + CSS + JS vanilla, cero build), bilingüe EN/ES y con tema claro/oscuro. Detalles técnicos al final del documento, en la sección [Landing page](#landing-page-orbex-web--este-repo).
+>
+> El código del **juego** (Godot 4.6, GDScript) vive en el repositorio principal — lo que sigue documenta ese proyecto.
 
 ---
-
-## What this is
-
-A one-page marketing site + privacy policy for [Orbex](https://github.com/AleixAj/orbex),
-a solo-developed Godot game. The landing has 8 sections:
-
-1. **Hero** — logo, tagline, Play Store CTA, trailer modal.
-2. **The game** — one-liner explanation with a phone mockup.
-3. **10 Worlds** — 5-column grid of world crests with taglines.
-4. **Features** — 6 feature cards (single-player, ranking, power-ups, etc.).
-5. **Gallery** — mixed screenshot / trailer grid with lightbox.
-6. **10 Languages** — grid of all localised flags.
-7. **Download** — Play Store button, badge, QR.
-8. **Footer** — legal/support links, socials, credits.
-
-Plus a separate **`/privacy`** route with a full-length privacy policy template.
-
-## Features
-
-- 🌗 **Light / dark theme** — respects `prefers-color-scheme`, persists in localStorage.
-- 🌐 **Bilingual (EN default / ES)** — toggle in the header, persisted, updates `<title>` and `<meta description>` as well as visible copy.
-- ⚡ **Zero build** — no bundler, no npm, no framework. Ship the folder as-is.
-- 📱 **Responsive** — mobile-first, tested from 320px up to ultra-wide.
-- ♿ **Accessible** — semantic HTML, ARIA labels on all icon buttons, modals close with Escape, respects `prefers-reduced-motion`.
-- 🎨 **"Light Bronze Forge" theme** — matches the game's in-app palette (parchment cream, bronze, cocoa ink, gold accents).
-- 🔍 **SEO-ready** — canonical URL, full Open Graph + Twitter Card meta, `hreflang` alternates, `sitemap.xml`, `robots.txt`.
 
 ## Tech stack
 
-Deliberately minimal:
-
-- **HTML5** — hand-written, no templating.
-- **CSS** — inline `<style>` block using CSS custom properties for theming.
-- **Vanilla JavaScript** — single inline `<script>` (~120 lines) for theme/lang toggles, IntersectionObserver-based scroll reveal, hero parallax, cursor trail, modals.
-- **Fonts** — [Press Start 2P](https://fonts.google.com/specimen/Press+Start+2P) + [Space Grotesk](https://fonts.google.com/specimen/Space+Grotesk) from Google Fonts.
-- **No external dependencies at runtime.**
+| Categoría | Detalle |
+|---|---|
+| Motor | Godot 4.6 (Mobile / `gl_compatibility`) |
+| Lenguaje | GDScript tipado estático con `class_name` |
+| Plataforma | Android landscape, base 1280×720 |
+| Backend | Supabase (PostgreSQL + PostgREST + Auth anónima) |
+| Persistencia local | `user://*.save` |
+| Editor tooling | `EditorPlugin` custom (`@tool` + `_forward_canvas_gui_input`) |
 
 ---
 
-## Structure
+## Cómo probarlo
+
+1. Abre Godot 4.6 e importa la carpeta `orbex/`.
+2. El plugin **Orbex Path Editor** viene activado por defecto.
+3. Ejecuta `res://scenes/main.tscn` (F5).
+4. Clic / toque para apuntar y disparar.
+
+> El `.gitignore` excluye `.godot/`, `builds/`, APKs y `export_presets.cfg`.
+
+---
+
+## Características principales
+
+**Gameplay**
+- Motor de cadena propio: avance por `path_progress`, inserción con `lerp`, snap-back, merge con shockwave, multi-cadena por nivel.
+- Sistema de profundidad sin recortar PNGs: `FrontMask` (polígonos), tótem universal (bola de cristal, 12 frames) que se ilumina al acercarse la cadena, portales `_Tp` con fade.
+- Personaje por mundo con 8 direcciones y profundidad por pose.
+- 9 power-ups consumibles (3 slots equipables) + combate de jefe (corazones + ataque propio por mundo).
+- Jefes multi-fase (2-3 fases) con transición de rotura de pantalla.
+- Bonus pickups deterministas (aparición por bolas destruidas del pool del nivel, sin RNG, sin respawn) para mantener el ranking como habilidad pura.
+
+**UI**
+- Pantallas completas (menú, mapa, tienda, inventario, perfil, ranking, opciones, daily, buzón) sobre paleta *Light Bronze Forge*.
+- 55 avatares de perfil (10 free + 41 premium + 4 VIP) con sistema WYSIWYG de marcos.
+- Tienda de packs (Hero VIP + 10 packs de mundo + 5 packs de monedas) cableada end-to-end como stub local: la compra desbloquea avatars/frames/orb skins/backgrounds del mundo, activa perks VIP (+50 % monedas por partida, badge de ranking, cosméticos exclusivos) y refresca las cards con el checkmark de "poseído". Pendiente Google Play Billing para receipt validation.
+- Recompensa diaria de 7 días con queue, racha con multiplicador y anti-cheat contra cambio de reloj.
+- Cofre gratis por rewarded ad con loot table por rareza (SDK pendiente).
+- Buzón de mensajes con backend Supabase (3 RPCs + fallback offline).
+- Skins de orbe por mundo (shader universal con recolor por luma).
+- Fondos temáticos del menú (2 variantes por mundo + clásico + VIP).
+
+**Herramientas y arquitectura**
+- Plugin **Orbex Path Editor**: Shift+clic para trazar paths, sufijos especiales (`_Tp`, `_NoHook`, `_Front`, `_FrontMax`, `_Sprint`).
+- Backend Supabase: leaderboard, perfiles públicos, auth anónima, RLS, anti-trampas con caps en servidor, sistema de roles.
+- **Telemetría** (autoload `Analytics`): payload rico por partida a Supabase con caps + rate limit anti-bot; toggle en Opciones por GDPR. Con datos beta reales, `percentile_cont` sobre `level_attempts.score` recalibra los star_thresholds.
+- **Cron jobs**: purga automática a 90 días de `level_attempts` + roll-up diario de DAU.
+- **GDPR "delete my account"**: RPC + cascade + limpieza local → next launch parece primera instalación.
+- Audio: música por mundo (lazy load + caché), menú con 4 temas en rotación, pool polifónico de SFX.
+- **i18n** en 10 idiomas con auto-detección del locale del sistema.
+
+---
+
+## Arquitectura
+
+```
++-------------+     +----------------------+     +------------------+
+|  AppRouter  |---->|  OrbexScreen (UI)    |---->|  Nivel (main.gd) |
+| (main.tscn) |     |  menú/zona/nivel     |     |  + HUD overlay   |
++-------------+     +----------------------+     +------------------+
+       |                                                  |
+       v                                                  v
++-------------+                                   +------------------+
+|  Autoloads  |   notify / save / unlock          |  ChainBall x N   |
+|  (14 globs) |                                   |  ProjectileBall  |
++-------------+                                   |  Boss            |
+                                                  +------------------+
+```
+
+- **`AppRouter`** (`scripts/systems/app_router.gd`): monta pantallas, gestiona overlays modales y carga niveles.
+- **`OrbexScreen`** (`scripts/ui/screens/orbex_screen.gd`): contenedor de pantallas. Secciones grandes extraídas en `scripts/ui/screens/sections/`.
+- **`main.gd`** (`scripts/systems/main.gd`): controlador del nivel — cadena, combos, vida del jefe.
+- **Autoloads**: `Notify`, `AchievementService`, `Wallet`, `Inventory`, `LevelProgress`, `DailyRewards`, `FreeReward`, `Settings`, `BackendConfig`, `RankingProvider`, `MusicPlayer`, `Sfx`, `OrbSkins`, `ProfileFrames`, `Analytics`.
+
+> Para detalles de mecánicas, balanceo, sistemas y "dónde está qué" → `CLAUDE.md` en el repo del juego.
+
+---
+
+## Estructura del proyecto
+
+```
+orbex/
+|-- addons/orbex_path_editor/     Plugin de editor para trazar paths
+|-- assets/                       arte, audio, fuentes, sprites de UI
+|-- scenes/
+|   |-- entities/                 boss/ player/ totem/ bonus/ + chain_ball, projectile_ball
+|   |-- levels/NN_zona/           <zona>_01..05.tscn
+|   |-- ui/                       components/ screens/ overlays/ hud.tscn
+|   `-- main.tscn
+|-- scripts/
+|   |-- entities/                 chain_ball, player, boss, front_mask, totem...
+|   |-- systems/                  app_router, main, autoloads, sql/
+|   `-- ui/                       components/ overlays/ screens/sections/
+|-- design/                       docs internas (no se publican)
+|-- project.godot
+|-- README.md
+`-- CLAUDE.md                     mapa de navegación del repo
+```
+
+---
+
+## Estado actual
+
+- **Mecánica**: completa (cadena, inserción, combos, multi-cadena, portales, profundidad, jefes multi-fase).
+- **Contenido**: 10 mundos, **50 niveles** + tutorial + 6 fases extra de jefe.
+- **Personajes**: los 10 mundos con 8 direcciones y profundidad por pose.
+- **UI**: menú, mapa, tiendas, inventario, perfil (55 avatares), ranking online, daily, buzón, regalo gratis.
+- **Ranking**: Supabase con auth anónima + RLS + perfiles públicos + anti-trampas.
+- **Telemetría de beta**: end-to-end con retention 90 días automatizada y queries de calibración listas.
+- **Base de datos**: endurecida (RLS optimizada, caps + rate limit, RPC de borrado GDPR).
+- **Audio**: música + SFX en los 10 mundos.
+- **i18n**: 10 idiomas con auto-detect y cambio en caliente.
+- **Mobile/APK**: landscape, touch validado, VRAM texture compression dual (desktop + Android).
+
+---
+
+## Roadmap pendiente
+
+- [ ] Haptic feedback en disparos críticos / combos.
+- [ ] Configuración de niveles desde JSON (`data/levels/`).
+- [ ] Conectar Google Play Billing a los packs.
+- [ ] Vincular identidad a Google Play Games sobre la sesión anónima.
+- [ ] Editor de niveles ampliado (paleta de patrones).
+- [ ] Revisar traducciones con hablantes nativos (las 9 no-inglesas están asistidas).
+
+---
+
+## Localización (i18n)
+
+10 idiomas: **EN** (base), **ES**, **CA**, **pt-BR**, **FR**, **IT**, **DE**, **JA**, **KO**, **RU**.
+
+- Fuente única: `assets/i18n/translations.csv` (`keys,en,es,ca,pt_BR,...`).
+- Compilado a `.translation` por el importer de Godot y registrado vía `[internationalization]` en `project.godot`. **El CSV no se lee en runtime**.
+- Auto-detect en primer arranque (`OS.get_locale()`, fallback a EN). Selector con banderas en Opciones + name picker.
+- Cambio en caliente vía `Settings.set_language()` → señal `language_changed` → reconstrucción de la pantalla activa. Labels en `.tscn` con `auto_translate_mode = ALWAYS` se retraducen solas.
+- Persistencia por dispositivo en `user://settings.save`.
+
+**Añadir un idioma**: nueva columna en el CSV + entrada en `LANGUAGES` (`settings.gd`) + path en `project.godot`.
+
+**Añadir una clave**: fila al CSV + `tr("MI_CLAVE")` en el código.
+
+---
+
+## Publicación en Google Play
+
+Pendientes para subir a Play Store (no bloquean desarrollo — hoy se exporta APK debug a propósito):
+
+- **Build**: AAB + Release, keystore de release, Play App Signing.
+- **Cumplimiento**: política de privacidad, Data Safety, IARC, público objetivo (13+). La política real vive en [`PRIVACY.md`](PRIVACY.md) de este repo y se sirve en [orbex.aleixaj.com/privacy](https://orbex.aleixaj.com/privacy). El flujo "delete my data" ya está implementado in-app.
+- **Backend**: hardening completado. `players.role` default = `'user'` en prod (verificado 2026-07-18); las 6 cuentas de dev se mantienen como `'admin'` para promo/tests, nuevas altas caen en `'user'`.
+- **Ficha**: icono 512×512, gráfico destacado 1024×500, capturas landscape, textos EN/ES en `design/STORE_TEXTS.md` del repo del juego. Idioma primario: **English (US)**.
+
+Permisos mínimos ya validados (`INTERNET` + `ACCESS_NETWORK_STATE`), `targetSdk 36` / `minSdk 24`, solo `arm64-v8a`.
+
+---
+
+## Autoría
+
+Proyecto personal de **Aleix**. Diseño, código, arte de UI y level design por una sola persona — pensado como showcase técnico y como excusa para construir un juego completo (gameplay, UI, herramientas, persistencia, plataforma) desde cero en un motor open source.
+
+Sugerencias y revisiones de código bienvenidas.
+
+- Email: [aleixauque@gmail.com](mailto:aleixauque@gmail.com)
+- Web: [aleixaj.com](https://aleixaj.com)
+
+---
+
+## Landing page (`orbex-web` — este repo)
+
+Landing pública del juego, desplegada en **[orbex.aleixaj.com](https://orbex.aleixaj.com)**. Ese subdominio también es la URL de referencia de la política de privacidad exigida por Google Play.
+
+### Stack
+
+HTML5 + CSS con custom properties + JS vanilla en un solo `<script>` inline. **Cero build**, **cero dependencias en runtime**. Ship the folder.
+
+- Landing (`index.html`): 8 secciones (hero, el juego, 10 mundos, 10 jefes, features, galería, 10 idiomas, descarga, footer).
+- Política de privacidad (`/privacy` → `privacy/index.html`): 11 secciones + resumen destacado, con GDPR/RGPD compliance.
+- **Bilingüe EN (default) / ES** — toggle en el header, persistencia en `localStorage`, ambos idiomas viven en el mismo HTML mediante `<span data-lang="en|es">` con CSS que oculta el inactivo. Actualiza también `<title>` y `<meta description>`.
+- **Tema claro/oscuro** — auto por `prefers-color-scheme` en la primera visita, persistente después.
+- **A11y**: `aria-label` en todos los botones-icono, modales con `role="dialog"` y cierre por Escape, respeta `prefers-reduced-motion`.
+- **SEO**: Open Graph + Twitter Card completos, canonical, `hreflang` alternates, `sitemap.xml`, `robots.txt`. HTML estático — Google/Twitter ven el contenido en la respuesta inicial, no en un shell hidratado.
+
+### Estructura
 
 ```
 orbex-web/
-├── index.html               # landing page (EN + ES)
-├── privacy/
-│   └── index.html           # /privacy — legal template (EN + ES)
+├── index.html               landing (bilingüe)
+├── privacy/index.html       /privacy — política real
+├── PRIVACY.md               source-of-truth bilingüe
 ├── assets/
 │   └── images/
-│       ├── orbex-title.png  # brand wordmark
-│       ├── zones/           # 10 world crest emblems
-│       ├── orbs/            # 5 marble sprites
-│       ├── icons/           # UI icons (map, ranking, gift, coin, chest, star)
-│       ├── avatars/         # 3 character portraits
-│       ├── bg/              # 3 world background photos
-│       ├── flags/           # 10 language flags (Eng, Esp, Cat, Prt, Fra, Ita, Deu, Jpn, Kor, Rus)
-│       └── placeholders/    # ⚠️ replace with real content before launch
-│
-├── robots.txt               # SEO — allows all, points to sitemap
-├── sitemap.xml              # SEO — 2 URLs
-│
-├── _headers                 # Cloudflare Pages / Netlify: cache + security headers
-├── _redirects               # Cloudflare Pages / Netlify: legacy URL redirects
-├── netlify.toml             # Netlify config
-├── vercel.json              # Vercel config (cleanUrls, redirects, cache headers)
-├── .netlifyignore           # excludes _source/ from Netlify deploys
-├── .vercelignore            # excludes _source/ from Vercel deploys
-├── .gitignore
-└── README.md
+│       ├── orbex-title.png  wordmark
+│       ├── zones/           10 escudos de mundo
+│       ├── bosses/          10 retratos verticales de jefe
+│       ├── orbs/            5 orbes
+│       ├── icons/           UI icons
+│       ├── avatars/         3 avatares
+│       ├── bg/              3 fondos de mundo
+│       ├── flags/           10 banderas de idioma
+│       └── placeholders/    ⚠️ sustituir antes de lanzar
+├── robots.txt sitemap.xml
+├── _headers _redirects       Cloudflare Pages / Netlify
+├── netlify.toml vercel.json
+└── README.md                 este archivo
 ```
 
----
-
-## Getting started
-
-The site works with any static file server. From the repo root:
+### Probar localmente
 
 ```bash
-# Python (bundled with most systems)
 python -m http.server 8000
-
-# Node
-npx serve .
-
-# PHP (also fine)
-php -S localhost:8000
+# → http://localhost:8000/   y   http://localhost:8000/privacy/
 ```
 
-Then open **http://localhost:8000/** (landing) and **http://localhost:8000/privacy/**.
+### Deploy
 
-Or just double-click `index.html` — the site works over `file://` too, though
-`localStorage` for the theme/lang persistence needs a real HTTP origin.
+Cualquier host estático. Recomendado **Cloudflare Pages**: framework "None", output `/`, `_headers` + `_redirects` se aplican automáticamente. Alternativas con config incluida: **Netlify** (`netlify.toml`) y **Vercel** (`vercel.json`).
 
----
+Custom domain `orbex.aleixaj.com` apunta al proyecto de Pages vía CNAME automático (dominio ya en Cloudflare).
 
-## Deployment
+### Placeholders a sustituir antes de anunciar
 
-The site is 100% static so any host works. Here are the three that ship
-with pre-configured files in this repo.
+Buscar en `index.html`:
 
-### Cloudflare Pages
-
-1. Dashboard → **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
-2. Framework preset: **None**. Build command: *(empty)*. Output directory: **`/`**.
-3. Deploy. Custom domain → add `orbex.aleixaj.com` and follow the CNAME steps.
-
-`_headers` and `_redirects` are picked up automatically.
-
-### Netlify
-
-1. **Add new site** → **Import from Git** (or drag-and-drop for a manual deploy).
-2. Publish directory: **`.`**. Build command: *(empty)*.
-3. **Domain settings** → **Add custom domain** → `orbex.aleixaj.com`.
-
-`.netlifyignore` keeps `_source/` (if you kept it locally) out of the deploy.
-
-### Vercel
-
-1. **Add New Project** → import the repo.
-2. Framework preset: **Other**. Build command: *(empty)*. Output directory: **`.`**.
-3. **Settings** → **Domains** → add `orbex.aleixaj.com`.
-
-`vercel.json` handles clean URLs (so `/privacy` works without the `.html`
-extension), sensible cache headers on assets, and legacy redirects.
-
----
-
-## ⚠️ Placeholders to replace before launch
-
-Search the two HTML files (`index.html`, `privacy/index.html`) for these:
-
-### Links (`#PLACEHOLDER-*`)
-
-| Placeholder | Replace with |
+| Placeholder | Sustituir por |
 |---|---|
-| `#PLACEHOLDER-play-store` | Real Google Play URL (3 occurrences in `index.html`) |
-| `#PLACEHOLDER-terminos` | Terms of use page |
-| `#PLACEHOLDER-borrar-cuenta` | "How to delete my account" page |
-| `#PLACEHOLDER-x` | X / Twitter profile |
-| `#PLACEHOLDER-github` | GitHub profile |
-| `#PLACEHOLDER-itch` | itch.io profile |
-
-### Placeholder assets (`assets/images/placeholders/`)
-
-| Current file | Should become | Size |
-|---|---|---|
-| `hero-gameplay.png` | Real trailer poster | 1280×720 |
-| *(missing)* `assets/videos/trailer.mp4` | Real trailer video | 1920×1080, MP4 H.264, `preload="none"` |
-| `google-play-badge.png` | Official Google Play badge | ~564×168 |
-| `qr.png` | Real QR pointing to your Play listing | 240×240+ |
-| `og-image.png` | Open Graph / social share image | 1200×630 |
-| `favicon-32.png`, `favicon-192.png` | Real favicons | 32×32 and 192×192 |
-| `gameplay-1..3.png` | Real gameplay screenshots | 1280×720 |
-
-### In `privacy/index.html`
-
-- `[DATE]` / `[FECHA]` → real "last updated" date.
-- Every `[PLACEHOLDER — …]` / `[PLACEHOLDER — …]` block → definitive legal
-  text. **The current text is a structured template, not legal advice —
-  have it reviewed by a professional before publishing.**
-
----
-
-## Editing guide
-
-### Copy (visible text)
-
-All user-facing text lives in dual `<span>` tags:
-
-```html
-<h2>
-  <span data-lang="en">A journey through history</span>
-  <span data-lang="es">Un viaje por la historia</span>
-</h2>
-```
-
-Edit the one you need. CSS (`html[lang="en"] [data-lang="es"]{display:none}`)
-hides the inactive language.
-
-### Meta title & description
-
-Also localised — they swap via JS when the toggle is clicked. Edit the `META`
-object at the bottom of each HTML file:
-
-```js
-var META = {
-  en: { title: "...", desc: "..." },
-  es: { title: "...", desc: "..." }
-};
-```
-
-### World cards (`index.html`, section 3)
-
-Each of the 10 `<article class="world-card">` blocks holds the crest, name and
-tagline. Edit in place — accent colour is the `background:` value on the top
-6-pixel band.
-
-### Feature cards (section 4)
-
-Each `<div class="feature-card">` has an icon + title + description. Add or
-remove cards freely; the grid auto-fits.
-
-### Gallery (section 5)
-
-Each `<button class="gallery-card">` opens the lightbox (or the trailer modal
-for the video card). Change images by editing the `src`. `grid-row:span 2`
-makes a card take a double row.
-
-### Languages section (section 6)
-
-Card list in `.flags-grid`. Add a new `<div class="flag-card">` if you
-localise the game to more languages.
-
-### Theme colours
-
-The Light Bronze Forge palette is defined as CSS custom properties near the
-top of the `<style>` block in each HTML file. Change once, applies everywhere
-in both light and dark modes.
-
-### Adding a third language
-
-1. Duplicate the `<span data-lang>` pairs with a third variant, e.g. `<span data-lang="ca">…</span>`.
-2. Add CSS: `html[lang="ca"] [data-lang="en"], html[lang="ca"] [data-lang="es"]{display:none}`.
-3. Extend `toggleLang()` in the `<script>` to cycle through 3 languages.
-4. Add the new locale to the `META` object.
-5. Add a flag button in the header.
-
-For SEO on multi-language sites, prefer separate URLs (`/es/`, `/ca/`) plus
-proper `hreflang` alternates — this repo currently uses a single URL with a
-runtime toggle, which is simpler but ranks the alternate language less well.
-
----
-
-## Technical notes
-
-- **Language** — English by default (`<html lang="en">`), Spanish as an
-  alternative via the header toggle. Both languages live in the same HTML
-  via `<span data-lang="en">` / `<span data-lang="es">`; CSS hides the
-  inactive one. `document.title` and `<meta name="description">` also swap
-  through the `META` dict in the `<script>`.
-- **Theme** — auto-detected from `prefers-color-scheme` on first visit,
-  persisted afterwards in `localStorage` under `orbex-theme`. Same for
-  language under `orbex-lang`. Both bootstrap **before paint** (inline
-  `<script>` in `<head>`) to avoid a light-mode flash on dark-mode users.
-- **Animations** — CSS keyframes for floating orbs, logo pulse, forge shift,
-  scroll cue. Intersection-observer-based scroll reveal. All respect
-  `prefers-reduced-motion: reduce`.
-- **Modals** — trailer + lightbox use a plain hidden `<div>` with a `.open`
-  class, close on click-outside or `Escape`.
-- **Fonts** — Google Fonts with `display=swap`. No self-hosted fallback
-  (acceptable trade-off for a landing page).
-- **Accessibility** — all icon-only buttons have `aria-label`; modals have
-  `role="dialog"` + `aria-modal="true"`; images are decorative
-  (`aria-hidden="true"`) unless they carry meaning.
-- **Browser support** — modern evergreen browsers (Chrome/Edge, Firefox,
-  Safari 16+). Uses CSS `color-mix()`, `aspect-ratio` and `100svh`.
-
-## SEO
-
-- Full Open Graph and Twitter Card meta on both pages.
-- `<link rel="canonical">` on both.
-- `<link rel="alternate" hreflang="en|es|x-default">` on both.
-- Static HTML: content is in the initial response, not injected after
-  hydration — Google and social crawlers see everything on first fetch.
-- `sitemap.xml` and `robots.txt` in the root.
-- Structured `<h1>` → `<h2>` → `<h3>` hierarchy, semantic `<section>`,
-  `<article>`, `<nav>`, `<footer>`.
-
----
-
-## Credits
-
-- **Game & site** — [Aleix Auqué](https://aleixaj.com) ([@AleixAj](https://github.com/AleixAj))
-- **Engine** — [Godot 4.6](https://godotengine.org)
-- **Fonts** — Press Start 2P (Cody "CodeMan38" Boisclair), Space Grotesk (Florian Karsten)
-- **Landing page design** — starting point generated as an internal
-  Design Component, converted to plain static HTML for deployment.
-
-## License
-
-The **code** in this repo (HTML / CSS / JS) can be reused as a reference for
-building similar static landing pages. See `LICENSE` if present.
-
-The **Orbex brand, sprites, artwork, and copy** in `assets/` are **© Aleix
-Auqué** and *not* covered by any open license — please don't reuse them
-outside of the Orbex project.
-
-## Contact
-
-- Email: aleixauque@gmail.com
-- Site: [aleixaj.com](https://aleixaj.com)
-- Game repo: [github.com/AleixAj/orbex](https://github.com/AleixAj/orbex) *(link if/when public)*
+| `#PLACEHOLDER-play-store` | URL real de Google Play (3 apariciones) |
+| `#PLACEHOLDER-terminos`, `#PLACEHOLDER-borrar-cuenta` | Páginas legales |
+| `#PLACEHOLDER-x`, `#PLACEHOLDER-github`, `#PLACEHOLDER-itch` | Perfiles sociales reales |
+| `assets/images/placeholders/hero-gameplay.png` | Poster del tráiler (1280×720) |
+| `assets/videos/trailer.mp4` (missing) | Tráiler real (MP4 H.264, `preload="none"`) |
+| `assets/images/placeholders/google-play-badge.png` | Badge oficial de Google Play |
+| `assets/images/placeholders/qr.png` | QR real a la ficha de Play |
+| `assets/images/placeholders/og-image.png` | Imagen para social share (1200×630) |
+| `assets/images/placeholders/favicon-*.png` | Favicons definitivos |
+| `assets/images/placeholders/gameplay-*.png` | Capturas reales de gameplay |
