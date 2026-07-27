@@ -180,7 +180,7 @@ Proyecto personal de **Aleix**. Diseño, código, arte de UI y level design por 
 
 Sugerencias y revisiones de código bienvenidas.
 
-- Email: [aleixauque@gmail.com](mailto:aleixauque@gmail.com)
+- Email: [playorbex@gmail.com](mailto:playorbex@gmail.com)
 - Web: [aleixaj.com](https://aleixaj.com)
 
 ---
