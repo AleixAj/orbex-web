@@ -223,8 +223,20 @@
   .section-h2{font-family:'Press Start 2P',monospace;color:var(--title);letter-spacing:.02em}
 
   /* ---- modals ---- */
-  .modal-backdrop{position:fixed;inset:0;z-index:100;display:none;place-items:center;padding:20px;background:rgba(10,6,2,.8);backdrop-filter:blur(6px)}
+  /* Sin backdrop-filter a propósito: un desenfoque a pantalla completa se
+     recalcula cada vez que cambia algo por debajo, y con el tráiler abierto
+     eso es cada fotograma del vídeo. Se compensa subiendo la opacidad. */
+  .modal-backdrop{position:fixed;inset:0;z-index:100;display:none;place-items:center;padding:20px;background:rgba(10,6,2,.93)}
   .modal-backdrop.open{display:grid}
+  /* Con un modal abierto, todo lo decorativo se para. El vídeo del tráiler
+     compite por el compositor con el rastro del ratón, los dos blur de la
+     cabecera y las animaciones infinitas, y se ve a tirones. */
+  body.modal-open #orbex-trail{display:none}
+  body.modal-open .nav-header{backdrop-filter:none}
+  body.modal-open .logo-pulse,
+  body.modal-open .scroll-cue,
+  body.modal-open .forge-anim{animation-play-state:paused}
+
   .modal-body{position:relative;animation:modalIn .3s ease}
   .modal-close{position:absolute;top:-14px;right:-14px;z-index:2;width:44px;height:44px;border-radius:50%;background:var(--btn-gold);border:3px solid #fff8ec;border-bottom-width:5px;color:#fff8ec;font-size:20px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.5)}
 
@@ -1012,10 +1024,18 @@
   // El iframe nace sin src: no se pide nada a YouTube hasta que el usuario
   // abre el modal, y al cerrarlo se le quita el src (eso detiene la reproducción).
   var TRAILER_SRC = "https://www.youtube-nocookie.com/embed/XL-izvbgFvg?autoplay=1&rel=0&modestbranding=1&playsinline=1";
+  // `modal-open` en el body es lo que congela rastro, blur y animaciones.
+  // Se recalcula mirando si queda ALGÚN modal abierto, porque Escape llama
+  // a los dos cierres y uno no puede descongelar lo que el otro sigue usando.
+  function syncModalOpen(){
+    var any = !!document.querySelector('.modal-backdrop.open');
+    document.body.classList.toggle('modal-open', any);
+  }
   function openTrailer(){
     document.getElementById('trailer-modal').classList.add('open');
     var f = document.getElementById('trailer-frame');
     if (f && !f.getAttribute('src')) f.setAttribute('src', TRAILER_SRC);
+    syncModalOpen();
   }
   function closeTrailer(){
     var m = document.getElementById('trailer-modal');
@@ -1023,14 +1043,17 @@
     m.classList.remove('open');
     var f = document.getElementById('trailer-frame');
     if (f) f.removeAttribute('src');
+    syncModalOpen();
   }
   function openLightbox(src, alt){
     var img = document.getElementById('lightbox-img');
     img.src = src; img.alt = alt || '';
     document.getElementById('lightbox').classList.add('open');
+    syncModalOpen();
   }
   function closeLightbox(){
     document.getElementById('lightbox').classList.remove('open');
+    syncModalOpen();
   }
 
   (function(){
@@ -1063,31 +1086,50 @@
       setTimeout(revealAll, 4000);
     }
 
+    // Parallax del hero. El scroll puede dispararse muchas más veces que
+    // fotogramas hay, así que se escribe una sola vez por frame; y por debajo
+    // del hero no se toca nada, que ya no se ve.
     if (!reduce){
-      window.addEventListener('scroll', function(){
-        var bg = document.getElementById('orbex-hero-bg');
-        if (bg) bg.style.transform = 'translateY(' + (window.scrollY * 0.2) + 'px)';
+      var heroBg = document.getElementById('orbex-hero-bg');
+      var pending = false;
+      if (heroBg) window.addEventListener('scroll', function(){
+        if (pending) return;
+        pending = true;
+        requestAnimationFrame(function(){
+          pending = false;
+          var y = window.scrollY;
+          if (y > window.innerHeight) return;
+          heroBg.style.transform = 'translateY(' + (y * 0.2) + 'px)';
+        });
       }, { passive: true });
     }
 
+    // Rastro del ratón: se apaga con un modal abierto (competía con el vídeo)
+    // y con la pestaña en segundo plano.
     var fine = window.matchMedia && window.matchMedia('(pointer: fine)').matches;
-    if (fine && !reduce){
+    var trailLayer = document.getElementById('orbex-trail');
+    if (fine && !reduce && trailLayer){
       var last = 0;
       window.addEventListener('mousemove', function(e){
+        if (document.body.classList.contains('modal-open') || document.hidden) return;
         var now = performance.now();
         if (now - last < 28) return;
         last = now;
-        var layer = document.getElementById('orbex-trail');
-        if (!layer) return;
         var s = document.createElement('span');
         var size = 6 + Math.random() * 8;
         s.style.width = s.style.height = size + 'px';
         s.style.left = (e.clientX - size / 2) + 'px';
         s.style.top = (e.clientY - size / 2) + 'px';
-        layer.appendChild(s);
-        setTimeout(function(){ s.remove(); }, 720);
+        trailLayer.appendChild(s);
+        s.addEventListener('animationend', function(){ s.remove(); });
       }, { passive: true });
     }
+
+    // Las 8 capturas pesan lo suyo: decodificarlas fuera del hilo principal
+    // evita el tirón al entrar en la galería.
+    document.querySelectorAll('img[loading="lazy"]').forEach(function(img){
+      img.decoding = 'async';
+    });
 
     window.addEventListener('keydown', function(e){
       if (e.key === 'Escape'){ closeTrailer(); closeLightbox(); closeMenu(); }
