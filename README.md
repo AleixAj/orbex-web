@@ -203,7 +203,19 @@ HTML5 + CSS con custom properties + JS vanilla en un solo `<script>` inline. **C
 - **Tráiler** — embed de YouTube (`youtube-nocookie.com`) en modal. El `<iframe>` nace **sin `src`**: no se hace ninguna petición a Google hasta que el usuario pulsa "Ver tráiler", y al cerrar el modal se le quita el `src` para detener la reproducción. Es el patrón click-to-load, así que la landing no necesita banner de cookies.
 - **Navegación móvil** — por debajo de 860 px (el mismo breakpoint donde `.navlink` desaparece) el JUGAR de la barra se oculta y aparece una hamburguesa que despliega un panel con JUGAR en dorado arriba y los seis enlaces debajo. Se cierra al elegir enlace, al tocar fuera de la cabecera, con Escape y al pasar a escritorio. ⚠️ Las reglas que ocultan `.nav-burger` y `.nav-play-top` van **cualificadas con `.nav-header`** a propósito: `.icon-btn` y `.btn-play-nav` se declaran más abajo en la hoja con la misma especificidad y ganarían por orden de aparición.
 - **A11y**: `aria-label` en todos los botones-icono, `aria-expanded` / `aria-controls` en la hamburguesa, modales con `role="dialog"` y cierre por Escape, respeta `prefers-reduced-motion`.
+- **Rendimiento** — ver el apartado dedicado más abajo.
 - **SEO**: Open Graph + Twitter Card completos, canonical, `hreflang` alternates, `sitemap.xml`, `robots.txt`. HTML estático — Google/Twitter ven el contenido en la respuesta inicial, no en un shell hidratado.
+
+### Rendimiento
+
+El tráiler se veía a tirones y el motivo no era el vídeo, sino el compositor saturado mientras reproduce. Lo que se hizo, y **por qué no conviene deshacerlo**:
+
+- **`.modal-backdrop` no lleva `backdrop-filter`.** Un desenfoque a pantalla completa se recalcula cada vez que cambia algo por debajo, y con el tráiler abierto eso es cada fotograma. Peor todavía: `#orbex-trail` está en z-index 90 y el modal en 100, así que cada partícula del rastro nacía *debajo* del desenfoque y disparaba un reblur de toda la ventana ~35 veces por segundo. Se compensa con la opacidad del fondo (0,93).
+- **`body.modal-open` congela lo decorativo** mientras hay un modal: oculta el rastro (y corta su generación), apaga el `backdrop-filter` de la cabecera y pausa `logoPulse` y `forgeShift`. Esas dos animan `filter` y `background-position`, que repintan en vez de componer, y corrían siempre aunque estuvieran fuera de pantalla.
+- La clase la recalcula `syncModalOpen()` mirando si queda **algún** `.modal-backdrop.open`. Escape llama a los dos cierres, y uno no puede descongelar lo que el otro sigue usando.
+- **El parallax del hero escribe una vez por frame** (`requestAnimationFrame`) y no hace nada por debajo del hero. El evento `scroll` se dispara más veces que fotogramas hay.
+- Las partículas del rastro se limpian con `animationend`, no con un `setTimeout` cada una.
+- Todas las imágenes `loading="lazy"` llevan `decoding="async"` para que decodificar las capturas no bloquee el hilo principal al entrar en la galería.
 
 ### Política de privacidad
 
@@ -273,6 +285,6 @@ Buscar en `index.html`:
 
 Ya no se usan (se pueden borrar): `placeholders/hero-gameplay.png` y `placeholders/gameplay-1..3.png` — la galería tira de `assets/images/screenshots/`.
 
-**Peso de las capturas**: las 8 de `screenshots/` suman ~4,4 MB (600 KB cada una, calidad ~95). Van con `loading="lazy"` y la galería está al final de la página, así que no afectan a la primera pintada, pero recomprimir a calidad ~80 las dejaría en ~150 KB sin diferencia visible al tamaño en que se muestran.
+**Peso de las capturas**: las 8 de `screenshots/` están recomprimidas a **calidad 85** y suman ~2,2 MB (venían a ~4,4 MB con calidad ~95). Los originales sin recomprimir se conservan fuera del repo, así que se pueden regenerar. Si se sustituye alguna, pasarla por la misma calidad antes de commitear.
 
 ⚠️ **`screenshots/7.jpg` está desactualizada**: el ranking muestra pestañas de nivel 1-5 y el build actual tiene 8 niveles por mundo. Hay que recapturarla (y revisar si la misma imagen está subida a la ficha de Play).
