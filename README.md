@@ -8,7 +8,7 @@
 
 **Orbex** es un juego pixel-art de acción y puntería para Android, desarrollado en **Godot 4.6** por una sola persona. Mecánica tipo *Zuma* con boss: lanzas orbes desde el centro, encadenas combos de 3+ del mismo color y vacías la vida del jefe antes de que la cadena hostil llegue al final del recorrido.
 
-10 mundos × 5 niveles ambientados en épocas históricas (dinosaurios → espacio). Proyecto a la vez juego y *showcase* técnico: motor de cadena propio, plugin de editor de paths, sistema de profundidad sin recortar PNGs, UI nativa completa y backend de ranking online.
+10 mundos × 8 niveles ambientados en épocas históricas (dinosaurios → espacio). Proyecto a la vez juego y *showcase* técnico: motor de cadena propio, plugin de editor de paths, sistema de profundidad sin recortar PNGs, UI nativa completa y backend de ranking online.
 
 > 🌐 **Este repositorio (`orbex-web`) contiene la landing page pública** del juego, desplegada en **[orbex.aleixaj.com](https://orbex.aleixaj.com)**. Es un sitio estático (HTML + CSS + JS vanilla, cero build), bilingüe EN/ES y con tema claro/oscuro. Detalles técnicos al final del documento, en la sección [Landing page](#landing-page-orbex-web--este-repo).
 >
@@ -82,7 +82,7 @@
        v                                                  v
 +-------------+                                   +------------------+
 |  Autoloads  |   notify / save / unlock          |  ChainBall x N   |
-|  (14 globs) |                                   |  ProjectileBall  |
+|  (22 globs) |                                   |  ProjectileBall  |
 +-------------+                                   |  Boss            |
                                                   +------------------+
 ```
@@ -90,7 +90,7 @@
 - **`AppRouter`** (`scripts/systems/app_router.gd`): monta pantallas, gestiona overlays modales y carga niveles.
 - **`OrbexScreen`** (`scripts/ui/screens/orbex_screen.gd`): contenedor de pantallas. Secciones grandes extraídas en `scripts/ui/screens/sections/`.
 - **`main.gd`** (`scripts/systems/main.gd`): controlador del nivel — cadena, combos, vida del jefe.
-- **Autoloads**: `Notify`, `AchievementService`, `Wallet`, `Inventory`, `LevelProgress`, `DailyRewards`, `FreeReward`, `Settings`, `BackendConfig`, `RankingProvider`, `MusicPlayer`, `Sfx`, `OrbSkins`, `ProfileFrames`, `Analytics`.
+- **Autoloads** (22): `Notify`, `AchievementService`, `LevelProgress`, `Settings`, `Wallet`, `Inventory`, `DailyRewards`, `FreeReward`, `Quests`, `BackendConfig`, `RankingProvider`, `VersionGate`, `Anim`, `MusicPlayer`, `Sfx`, `OrbSkins`, `ProfileFrames`, `Analytics`, `SaveEpoch`, `CloudSave`, `KeyboardDismiss`, `GoogleSignIn`.
 
 > Para detalles de mecánicas, balanceo, sistemas y "dónde está qué" → `CLAUDE.md` en el repo del juego.
 
@@ -104,7 +104,7 @@ orbex/
 |-- assets/                       arte, audio, fuentes, sprites de UI
 |-- scenes/
 |   |-- entities/                 boss/ player/ totem/ bonus/ + chain_ball, projectile_ball
-|   |-- levels/NN_zona/           <zona>_01..05.tscn
+|   |-- levels/NN_zona/           <zona>_01..08.tscn
 |   |-- ui/                       components/ screens/ overlays/ hud.tscn
 |   `-- main.tscn
 |-- scripts/
@@ -122,10 +122,12 @@ orbex/
 ## Estado actual
 
 - **Mecánica**: completa (cadena, inserción, combos, multi-cadena, portales, profundidad, jefes multi-fase).
-- **Contenido**: 10 mundos, **50 niveles** + tutorial + 6 fases extra de jefe.
+- **Contenido**: 10 mundos, **80 niveles** + tutorial + 6 fases extra de jefe.
 - **Personajes**: los 10 mundos con 8 direcciones y profundidad por pose.
-- **UI**: menú, mapa, tiendas, inventario, perfil (55 avatares), ranking online, daily, buzón, regalo gratis.
+- **UI**: menú, mapa, tiendas, inventario, perfil (55 avatares), ranking online, daily, misiones diarias y semanales, buzón, regalo gratis.
 - **Ranking**: Supabase con auth anónima + RLS + perfiles públicos + anti-trampas.
+- **Cloud save**: copia del progreso en Supabase + códigos de transferencia entre dispositivos (un solo uso, 72 h, con lápida anti-duplicación).
+- **Version gate**: dos umbrales en servidor (aviso y bloqueo) para sacar de circulación una build rota sin publicar nada. Falla en abierto.
 - **Telemetría de beta**: end-to-end con retention 90 días automatizada y queries de calibración listas.
 - **Base de datos**: endurecida (RLS optimizada, caps + rate limit, RPC de borrado GDPR).
 - **Audio**: música + SFX en los 10 mundos.
@@ -139,7 +141,8 @@ orbex/
 - [ ] Haptic feedback en disparos críticos / combos.
 - [ ] Configuración de niveles desde JSON (`data/levels/`).
 - [ ] Conectar Google Play Billing a los packs.
-- [ ] Vincular identidad a Google Play Games sobre la sesión anónima.
+- [ ] Google Sign-In: código listo, pendiente de que funcione en dispositivo. Al activarlo hay que actualizar la política de privacidad (ver tabla en [Política de privacidad](#política-de-privacidad)).
+- [ ] AdMob para el cofre gratis. Mismo aviso: toca política + `meta description`.
 - [ ] Editor de niveles ampliado (paleta de patrones).
 - [ ] Revisar traducciones con hablantes nativos (las 9 no-inglesas están asistidas).
 
@@ -193,12 +196,28 @@ Landing pública del juego, desplegada en **[orbex.aleixaj.com](https://orbex.al
 
 HTML5 + CSS con custom properties + JS vanilla en un solo `<script>` inline. **Cero build**, **cero dependencias en runtime**. Ship the folder.
 
-- Landing (`index.html`): 8 secciones (hero, el juego, 10 mundos, 10 jefes, features, galería, 10 idiomas, descarga, footer).
+- Landing (`index.html`): 8 secciones (hero, el juego, 10 mundos, 10 jefes, features, galería, 10 idiomas, descarga, footer). La galería son las 8 capturas del juego en tarjetas 16:9 con lightbox; el tráiler tiene su propio botón en el hero.
 - Política de privacidad (`/privacy` → `privacy/index.html`): 11 secciones + resumen destacado, con GDPR/RGPD compliance.
 - **Bilingüe EN (default) / ES** — toggle en el header, persistencia en `localStorage`, ambos idiomas viven en el mismo HTML mediante `<span data-lang="en|es">` con CSS que oculta el inactivo. Actualiza también `<title>` y `<meta description>`.
 - **Tema claro/oscuro** — auto por `prefers-color-scheme` en la primera visita, persistente después.
-- **A11y**: `aria-label` en todos los botones-icono, modales con `role="dialog"` y cierre por Escape, respeta `prefers-reduced-motion`.
+- **Tráiler** — embed de YouTube (`youtube-nocookie.com`) en modal. El `<iframe>` nace **sin `src`**: no se hace ninguna petición a Google hasta que el usuario pulsa "Ver tráiler", y al cerrar el modal se le quita el `src` para detener la reproducción. Es el patrón click-to-load, así que la landing no necesita banner de cookies.
+- **Navegación móvil** — por debajo de 860 px (el mismo breakpoint donde `.navlink` desaparece) el JUGAR de la barra se oculta y aparece una hamburguesa que despliega un panel con JUGAR en dorado arriba y los seis enlaces debajo. Se cierra al elegir enlace, al tocar fuera de la cabecera, con Escape y al pasar a escritorio. ⚠️ Las reglas que ocultan `.nav-burger` y `.nav-play-top` van **cualificadas con `.nav-header`** a propósito: `.icon-btn` y `.btn-play-nav` se declaran más abajo en la hoja con la misma especificidad y ganarían por orden de aparición.
+- **A11y**: `aria-label` en todos los botones-icono, `aria-expanded` / `aria-controls` en la hamburguesa, modales con `role="dialog"` y cierre por Escape, respeta `prefers-reduced-motion`.
 - **SEO**: Open Graph + Twitter Card completos, canonical, `hreflang` alternates, `sitemap.xml`, `robots.txt`. HTML estático — Google/Twitter ven el contenido en la respuesta inicial, no en un shell hidratado.
+
+### Política de privacidad
+
+Vive en dos ficheros que hay que editar **siempre a la vez** o divergen: `PRIVACY.md` (source of truth bilingüe) y `privacy/index.html` (la página servida). Cada uno lleva el texto EN y ES completo.
+
+Al tocarla, subir la fecha de "Última actualización" en los dos y en los dos idiomas — son cuatro sitios.
+
+**Tiene que ir por delante de lo que hace el juego, no por detrás.** Lo que está pendiente y en qué commit toca:
+
+| Cuándo | Qué cambia |
+|---|---|
+| Al activar **Google Sign-In** en dispositivo | El resumen dice "no pedimos tu correo" y §2.5 lista "Email" entre lo que NO se recoge. Al vincular, `auth.identities` guarda el email: las dos frases pasan a ser falsas. También §4 ("Nadie más" ve tus datos). |
+| Al activar **AdMob** (`ADS_AVAILABLE = true`) | El resumen dice "no mostramos anuncios" y §2.5 lista el ID publicitario de Android (AAID/GAID) entre lo que no se recoge. Además §3 excluye la publicidad como finalidad. Y en `index.html`, la `meta description` dice "sin anuncios agresivos" (3 sitios: línea 7 y las dos entradas de `META`). |
+| Al activar **Play Billing** (`BILLING_AVAILABLE = true`) | Revisar las menciones a "compras" de §7, que hoy se refieren a packs comprados con monedas del juego. |
 
 ### Estructura
 
@@ -216,6 +235,7 @@ orbex-web/
 │       ├── icons/           UI icons
 │       ├── avatars/         3 avatares
 │       ├── bg/              3 fondos de mundo
+│       ├── screenshots/     8 capturas reales del juego (1280×720)
 │       ├── flags/           10 banderas de idioma
 │       └── placeholders/    ⚠️ sustituir antes de lanzar
 ├── robots.txt sitemap.xml
@@ -243,13 +263,16 @@ Buscar en `index.html`:
 
 | Placeholder | Sustituir por |
 |---|---|
-| `#PLACEHOLDER-play-store` | URL real de Google Play (3 apariciones) |
-| `#PLACEHOLDER-terminos`, `#PLACEHOLDER-borrar-cuenta` | Páginas legales |
-| `#PLACEHOLDER-x`, `#PLACEHOLDER-github`, `#PLACEHOLDER-itch` | Perfiles sociales reales |
-| `assets/images/placeholders/hero-gameplay.png` | Poster del tráiler (1280×720) |
-| `assets/videos/trailer.mp4` (missing) | Tráiler real (MP4 H.264, `preload="none"`) |
+| `#PLACEHOLDER-play-store` | URL real de Google Play (**4 apariciones**: nav, panel móvil, hero, descarga) |
+| `#PLACEHOLDER-terminos` | Página de términos de uso |
+| `#PLACEHOLDER-x` | Perfil de X (o quitar el botón) |
 | `assets/images/placeholders/google-play-badge.png` | Badge oficial de Google Play |
 | `assets/images/placeholders/qr.png` | QR real a la ficha de Play |
 | `assets/images/placeholders/og-image.png` | Imagen para social share (1200×630) |
 | `assets/images/placeholders/favicon-*.png` | Favicons definitivos |
-| `assets/images/placeholders/gameplay-*.png` | Capturas reales de gameplay |
+
+Ya no se usan (se pueden borrar): `placeholders/hero-gameplay.png` y `placeholders/gameplay-1..3.png` — la galería tira de `assets/images/screenshots/`.
+
+**Peso de las capturas**: las 8 de `screenshots/` suman ~4,4 MB (600 KB cada una, calidad ~95). Van con `loading="lazy"` y la galería está al final de la página, así que no afectan a la primera pintada, pero recomprimir a calidad ~80 las dejaría en ~150 KB sin diferencia visible al tamaño en que se muestran.
+
+⚠️ **`screenshots/7.jpg` está desactualizada**: el ranking muestra pestañas de nivel 1-5 y el build actual tiene 8 niveles por mundo. Hay que recapturarla (y revisar si la misma imagen está subida a la ficha de Play).
