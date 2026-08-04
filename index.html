@@ -160,10 +160,31 @@
   .icon-btn:hover{background:var(--hi)}
   [data-theme="light"] .icon-sun{display:none}
   [data-theme="dark"] .icon-moon{display:none}
-  .lang-btn{gap:6px;padding:0 10px;width:auto;min-width:44px;font-family:var(--f-display);font-size:14px;letter-spacing:.06em;color:var(--ink)}
-  .lang-btn img{width:22px;height:auto;image-rendering:pixelated;display:block}
-  html[lang="en"] .lang-when-es,html[lang="es"] .lang-when-en{display:none}
-  .lang-when-en,.lang-when-es{display:inline-flex;align-items:center;gap:6px}
+  /* Selector de idioma: las dos banderas siempre a la vista y la activa
+     resaltada. Antes era un solo botón que mostraba la bandera del idioma AL
+     QUE ibas, que se lee justo al revés de lo que uno espera. */
+  .lang-switch{display:inline-flex;align-items:center;gap:3px;height:44px;padding:0 4px;border:2px solid var(--frame);background:var(--panel);border-radius:10px;box-shadow:0 3px 0 var(--frame-soft)}
+  .lang-flag{display:grid;place-items:center;padding:3px;border:2px solid transparent;border-radius:7px;background:none;cursor:pointer;line-height:0;opacity:.4;filter:grayscale(.7);transition:opacity .15s,filter .15s,border-color .15s,background .15s}
+  .lang-flag:hover{opacity:.8;filter:grayscale(.2)}
+  .lang-flag img{width:24px;height:24px;image-rendering:pixelated;display:block}
+  html[lang="en"] .lang-flag[data-set="en"],
+  html[lang="es"] .lang-flag[data-set="es"]{opacity:1;filter:none;border-color:var(--gold);background:var(--hi)}
+  /* En móvil la barra lleva logo + idioma + tema + hamburguesa: las banderas
+     encogen para que quepa todo sin apretar los 44px de los otros botones. */
+  @media (max-width: 420px){
+    .lang-switch{gap:2px;padding:0 3px}
+    .lang-flag{padding:2px}
+    .lang-flag img{width:20px;height:20px}
+  }
+  /* A 320px (iPhone SE y Android pequeños) el logo es la pieza más ancha de
+     la barra y desbordaba: la hamburguesa quedaba recortada contra el borde.
+     No daba scroll horizontal porque body lleva overflow-x:hidden, o sea que
+     el síntoma estaba tapado. */
+  .nav-logo{height:26px}
+  @media (max-width: 380px){
+    .nav-header{padding-left:12px;padding-right:12px;gap:8px}
+    .nav-logo{height:22px}
+  }
 
   /* ---- buttons ---- */
   .btn-play-nav{display:inline-flex;align-items:center;gap:8px;font-family:var(--f-display);font-size:15px;letter-spacing:.04em;color:#fff8ec;text-shadow:0 2px 0 #5a3808;background:var(--btn-gold);border-bottom:5px solid var(--btn-gold-edge);border-radius:10px;padding:12px 16px;text-decoration:none;box-shadow:0 4px 10px var(--shadow);transition:transform .12s,border-bottom-width .12s}
@@ -293,7 +314,7 @@
   <!-- ============ NAV ============ -->
   <header class="nav-header">
     <a href="#inicio" aria-label="Orbex — home" style="display:flex;align-items:center;gap:10px;text-decoration:none">
-      <img src="assets/images/orbex-title.png" alt="Orbex" style="height:26px;width:auto;display:block">
+      <img src="assets/images/orbex-title.png" alt="Orbex" class="nav-logo" style="width:auto;display:block">
     </a>
     <nav aria-label="Main navigation" style="display:flex;align-items:center;gap:clamp(6px,2vw,26px)">
       <a href="#juego" class="navlink"><span data-lang="en">The game</span><span data-lang="es">El juego</span></a>
@@ -303,10 +324,14 @@
       <a href="#galeria" class="navlink"><span data-lang="en">Gallery</span><span data-lang="es">Galería</span></a>
       <a href="/privacy" class="navlink"><span data-lang="en">Privacy</span><span data-lang="es">Privacidad</span></a>
 
-      <button type="button" class="icon-btn lang-btn" onclick="toggleLang()" aria-label="Switch language">
-        <span class="lang-when-en"><img src="assets/images/flags/Icon_LanguageFlag_Large_Esp.png" alt="">ES</span>
-        <span class="lang-when-es"><img src="assets/images/flags/Icon_LanguageFlag_Large_Eng.png" alt="">EN</span>
-      </button>
+      <div class="lang-switch" role="group" aria-label="Language / Idioma">
+        <button type="button" class="lang-flag" data-set="en" onclick="setLang('en')" title="English" aria-label="English">
+          <img src="assets/images/flags/Icon_LanguageFlag_Large_Eng.png" alt="English">
+        </button>
+        <button type="button" class="lang-flag" data-set="es" onclick="setLang('es')" title="Español" aria-label="Español">
+          <img src="assets/images/flags/Icon_LanguageFlag_Large_Esp.png" alt="Español">
+        </button>
+      </div>
 
       <button type="button" class="icon-btn" onclick="toggleTheme()" aria-label="Toggle light / dark mode" title="Light / dark">
         <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8 6 18M18 6l1.8-1.8"/></svg>
@@ -1040,12 +1065,17 @@
     var d = document.querySelector('meta[name="description"]');
     if (d) d.setAttribute('content', m.desc);
   }
-  function toggleLang(){
-    var cur = document.documentElement.getAttribute('lang') || 'en';
-    var next = cur === 'es' ? 'en' : 'es';
+  function setLang(next){
     document.documentElement.setAttribute('lang', next);
     try { localStorage.setItem('orbex-lang', next); } catch(e){}
     applyMetaForLang(next);
+    syncLangButtons();
+  }
+  function syncLangButtons(){
+    var cur = document.documentElement.getAttribute('lang') || 'en';
+    document.querySelectorAll('.lang-flag').forEach(function(b){
+      b.setAttribute('aria-pressed', b.getAttribute('data-set') === cur ? 'true' : 'false');
+    });
   }
   function toggleMenu(){
     var p = document.getElementById('nav-panel'), b = document.getElementById('nav-burger');
@@ -1105,6 +1135,7 @@
     // sync meta if lang was overridden from localStorage
     var initLang = document.documentElement.getAttribute('lang');
     if (initLang && initLang !== 'en') applyMetaForLang(initLang);
+    syncLangButtons();
 
     var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
