@@ -1,7 +1,7 @@
 # Privacy Policy — Orbex
 
-**Last updated:** July 13, 2026
-**Effective:** July 13, 2026
+**Last updated:** August 4, 2026
+**Effective:** August 4, 2026
 
 ## 30-second summary
 
@@ -27,19 +27,27 @@ Orbex is a personal project developed and maintained by Aleix (natural person, S
 - **Game stats**: games played, levels completed, stars, best combo, bosses defeated, best score, total score, total play time, achievements completed.
 - **Scores per level and per world**: your highest score on each level and world.
 - **Technical metadata**: game language, platform (Android), app version, session count, last activity timestamp. Used only for diagnosing issues and prioritizing development.
+- **Cloud backup of your progress**: so you don't lose everything if you change or wipe your phone, the game uploads a copy of your progress files. This copy contains your level progress and stars, your coin balance, your power-up inventory, your achievements, your daily-reward and free-chest state, your daily and weekly quests, and your selected orb skin and profile frame. Your device Settings (volume, language, menu background) are **not** included.
+- **Mailbox read state**: which in-game announcements you have already opened, so they don't show up as unread again.
 
-### 2.2 Data stored ONLY on your device
+### 2.2 Transfer codes (moving to another phone)
 
-- Music and SFX volume, language, menu background, other Settings preferences.
-- Daily chests opened, free reward cooldown.
-- Local power-up inventory and coins.
+Your account is tied to your device. To move it, the game lets you generate a **transfer code** from Settings → Cloud. About that code:
+
+- It is **single use** and expires after **72 hours**.
+- We store only an irreversible hash of it (MD5), never the code itself.
+- Redeeming it on the new phone **moves** the account: the origin account is deleted from the server, freeing up its nickname, and the origin device wipes its local progress the next time it opens the game. It is a move, not a copy.
+
+### 2.3 Data stored ONLY on your device
+
+- Music and SFX volume, language, menu background, FPS limit, other Settings preferences.
 - Anonymous session refresh token (so you don't have to sign in every time).
 
-#### 2.3 Anonymous gameplay analytics (optional)
+### 2.4 Anonymous gameplay analytics (optional)
 
 To calibrate difficulty and star thresholds during beta, the game sends a small telemetry payload after each attempt: final score, combo, active playtime (excluding paused time), how far the chain reached, hearts lost, powerups used, and cause of defeat. All are attached to your anonymous UUID; no personal data is included. You can **turn this off at any time** from **Settings → Anonymous Stats** — the switch is on by default. Turning it off takes immediate effect and does not affect any other functionality.
 
-### 2.4 What we do NOT collect
+### 2.5 What we do NOT collect
 
 - Email.
 - Real name, postal address, phone number.
@@ -54,7 +62,7 @@ To calibrate difficulty and star thresholds during beta, the game sends a small 
 
 We use your data exclusively for:
 
-1. **Game functionality**: saving your progress, showing your position in the global ranking, showing your public profile when other players tap your row.
+1. **Game functionality**: saving your progress, restoring it if you reinstall or change phones, showing your position in the global ranking, showing your public profile when other players tap your row.
 2. **Technical diagnostics**: identifying bugs, understanding which languages and versions are in use.
 
 **We do NOT use your data for**: advertising, marketing, profiling, AI model training, or sale to third parties.
@@ -75,9 +83,11 @@ We use your data exclusively for:
 ## 6. How long we keep it
 
 - **Local**: until you uninstall the app, press "Reset Progress", or press "Delete Account".
-- **Server**: indefinitely while your account is active, with two exceptions:
+- **Server**: indefinitely while your account is active, with these exceptions:
   - **Per-attempt telemetry** (`level_attempts`) auto-purges after 90 days by a scheduled job. The aggregated stats (best score, averages, star counts) stay indefinitely.
-  - When you press **Delete Account** (see next section) or write requesting deletion, your entire server-side record is erased immediately.
+  - **Transfer codes** expire 72 hours after being generated, and are deleted once redeemed.
+  - **Accounts that never chose a nickname**: if you open the game but never pick a nickname, the only thing that exists on the server is an empty anonymous session. A scheduled job deletes it after **30 days** with no activity. Your local progress on the device is not affected.
+  - When you press **Delete Account** (see next section) or write requesting deletion, your entire server-side record is erased immediately — including the authentication account itself, not just your game data.
 
 ## 7. Your rights (GDPR)
 
@@ -114,8 +124,8 @@ Aleix — playorbex@gmail.com
 
 # Política de Privacidad — Orbex
 
-**Última actualización:** 13 de julio de 2026
-**Vigente desde:** 13 de julio de 2026
+**Última actualización:** 4 de agosto de 2026
+**Vigente desde:** 4 de agosto de 2026
 
 ## Resumen en 30 segundos
 
@@ -141,19 +151,27 @@ Orbex es un proyecto personal desarrollado y mantenido por Aleix (persona físic
 - **Estadísticas de juego**: partidas jugadas, niveles completados, estrellas, mejor combo, jefes derrotados, mejor puntuación, puntuación total, tiempo total de juego, logros completados.
 - **Puntuaciones por nivel y por mundo**: la puntuación más alta que has conseguido en cada nivel y en cada mundo.
 - **Metadatos técnicos**: idioma del juego, plataforma (Android), versión de la app, número de sesiones y timestamp de última actividad. Se usan solo para diagnosticar problemas y decidir prioridades de desarrollo.
+- **Copia de seguridad de tu progreso**: para que no lo pierdas todo si cambias o formateas el móvil, el juego sube una copia de tus ficheros de progreso. Esa copia contiene tu avance por niveles y estrellas, tu saldo de monedas, tu inventario de power-ups, tus logros, el estado de la recompensa diaria y del cofre gratis, tus misiones diarias y semanales, y la skin de orbe y el marco de perfil que tengas elegidos. Las preferencias de Opciones de tu dispositivo (volumen, idioma, fondo del menú) **no** viajan.
+- **Mensajes del buzón leídos**: qué avisos del juego has abierto ya, para que no vuelvan a salirte como no leídos.
 
-### 2.2 Datos que se guardan SOLO en tu dispositivo
+### 2.2 Códigos de transferencia (cambiar de móvil)
 
-- Volumen de música y efectos, idioma, fondo del menú, otras preferencias de Opciones.
-- Cofres diarios abiertos, cooldown de recompensa gratis.
-- Inventario de power-ups y monedas locales.
+Tu cuenta va ligada a tu dispositivo. Para moverla, el juego te deja generar un **código de transferencia** desde Opciones → Nube. Sobre ese código:
+
+- Es de **un solo uso** y caduca a las **72 horas**.
+- En la base de datos solo guardamos un hash irreversible (MD5), nunca el código en claro.
+- Canjearlo en el móvil nuevo **mueve** la cuenta: la cuenta de origen se borra del servidor, liberando su apodo, y el dispositivo de origen limpia su progreso local la próxima vez que abras el juego. Es un traslado, no una copia.
+
+### 2.3 Datos que se guardan SOLO en tu dispositivo
+
+- Volumen de música y efectos, idioma, fondo del menú, límite de FPS, otras preferencias de Opciones.
 - Token de refresco de sesión anónima (para no tener que iniciar sesión cada vez).
 
-### 2.3 Analíticas de juego anónimas (opcional)
+### 2.4 Analíticas de juego anónimas (opcional)
 
 Para calibrar la dificultad y los umbrales de estrellas durante la beta, el juego envía después de cada partida un pequeño paquete de telemetría: puntuación final, combo, tiempo activo de juego (sin contar la pausa), hasta dónde llegó la cadena, corazones perdidos, power-ups usados y causa de la derrota. Todo se asocia a tu UUID anónimo; no se incluye ningún dato personal. Puedes **desactivarlo en cualquier momento** desde **Opciones → Estadísticas anónimas** — el interruptor está encendido por defecto. Al apagarlo el efecto es inmediato y no afecta al resto de funcionalidades.
 
-### 2.4 Lo que NO recogemos
+### 2.5 Lo que NO recogemos
 
 - Correo electrónico.
 - Nombre real, dirección postal, teléfono.
@@ -168,7 +186,7 @@ Para calibrar la dificultad y los umbrales de estrellas durante la beta, el jueg
 
 Los usamos exclusivamente para:
 
-1. **Funcionalidad del juego**: guardar tu progreso, mostrar tu posición en el ranking mundial, mostrar tu perfil público cuando otros jugadores toquen tu fila.
+1. **Funcionalidad del juego**: guardar tu progreso, restaurarlo si reinstalas o cambias de móvil, mostrar tu posición en el ranking mundial, mostrar tu perfil público cuando otros jugadores toquen tu fila.
 2. **Diagnóstico técnico**: identificar bugs, entender qué idiomas y versiones se usan.
 
 **NO usamos tus datos para**: publicidad, marketing, perfilado, entrenamiento de modelos de IA, venta a terceros.
@@ -189,9 +207,11 @@ Los usamos exclusivamente para:
 ## 6. Cuánto tiempo se conservan
 
 - **Local**: hasta que desinstalas la app, pulsas "Restablecer progreso", o pulsas "Borrar cuenta".
-- **Servidor**: indefinidamente mientras tu cuenta esté activa, con dos excepciones:
+- **Servidor**: indefinidamente mientras tu cuenta esté activa, con estas excepciones:
   - **Telemetría por partida** (`level_attempts`) se auto-purga a los 90 días mediante una tarea programada. Los agregados (mejor puntuación, medias, estrellas) se conservan indefinidamente.
-  - Cuando pulsas **Borrar cuenta** (ver siguiente sección) o escribes solicitando borrado, todo tu registro en el servidor se elimina inmediatamente.
+  - **Los códigos de transferencia** caducan a las 72 horas de generarse, y se borran en cuanto se canjean.
+  - **Cuentas que nunca eligieron apodo**: si abres el juego pero no llegas a poner apodo, lo único que existe en el servidor es una sesión anónima vacía. Una tarea programada la borra tras **30 días** sin actividad. Tu progreso local en el dispositivo no se toca.
+  - Cuando pulsas **Borrar cuenta** (ver siguiente sección) o escribes solicitando borrado, todo tu registro en el servidor se elimina inmediatamente — incluida la propia cuenta de autenticación, no solo tus datos de juego.
 
 ## 7. Tus derechos (RGPD / LOPDGDD)
 
