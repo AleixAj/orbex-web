@@ -20,7 +20,7 @@
 <meta property="og:locale:alternate" content="es_ES">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Press+Start+2P&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script>
   (function(){
     try {
@@ -51,6 +51,20 @@
     --ink:#ecdfc6; --ink-dim:#ab9270; --title:#ffe9bf;
     --gold:#d9a43a; --gold-dk:#c08820;
   }
+  /* Misma jerarquía que la landing y que el juego: Lilita One para títulos,
+     Space Grotesk para el cuerpo. Los subtítulos (h3, resumen) se quedan en
+     Space Grotesk a propósito: es un documento largo y conviene que el nivel
+     de encabezado se distinga por familia, no solo por tamaño.
+     Lilita One tiene un único peso — nada de font-weight aquí o el navegador
+     sintetiza la negrita y la emborrona. */
+  :root{
+    --f-display:'Lilita One',system-ui,sans-serif;
+    --f-body:'Space Grotesk',system-ui,sans-serif;
+  }
+  /* Sin esto el navegador sintetiza la negrita sobre Lilita (los encabezados
+     vienen en bold por defecto) y la emborrona. Los de Space Grotesk que sí
+     van en negrita declaran su peso aparte y ganan a esta regla. */
+  h1,h2,h3,h4{font-weight:400}
   a{color:var(--gold);text-underline-offset:3px}
   a:hover{color:var(--gold-dk)}
   ::-webkit-scrollbar{width:12px}
@@ -65,7 +79,7 @@
   .icon-btn:hover{background:var(--hi)}
   [data-theme="light"] .icon-sun{display:none}
   [data-theme="dark"] .icon-moon{display:none}
-  .lang-btn{gap:6px;padding:0 10px;width:auto;min-width:42px;font-family:'Press Start 2P',monospace;font-size:10px;letter-spacing:.06em;color:var(--ink)}
+  .lang-btn{gap:6px;padding:0 10px;width:auto;min-width:42px;font-family:var(--f-display);font-size:14px;letter-spacing:.06em;color:var(--ink)}
   .lang-btn img{width:20px;height:auto;image-rendering:pixelated;display:block}
   html[lang="en"] .lang-when-es,html[lang="es"] .lang-when-en{display:none}
   .lang-when-en,.lang-when-es{display:inline-flex;align-items:center;gap:6px}
@@ -80,7 +94,7 @@
   }
   .pv-toc-desktop a,.pv-toc-mobile a{color:var(--ink);text-decoration:none;display:block}
   .pv-toc-desktop a:hover{color:var(--gold)}
-  .sect-h2{font-family:'Space Grotesk';font-weight:700;font-size:clamp(19px,3vw,23px);color:var(--gold-dk);margin:0 0 12px;padding-bottom:8px;border-bottom:2px solid var(--frame-soft)}
+  .sect-h2{font-family:var(--f-display);font-size:clamp(24px,3.6vw,29px);color:var(--gold-dk);margin:0 0 12px;padding-bottom:8px;border-bottom:2px solid var(--frame-soft)}
   .sect{scroll-margin-top:84px;margin:0 0 34px}
   .sect p{margin:0 0 14px;color:var(--ink)}
   .sect ul{margin:0 0 14px;padding-left:22px;color:var(--ink)}
@@ -115,7 +129,7 @@
 
     <aside style="position:sticky;top:76px">
       <nav aria-label="Contents" class="pv-toc-desktop">
-        <h2 style="font-family:'Press Start 2P',monospace;font-size:10px;letter-spacing:.06em;color:var(--gold);margin:0 0 14px">
+        <h2 style="font-family:var(--f-display);font-size:14px;letter-spacing:.06em;color:var(--gold);margin:0 0 14px">
           <span data-lang="en">CONTENTS</span><span data-lang="es">ÍNDICE</span>
         </h2>
         <ol style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px;font-size:13.5px">
@@ -134,7 +148,7 @@
         </ol>
       </nav>
       <details class="pv-toc-mobile">
-        <summary style="cursor:pointer;list-style:none;font-family:'Press Start 2P',monospace;font-size:10px;letter-spacing:.06em;color:var(--gold);padding:16px 0">
+        <summary style="cursor:pointer;list-style:none;font-family:var(--f-display);font-size:14px;letter-spacing:.06em;color:var(--gold);padding:16px 0">
           <span data-lang="en">CONTENTS ▾</span><span data-lang="es">ÍNDICE ▾</span>
         </summary>
         <ol style="list-style:none;padding:0;margin:0 0 16px;display:flex;flex-direction:column;gap:9px;font-size:14px">
@@ -155,8 +169,8 @@
     </aside>
 
     <article style="max-width:720px;width:100%">
-      <p style="font-family:'Press Start 2P',monospace;font-size:11px;letter-spacing:.1em;color:var(--gold);margin:0 0 14px">ORBEX</p>
-      <h1 style="font-family:'Space Grotesk';font-weight:700;font-size:clamp(28px,5vw,40px);line-height:1.2;color:var(--title);margin:0 0 10px;letter-spacing:-.01em">
+      <p style="font-family:var(--f-display);font-size:15px;letter-spacing:.1em;color:var(--gold);margin:0 0 14px">ORBEX</p>
+      <h1 style="font-family:var(--f-display);font-size:clamp(34px,6vw,50px);line-height:1.15;color:var(--title);margin:0 0 10px">
         <span data-lang="en">Privacy policy</span><span data-lang="es">Política de privacidad</span>
       </h1>
       <p style="color:var(--ink-dim);font-size:14px;margin:0 0 4px">
