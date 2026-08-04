@@ -278,7 +278,6 @@ Buscar en `index.html`:
 |---|---|
 | `#PLACEHOLDER-play-store` | URL real de Google Play (**4 apariciones**: nav, panel móvil, hero, descarga) |
 | `#PLACEHOLDER-terminos` | Página de términos de uso |
-| `#PLACEHOLDER-x` | Perfil de X (o quitar el botón) |
 | `assets/images/placeholders/google-play-badge.png` | Badge oficial de Google Play |
 | `assets/images/placeholders/qr.png` | QR real a la ficha de Play |
 | `assets/images/placeholders/og-image.png` | Imagen para social share (1200×630) |
