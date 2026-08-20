@@ -49,16 +49,22 @@
 - 9 power-ups consumibles (3 slots equipables) + combate de jefe (corazones + ataque propio por mundo).
 - Jefes multi-fase (2-3 fases) con transición de rotura de pantalla.
 - Bonus pickups deterministas (aparición por bolas destruidas del pool del nivel, sin RNG, sin respawn) para mantener el ranking como habilidad pura.
+- **Modo Supervivencia**: cualquier nivel ya superado, con el pool infinito y sin objetos, hasta que la cadena te alcanza. Rampa de velocidad normalizada por nivel y tabla propia.
+- **Desafío semanal**: un nivel sorteado en servidor, el mismo para todo el mundo, jugado sin objetos y aislado del resto del progreso. Tabla propia y premios por buzón.
+- **Asistencia invisible**: tras varias derrotas seguidas en el mismo nivel, la cadena afloja (o el jefe espacia sus ataques) sin anunciarlo y sin modo fácil que elegir.
 
 **UI**
 - Pantallas completas (menú, mapa, tienda, inventario, perfil, ranking, opciones, daily, buzón) sobre paleta *Light Bronze Forge*.
-- 55 avatares de perfil (10 free + 41 premium + 4 VIP) con sistema WYSIWYG de marcos.
+- 103 avatares de perfil (10 free + 41 de mundo + 4 VIP + 40 exclusivos + 8 del evento de temporada) con sistema WYSIWYG de marcos, más 24 marcos, 42 skins de orbe y 45 fondos de menú.
 - Tienda de packs (Hero VIP + 10 packs de mundo + 5 packs de monedas) cableada end-to-end como stub local: la compra desbloquea avatars/frames/orb skins/backgrounds del mundo, activa perks VIP (+50 % monedas por partida, badge de ranking, cosméticos exclusivos) y refresca las cards con el checkmark de "poseído". Pendiente Google Play Billing para receipt validation.
 - Recompensa diaria de 7 días con queue, racha con multiplicador y anti-cheat contra cambio de reloj.
-- Cofre gratis por rewarded ad con loot table por rareza (SDK pendiente).
+- Cofre gratis por rewarded ad con loot table por rareza. **SDK de AdMob integrado** (unidades de prueba); los cuatro puntos de rewarded y el intersticial pasan por el autoload `Ads` y por ningún otro sitio.
 - Buzón de mensajes con backend Supabase (3 RPCs + fallback offline).
 - Skins de orbe por mundo (shader universal con recolor por luma).
-- Fondos temáticos del menú (2 variantes por mundo + clásico + VIP).
+- Fondos temáticos del menú (2 variantes por mundo + clásico + VIP + exclusivos).
+- **Eventos de temporada**: ventana de fechas con divisa propia que caduca, catálogo de cosméticos exclusivos y fase de liquidación para gastar lo ganado.
+- **Amigos** (alta unilateral, notificaciones y tabla filtrada), **misiones** diarias y semanales con reroll, y **69 logros**.
+- **Panel de admin dentro del juego** (admin-only, verificado en servidor): buscador de jugadores, ficha completa, sanciones y herramientas de desarrollo.
 
 **Herramientas y arquitectura**
 - Plugin **Orbex Path Editor**: Shift+clic para trazar paths, sufijos especiales (`_Tp`, `_NoHook`, `_Front`, `_FrontMax`, `_Sprint`).
@@ -82,7 +88,7 @@
        v                                                  v
 +-------------+                                   +------------------+
 |  Autoloads  |   notify / save / unlock          |  ChainBall x N   |
-|  (22 globs) |                                   |  ProjectileBall  |
+|  (26 globs) |                                   |  ProjectileBall  |
 +-------------+                                   |  Boss            |
                                                   +------------------+
 ```
@@ -90,7 +96,8 @@
 - **`AppRouter`** (`scripts/systems/app_router.gd`): monta pantallas, gestiona overlays modales y carga niveles.
 - **`OrbexScreen`** (`scripts/ui/screens/orbex_screen.gd`): contenedor de pantallas. Secciones grandes extraídas en `scripts/ui/screens/sections/`.
 - **`main.gd`** (`scripts/systems/main.gd`): controlador del nivel — cadena, combos, vida del jefe.
-- **Autoloads** (22): `Notify`, `AchievementService`, `LevelProgress`, `Settings`, `Wallet`, `Inventory`, `DailyRewards`, `FreeReward`, `Quests`, `BackendConfig`, `RankingProvider`, `VersionGate`, `Anim`, `MusicPlayer`, `Sfx`, `OrbSkins`, `ProfileFrames`, `Analytics`, `SaveEpoch`, `CloudSave`, `KeyboardDismiss`, `GoogleSignIn`.
+- **Autoloads** (26): `Notify`, `AchievementService`, `LevelProgress`, `Settings`, `Wallet`, `Inventory`, `DailyRewards`, `FreeReward`, `Quests`, `BackendConfig`, `RankingProvider`, `Challenge`, `SummerEvent`, `VersionGate`, `Anim`, `MusicPlayer`, `Sfx`, `OrbSkins`, `ProfileFrames`, `Analytics`, `SaveEpoch`, `CloudSave`, `KeyboardDismiss`, `GoogleSignIn`, `Ads`, `Purchases`.
+  > `Ads` y `Purchases` son **puertas**: el SDK entra por ahí y solo por ahí. Ninguna pantalla habla con el plugin — se pide `await Ads.request_reward(placement)` y punto. `Purchases` sigue vacío hasta que entre Play Billing.
 
 > Para detalles de mecánicas, balanceo, sistemas y "dónde está qué" → `CLAUDE.md` en el repo del juego.
 
@@ -124,12 +131,15 @@ orbex/
 - **Mecánica**: completa (cadena, inserción, combos, multi-cadena, portales, profundidad, jefes multi-fase).
 - **Contenido**: 10 mundos, **80 niveles** + tutorial + 6 fases extra de jefe.
 - **Personajes**: los 10 mundos con 8 direcciones y profundidad por pose.
-- **UI**: menú, mapa, tiendas, inventario, perfil (55 avatares), ranking online, daily, misiones diarias y semanales, buzón, regalo gratis.
+- **UI**: menú, mapa, tiendas, inventario, perfil (103 avatares), ranking online, daily, misiones diarias y semanales, buzón, cofre gratis, amigos, eventos y panel de admin.
+- **Modos**: campaña, **supervivencia** (por nivel, al superarlo) y **desafío semanal** (nivel sorteado en servidor, con premios).
 - **Ranking**: Supabase con auth anónima + RLS + perfiles públicos + anti-trampas.
 - **Cloud save**: copia del progreso en Supabase + códigos de transferencia entre dispositivos (un solo uso, 72 h, con lápida anti-duplicación).
 - **Version gate**: dos umbrales en servidor (aviso y bloqueo) para sacar de circulación una build rota sin publicar nada. Falla en abierto.
 - **Telemetría de beta**: end-to-end con retention 90 días automatizada y queries de calibración listas.
-- **Base de datos**: endurecida (RLS optimizada, caps + rate limit, RPC de borrado GDPR).
+- **Base de datos**: endurecida (RLS optimizada, caps + rate limit, RPC de borrado GDPR, grants columnares, moderación de cuentas).
+- **Monetización**: SDK de AdMob integrado con unidades de prueba y consentimiento UMP; Play Billing pendiente (`BILLING_AVAILABLE = false`), así que hoy no se cobra nada dentro de la app.
+- **Identidad**: sesión anónima por dispositivo, vinculación opcional con Google (conservando el mismo `auth.uid()`) y códigos de transferencia.
 - **Audio**: música + SFX en los 10 mundos.
 - **i18n**: 10 idiomas con auto-detect y cambio en caliente.
 - **Mobile/APK**: landscape, touch validado, VRAM texture compression dual (desktop + Android).
@@ -138,13 +148,18 @@ orbex/
 
 ## Roadmap pendiente
 
+- [ ] Conectar Google Play Billing a los packs (Fase 3). Al activarlo hay que tocar §4 de la política — ver la tabla de [Política de privacidad](#política-de-privacidad).
+- [ ] AdMob: flip a unidades reales (`USE_TEST_AD_UNITS = false`) y repaso del match rate en el panel.
 - [ ] Haptic feedback en disparos críticos / combos.
 - [ ] Configuración de niveles desde JSON (`data/levels/`).
-- [ ] Conectar Google Play Billing a los packs.
-- [ ] Google Sign-In: código listo, pendiente de que funcione en dispositivo. Al activarlo hay que actualizar la política de privacidad (ver tabla en [Política de privacidad](#política-de-privacidad)).
-- [ ] AdMob para el cofre gratis. Mismo aviso: toca política + `meta description`.
 - [ ] Editor de niveles ampliado (paleta de patrones).
 - [ ] Revisar traducciones con hablantes nativos (las 9 no-inglesas están asistidas).
+
+Hecho recientemente:
+
+- [x] Google Sign-In funcionando en dispositivo (2026-08-04).
+- [x] AdMob integrado con unidades de prueba y flujo de consentimiento UMP (2026-08-20).
+- [x] Política de privacidad al día con anuncios, Google Sign-In, modos nuevos y base legal (2026-08-20).
 
 ---
 
@@ -166,11 +181,12 @@ orbex/
 
 ## Publicación en Google Play
 
-Pendientes para subir a Play Store (no bloquean desarrollo — hoy se exporta APK debug a propósito):
+El juego está en **beta cerrada** en Play (AAB de release firmado con Play App Signing). Lo que queda para producción:
 
-- **Build**: AAB + Release, keystore de release, Play App Signing.
-- **Cumplimiento**: política de privacidad, Data Safety, IARC, público objetivo (13+). La política real vive en [`PRIVACY.md`](PRIVACY.md) de este repo y se sirve en [orbex.aleixaj.com/privacy](https://orbex.aleixaj.com/privacy). El flujo "delete my data" ya está implementado in-app.
-- **Backend**: hardening completado. `players.role` default = `'user'` en prod (verificado 2026-07-18); las 6 cuentas de dev se mantienen como `'admin'` para promo/tests, nuevas altas caen en `'user'`.
+- **Cumplimiento**: la política real vive en [`PRIVACY.md`](PRIVACY.md) de este repo y se sirve en [orbex.aleixaj.com/privacy](https://orbex.aleixaj.com/privacy). El flujo "delete my data" ya está implementado in-app.
+- ⚠️ **Data Safety pendiente de repasar.** Desde que el SDK de AdMob entró en la build (2026-08-20) la app recoge el identificador publicitario y Google Sign-In guarda un correo cuando el jugador vincula. La política ya lo declara; **la declaración de Play Console tiene que decir lo mismo o rechazan la actualización**.
+- **IARC** y público objetivo (13+), con la clasificación al día tras añadir publicidad.
+- **Backend**: hardening completado. `players.role` default = `'user'` en prod (verificado 2026-08-20); las cuentas de staff se mantienen como `'admin'` para moderación y pruebas, y las nuevas altas caen en `'user'`.
 - **Ficha**: icono 512×512, gráfico destacado 1024×500, capturas landscape, textos EN/ES en `design/STORE_TEXTS.md` del repo del juego. Idioma primario: **English (US)**.
 
 Permisos mínimos ya validados (`INTERNET` + `ACCESS_NETWORK_STATE`), `targetSdk 36` / `minSdk 24`, solo `arm64-v8a`.
@@ -197,7 +213,8 @@ Landing pública del juego, desplegada en **[orbex.aleixaj.com](https://orbex.al
 HTML5 + CSS con custom properties + JS vanilla en un solo `<script>` inline. **Cero build**, **cero dependencias en runtime**. Ship the folder.
 
 - Landing (`index.html`): 8 secciones (hero, el juego, 10 mundos, 10 jefes, features, galería, 10 idiomas, descarga, footer). La galería son las 8 capturas del juego en tarjetas 16:9 con lightbox; el tráiler tiene su propio botón en el hero.
-- Política de privacidad (`/privacy` → `privacy/index.html`): 11 secciones + resumen destacado, con GDPR/RGPD compliance.
+  - **Features son 9 tarjetas en una rejilla `auto-fit`**, o sea 3×3 exactas en escritorio. Añadir o quitar una descuadra la última fila: van de tres en tres.
+- Política de privacidad (`/privacy` → `privacy/index.html`): 14 secciones + resumen destacado, con GDPR/RGPD compliance.
 - **Bilingüe EN (default) / ES** — toggle en el header, persistencia en `localStorage`, ambos idiomas viven en el mismo HTML mediante `<span data-lang="en|es">` con CSS que oculta el inactivo. Actualiza también `<title>` y `<meta description>`.
 - **Tema claro/oscuro** — auto por `prefers-color-scheme` en la primera visita, persistente después.
 - **Tipografía** — la misma jerarquía que el juego, vía tres variables en `:root`: `--f-display` (**Lilita One**) para títulos, botones y etiquetas, `--f-body` (**Space Grotesk**) para el cuerpo, y `--f-pixel` (**Press Start 2P**) reservada a los números — contadores del hero y dorsales de las tarjetas de mundo y de jefe. Es lo que hace el juego, donde `OrbexUI` cambia el árbol entero a Lilita One y la pixel solo sobrevive en el HUD de partida (marcador, combo, vida del jefe). ⚠️ **Lilita One tiene un único peso**: los encabezados vienen en bold por defecto del navegador, así que hay una regla `h1,h2,h3,h4{font-weight:400}` para que no se sintetice la negrita. Los encabezados que sí van en negrita son los de Space Grotesk y declaran su peso inline, que gana a esa regla. Y como Lilita se lee más pequeña que la pixel al mismo tamaño, los `font-size` heredados van escalados hacia arriba (~×1.4 en textos pequeños, ~×1.35 en titulares) — el juego hace lo mismo con un ×1.5.
@@ -224,13 +241,22 @@ Vive en dos ficheros que hay que editar **siempre a la vez** o divergen: `PRIVAC
 
 Al tocarla, subir la fecha de "Última actualización" en los dos y en los dos idiomas — son cuatro sitios.
 
-**Tiene que ir por delante de lo que hace el juego, no por detrás.** Lo que está pendiente y en qué commit toca:
+⚠️ **La política ya no se puede regenerar desde `_source/Orbex Privacy.dc.html`.** Ese fichero es el canvas de diseño original y se quedó en la versión del 2026-08-04; además está en `.gitignore`, así que ni se versiona ni se despliega. La fuente de verdad son los dos ficheros de arriba.
+
+**Tiene que ir por delante de lo que hace el juego, no por detrás**, y la versión del 2026-08-04 demostró lo fácil que es que se quede detrás: siguió diciendo "no pedimos tu correo" y "no mostramos anuncios" durante dos semanas en las que Google Sign-In ya vinculaba correos y el SDK de AdMob ya estaba dentro de la build. Las dos frases eran justo las dos que Google Play contrasta con la declaración de Data Safety.
+
+⚠️ **Al tocar la política hay que revisar también la declaración de Data Safety de Play Console.** Las dos tienen que decir lo mismo; si divergen, Play rechaza la actualización.
+
+Al día desde el 2026-08-20 (14 apartados). Lo que cubre y que no estaba antes: publicidad y AdMob (§3), vinculación con Google (2.2), amigos, desafío semanal y supervivencia (2.1), economía y tiempo de app dentro de la telemetría opcional (2.5), base legal por finalidad (§5), compras (§4) y sanciones de cuenta (§11).
+
+Lo que queda pendiente:
 
 | Cuándo | Qué cambia |
 |---|---|
-| Al activar **Google Sign-In** en dispositivo | El resumen dice "no pedimos tu correo" y §2.5 lista "Email" entre lo que NO se recoge. Al vincular, `auth.identities` guarda el email: las dos frases pasan a ser falsas. También §4 ("Nadie más" ve tus datos). |
-| Al activar **AdMob** (`ADS_AVAILABLE = true`) | El resumen dice "no mostramos anuncios" y §2.5 lista el ID publicitario de Android (AAID/GAID) entre lo que no se recoge. Además §3 excluye la publicidad como finalidad. Y en `index.html`, la `meta description` dice "sin anuncios agresivos" (3 sitios: línea 7 y las dos entradas de `META`). |
-| Al activar **Play Billing** (`BILLING_AVAILABLE = true`) | Revisar las menciones a "compras" de §7, que hoy se refieren a packs comprados con monedas del juego. |
+| Al pasar AdMob a **unidades reales** (`USE_TEST_AD_UNITS = false`) | Nada en el texto — §3 ya está redactado para los dos casos. Sí hay que repasar la Data Safety de Play. |
+| Al activar **Play Billing** (`BILLING_AVAILABLE = true`) | §4 dice "Orbex no vende nada dentro de la app": pasa a ser falso. Hay que describir qué recibimos de Google Play y revisar las menciones a compras de §9. |
+| Al añadir un **evento de temporada nuevo** | 2.1 nombra la divisa del evento de forma genérica a propósito; comprobar que sigue siendo cierto. |
+| Si alguna vez se recoge algo **nuevo del jugador** | La regla es que 2.1/2.5 lo listen ANTES de que la build salga. Los apartados que más envejecen son 2.1 (tablas nuevas) y 2.5 (telemetría nueva). |
 
 ### Estructura
 
