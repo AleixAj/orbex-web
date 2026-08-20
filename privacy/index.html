@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Privacy policy — Orbex</title>
-<meta name="description" content="Orbex privacy policy — what we collect, why, where it's stored, and how to delete it. No email, no ads, no third-party tracking.">
+<meta name="description" content="Orbex privacy policy — what we collect, why, where it's stored, and how to delete it. No location, no contacts, nothing sold to anyone.">
 <meta name="robots" content="index,follow">
 <link rel="canonical" href="https://orbex.aleixaj.com/privacy">
 <link rel="alternate" hreflang="en" href="https://orbex.aleixaj.com/privacy">
@@ -14,7 +14,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="../assets/images/placeholders/favicon-192.png">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Privacy policy — Orbex">
-<meta property="og:description" content="What we collect, why, where it's stored, and how to delete it. No email, no ads, no third-party tracking.">
+<meta property="og:description" content="What we collect, why, where it's stored, and how to delete it. No location, no contacts, nothing sold to anyone.">
 <meta property="og:url" content="https://orbex.aleixaj.com/privacy">
 <meta property="og:locale" content="en_US">
 <meta property="og:locale:alternate" content="es_ES">
@@ -113,6 +113,13 @@
   .summary-box{border:2px solid var(--gold);border-radius:12px;background:color-mix(in srgb,var(--gold) 8%,var(--panel));padding:18px 20px;margin:20px 0 32px}
   .summary-box p{margin:0 0 10px;color:var(--ink)}
   .summary-box p:last-child{margin-bottom:0}
+  .summary-box ul{margin:0 0 10px;padding-left:20px;color:var(--ink)}
+  .summary-box li{margin:0 0 8px}
+  .summary-box li strong{color:var(--title)}
+  /* Base legal de cada finalidad: linea aparte y en tono secundario, para
+     que el apartado 5 se lea como "para que" y no como jerga juridica. */
+  .sect .basis{display:block;font-size:13.5px;color:var(--ink-dim);margin-top:3px}
+  .sect code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;background:color-mix(in srgb,var(--frame) 18%,transparent);padding:1px 5px;border-radius:4px}
 </style>
 </head>
 <body>
@@ -149,15 +156,18 @@
           <li><a href="#summary"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">·</span> <span data-lang="en">30-second summary</span><span data-lang="es">Resumen en 30 s</span></a></li>
           <li><a href="#who"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">1.</span> <span data-lang="en">Who we are</span><span data-lang="es">Quién soy</span></a></li>
           <li><a href="#data"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">2.</span> <span data-lang="en">What data we collect</span><span data-lang="es">Qué datos recogemos</span></a></li>
-          <li><a href="#purpose"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">3.</span> <span data-lang="en">Why we collect it</span><span data-lang="es">Para qué los usamos</span></a></li>
-          <li><a href="#recipients"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">4.</span> <span data-lang="en">Who sees your data</span><span data-lang="es">Quién ve tus datos</span></a></li>
-          <li><a href="#storage"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">5.</span> <span data-lang="en">Where it's stored</span><span data-lang="es">Dónde se guardan</span></a></li>
-          <li><a href="#retention"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">6.</span> <span data-lang="en">How long we keep it</span><span data-lang="es">Cuánto tiempo se conservan</span></a></li>
-          <li><a href="#rights"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">7.</span> <span data-lang="en">Your rights (GDPR)</span><span data-lang="es">Tus derechos (RGPD)</span></a></li>
-          <li><a href="#children"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">8.</span> <span data-lang="en">Children</span><span data-lang="es">Menores</span></a></li>
-          <li><a href="#security"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">9.</span> <span data-lang="en">Security</span><span data-lang="es">Seguridad</span></a></li>
-          <li><a href="#changes"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">10.</span> <span data-lang="en">Changes</span><span data-lang="es">Cambios</span></a></li>
-          <li><a href="#contact"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">11.</span> <span data-lang="en">Contact</span><span data-lang="es">Contacto</span></a></li>
+          <li><a href="#ads"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">3.</span> <span data-lang="en">Advertising</span><span data-lang="es">Publicidad</span></a></li>
+          <li><a href="#purchases"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">4.</span> <span data-lang="en">Purchases</span><span data-lang="es">Compras</span></a></li>
+          <li><a href="#purpose"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">5.</span> <span data-lang="en">Why we use it</span><span data-lang="es">Para qué los usamos</span></a></li>
+          <li><a href="#recipients"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">6.</span> <span data-lang="en">Who sees your data</span><span data-lang="es">Quién ve tus datos</span></a></li>
+          <li><a href="#storage"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">7.</span> <span data-lang="en">Where it's stored</span><span data-lang="es">Dónde se guardan</span></a></li>
+          <li><a href="#retention"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">8.</span> <span data-lang="en">How long we keep it</span><span data-lang="es">Cuánto tiempo se conservan</span></a></li>
+          <li><a href="#rights"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">9.</span> <span data-lang="en">Your rights (GDPR)</span><span data-lang="es">Tus derechos (RGPD)</span></a></li>
+          <li><a href="#children"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">10.</span> <span data-lang="en">Children</span><span data-lang="es">Menores</span></a></li>
+          <li><a href="#fairplay"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">11.</span> <span data-lang="en">Fair play</span><span data-lang="es">Juego limpio</span></a></li>
+          <li><a href="#security"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">12.</span> <span data-lang="en">Security</span><span data-lang="es">Seguridad</span></a></li>
+          <li><a href="#changes"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">13.</span> <span data-lang="en">Changes</span><span data-lang="es">Cambios</span></a></li>
+          <li><a href="#contact"><span style="color:var(--gold-dk);font-variant-numeric:tabular-nums">14.</span> <span data-lang="en">Contact</span><span data-lang="es">Contacto</span></a></li>
         </ol>
       </nav>
       <details class="pv-toc-mobile">
@@ -168,15 +178,18 @@
           <li><a href="#summary"><span style="color:var(--gold-dk)">·</span> <span data-lang="en">30-second summary</span><span data-lang="es">Resumen en 30 s</span></a></li>
           <li><a href="#who"><span style="color:var(--gold-dk)">1.</span> <span data-lang="en">Who we are</span><span data-lang="es">Quién soy</span></a></li>
           <li><a href="#data"><span style="color:var(--gold-dk)">2.</span> <span data-lang="en">What data we collect</span><span data-lang="es">Qué datos recogemos</span></a></li>
-          <li><a href="#purpose"><span style="color:var(--gold-dk)">3.</span> <span data-lang="en">Why we collect it</span><span data-lang="es">Para qué los usamos</span></a></li>
-          <li><a href="#recipients"><span style="color:var(--gold-dk)">4.</span> <span data-lang="en">Who sees your data</span><span data-lang="es">Quién ve tus datos</span></a></li>
-          <li><a href="#storage"><span style="color:var(--gold-dk)">5.</span> <span data-lang="en">Where it's stored</span><span data-lang="es">Dónde se guardan</span></a></li>
-          <li><a href="#retention"><span style="color:var(--gold-dk)">6.</span> <span data-lang="en">How long we keep it</span><span data-lang="es">Cuánto tiempo se conservan</span></a></li>
-          <li><a href="#rights"><span style="color:var(--gold-dk)">7.</span> <span data-lang="en">Your rights (GDPR)</span><span data-lang="es">Tus derechos (RGPD)</span></a></li>
-          <li><a href="#children"><span style="color:var(--gold-dk)">8.</span> <span data-lang="en">Children</span><span data-lang="es">Menores</span></a></li>
-          <li><a href="#security"><span style="color:var(--gold-dk)">9.</span> <span data-lang="en">Security</span><span data-lang="es">Seguridad</span></a></li>
-          <li><a href="#changes"><span style="color:var(--gold-dk)">10.</span> <span data-lang="en">Changes</span><span data-lang="es">Cambios</span></a></li>
-          <li><a href="#contact"><span style="color:var(--gold-dk)">11.</span> <span data-lang="en">Contact</span><span data-lang="es">Contacto</span></a></li>
+          <li><a href="#ads"><span style="color:var(--gold-dk)">3.</span> <span data-lang="en">Advertising</span><span data-lang="es">Publicidad</span></a></li>
+          <li><a href="#purchases"><span style="color:var(--gold-dk)">4.</span> <span data-lang="en">Purchases</span><span data-lang="es">Compras</span></a></li>
+          <li><a href="#purpose"><span style="color:var(--gold-dk)">5.</span> <span data-lang="en">Why we use it</span><span data-lang="es">Para qué los usamos</span></a></li>
+          <li><a href="#recipients"><span style="color:var(--gold-dk)">6.</span> <span data-lang="en">Who sees your data</span><span data-lang="es">Quién ve tus datos</span></a></li>
+          <li><a href="#storage"><span style="color:var(--gold-dk)">7.</span> <span data-lang="en">Where it's stored</span><span data-lang="es">Dónde se guardan</span></a></li>
+          <li><a href="#retention"><span style="color:var(--gold-dk)">8.</span> <span data-lang="en">How long we keep it</span><span data-lang="es">Cuánto tiempo se conservan</span></a></li>
+          <li><a href="#rights"><span style="color:var(--gold-dk)">9.</span> <span data-lang="en">Your rights (GDPR)</span><span data-lang="es">Tus derechos (RGPD)</span></a></li>
+          <li><a href="#children"><span style="color:var(--gold-dk)">10.</span> <span data-lang="en">Children</span><span data-lang="es">Menores</span></a></li>
+          <li><a href="#fairplay"><span style="color:var(--gold-dk)">11.</span> <span data-lang="en">Fair play</span><span data-lang="es">Juego limpio</span></a></li>
+          <li><a href="#security"><span style="color:var(--gold-dk)">12.</span> <span data-lang="en">Security</span><span data-lang="es">Seguridad</span></a></li>
+          <li><a href="#changes"><span style="color:var(--gold-dk)">13.</span> <span data-lang="en">Changes</span><span data-lang="es">Cambios</span></a></li>
+          <li><a href="#contact"><span style="color:var(--gold-dk)">14.</span> <span data-lang="en">Contact</span><span data-lang="es">Contacto</span></a></li>
         </ol>
       </details>
     </aside>
@@ -187,12 +200,12 @@
         <span data-lang="en">Privacy policy</span><span data-lang="es">Política de privacidad</span>
       </h1>
       <p style="color:var(--ink-dim);font-size:14px;margin:0 0 4px">
-        <span data-lang="en"><strong style="color:var(--ink)">Last updated:</strong> August 4, 2026</span>
-        <span data-lang="es"><strong style="color:var(--ink)">Última actualización:</strong> 4 de agosto de 2026</span>
+        <span data-lang="en"><strong style="color:var(--ink)">Last updated:</strong> August 20, 2026</span>
+        <span data-lang="es"><strong style="color:var(--ink)">Última actualización:</strong> 20 de agosto de 2026</span>
       </p>
       <p style="color:var(--ink-dim);font-size:14px;margin:0 0 4px">
-        <span data-lang="en"><strong style="color:var(--ink)">Effective:</strong> August 4, 2026</span>
-        <span data-lang="es"><strong style="color:var(--ink)">Vigente desde:</strong> 4 de agosto de 2026</span>
+        <span data-lang="en"><strong style="color:var(--ink)">Effective:</strong> August 20, 2026</span>
+        <span data-lang="es"><strong style="color:var(--ink)">Vigente desde:</strong> 20 de agosto de 2026</span>
       </p>
 
       <section id="summary" class="sect summary-box" style="scroll-margin-top:84px">
@@ -200,20 +213,38 @@
           <span data-lang="en">30-second summary</span><span data-lang="es">Resumen en 30 segundos</span>
         </h2>
         <p>
-          <span data-lang="en">Orbex is a puzzle game built by an independent solo developer (Aleix). To power the online ranking and save your progress in the cloud, the game stores some basic information on a server. <strong>We do not ask for your email, we do not access your contacts or photos, we do not track your location, we do not show ads, and we do not share your data with third parties beyond our backend provider.</strong></span>
-          <span data-lang="es">Orbex es un juego de puzles desarrollado por una persona independiente (Aleix). Para que el ranking online funcione y tu progreso se guarde en la nube, el juego almacena información básica en un servidor. <strong>No pedimos tu correo, no accedemos a tus contactos ni fotos, no rastreamos tu ubicación, no mostramos anuncios y no compartimos tus datos con terceros ajenos al servidor de backend.</strong></span>
+          <span data-lang="en">Orbex is a puzzle game built by an independent solo developer (Aleix). To run the online ranking, the events and the cloud backup of your progress, the game stores some basic information on a server.</span>
+          <span data-lang="es">Orbex es un juego de puzles desarrollado por una persona independiente (Aleix). Para que funcionen el ranking online, los eventos y la copia de tu progreso en la nube, el juego guarda información básica en un servidor.</span>
         </p>
         <p>
-          <span data-lang="en">You can delete your account and all your data at any time from <strong>Settings → Delete Account</strong> (permanent — this also erases any purchases). If you only want to start over without losing your purchases, use Settings → Reset Progress instead. You can also write to <a href="mailto:playorbex@gmail.com">playorbex@gmail.com</a>.</span>
-          <span data-lang="es">Puedes borrar tu cuenta y todos tus datos en cualquier momento desde <strong>Opciones → Borrar cuenta</strong> (definitivo — también elimina las compras). Si solo quieres empezar de cero sin perder las compras, usa Opciones → Restablecer progreso. También puedes escribir a <a href="mailto:playorbex@gmail.com">playorbex@gmail.com</a>.</span>
+          <span data-lang="en">Two things are worth knowing up front:</span>
+          <span data-lang="es">Hay dos cosas que conviene saber desde el principio:</span>
+        </p>
+        <ul>
+          <li>
+            <span data-lang="en"><strong>The game shows ads through Google AdMob.</strong> AdMob uses your device's advertising ID. In the European Economic Area, the UK and Switzerland the game asks for your consent before serving personalised ads.</span>
+            <span data-lang="es"><strong>El juego muestra anuncios a través de Google AdMob.</strong> AdMob usa el identificador publicitario de tu dispositivo. En el Espacio Económico Europeo, Reino Unido y Suiza el juego te pide consentimiento antes de mostrarte anuncios personalizados.</span>
+          </li>
+          <li>
+            <span data-lang="en"><strong>You can link a Google account</strong> so you don't lose your progress if you change phones. If you do, we store the email address of that account. If you don't, the game never asks you for an email.</span>
+            <span data-lang="es"><strong>Puedes vincular una cuenta de Google</strong> para no perder tu progreso si cambias de móvil. Si lo haces, guardamos el correo de esa cuenta. Si no lo haces, el juego no te pide ningún correo.</span>
+          </li>
+        </ul>
+        <p>
+          <span data-lang="en">Beyond that: <strong>we do not access your contacts, photos, calendar, microphone or camera, we do not track your location, and we do not sell your data to anyone.</strong></span>
+          <span data-lang="es">Más allá de eso: <strong>no accedemos a tus contactos, fotos, calendario, micrófono ni cámara, no rastreamos tu ubicación y no vendemos tus datos a nadie.</strong></span>
+        </p>
+        <p>
+          <span data-lang="en">You can delete your account and all your data at any time from <strong>Settings → Delete Account</strong> (permanent). If you only want to start over without losing what you own, use Settings → Reset Progress instead. You can also write to <a href="mailto:playorbex@gmail.com">playorbex@gmail.com</a>.</span>
+          <span data-lang="es">Puedes borrar tu cuenta y todos tus datos en cualquier momento desde <strong>Opciones → Borrar cuenta</strong> (definitivo). Si solo quieres empezar de cero sin perder lo que tienes, usa Opciones → Restablecer progreso. También puedes escribir a <a href="mailto:playorbex@gmail.com">playorbex@gmail.com</a>.</span>
         </p>
       </section>
 
       <section id="who" class="sect">
         <h2 class="sect-h2">1. <span data-lang="en">Who we are</span><span data-lang="es">Quién soy</span></h2>
         <p>
-          <span data-lang="en">Orbex is a personal project developed and maintained by Aleix (natural person, Spain). Contact for anything related to this policy or your data:</span>
-          <span data-lang="es">Orbex es un proyecto personal desarrollado y mantenido por Aleix (persona física, España). Contacto para cualquier tema relacionado con esta política o con tus datos:</span>
+          <span data-lang="en">Orbex is a personal project developed and maintained by Aleix (natural person, Spain), who is the data controller under the GDPR. Contact for anything related to this policy or to your data:</span>
+          <span data-lang="es">Orbex es un proyecto personal desarrollado y mantenido por Aleix (persona física, España), que es el responsable del tratamiento a efectos del RGPD. Contacto para cualquier tema relacionado con esta política o con tus datos:</span>
         </p>
         <ul>
           <li><strong>Email:</strong> <a href="mailto:playorbex@gmail.com">playorbex@gmail.com</a></li>
@@ -242,27 +273,67 @@
             <span data-lang="es"><strong>Estadísticas de juego</strong>: partidas jugadas, niveles completados, estrellas, mejor combo, jefes derrotados, mejor puntuación, puntuación total, tiempo total de juego, logros completados.</span>
           </li>
           <li>
-            <span data-lang="en"><strong>Scores per level and per world</strong>: your highest score on each level and world.</span>
-            <span data-lang="es"><strong>Puntuaciones por nivel y por mundo</strong>: la puntuación más alta que has conseguido en cada nivel y en cada mundo.</span>
+            <span data-lang="en"><strong>Scores</strong>: your highest score on each level and each world (global ranking), your best score in the weekly challenge, and your best score per level in Survival mode. Each leaderboard is separate.</span>
+            <span data-lang="es"><strong>Puntuaciones</strong>: tu mejor marca en cada nivel y en cada mundo (ranking global), tu mejor puntuación del desafío semanal y tu mejor marca por nivel en el modo Supervivencia. Cada tabla es independiente.</span>
           </li>
           <li>
-            <span data-lang="en"><strong>Technical metadata</strong>: game language, platform (Android), app version, session count, last activity timestamp. Used only for diagnosing issues and prioritizing development.</span>
-            <span data-lang="es"><strong>Metadatos técnicos</strong>: idioma del juego, plataforma (Android), versión de la app, número de sesiones y timestamp de última actividad. Se usan solo para diagnosticar problemas y decidir prioridades de desarrollo.</span>
+            <span data-lang="en"><strong>Friends</strong>: the list of players you have added, and a notification for each player who adds you. Adding someone is one-directional and needs no approval; the other player only sees that you added them.</span>
+            <span data-lang="es"><strong>Amigos</strong>: la lista de jugadores que has añadido y una notificación por cada jugador que te añade a ti. Añadir es unilateral y no requiere aprobación; la otra persona solo ve que la has añadido.</span>
           </li>
           <li>
-            <span data-lang="en"><strong>Cloud backup of your progress</strong>: so you don't lose everything if you change or wipe your phone, the game uploads a copy of your progress files. This copy contains your level progress and stars, your coin balance, your power-up inventory, your achievements, your daily-reward and free-chest state, your daily and weekly quests, and your selected orb skin and profile frame. Your device Settings (volume, language, menu background) are <strong>not</strong> included.</span>
-            <span data-lang="es"><strong>Copia de seguridad de tu progreso</strong>: para que no lo pierdas todo si cambias o formateas el móvil, el juego sube una copia de tus ficheros de progreso. Esa copia contiene tu avance por niveles y estrellas, tu saldo de monedas, tu inventario de power-ups, tus logros, el estado de la recompensa diaria y del cofre gratis, tus misiones diarias y semanales, y la skin de orbe y el marco de perfil que tengas elegidos. Las preferencias de Opciones de tu dispositivo (volumen, idioma, fondo del menú) <strong>no</strong> viajan.</span>
+            <span data-lang="en"><strong>Cloud backup of your progress</strong>: so you don't lose everything if you change or wipe your phone, the game uploads a copy of your progress files. That copy contains your level progress and stars, your currency balances (coins, golden tickets and any seasonal event currency), your power-up inventory, the cosmetic packs you own, your achievements, your daily-reward and free-chest state, your daily and weekly quests, your best weekly-challenge score, and your selected orb skin and profile frame. Your device Settings (volume, language, menu background) are <strong>not</strong> included.</span>
+            <span data-lang="es"><strong>Copia de seguridad de tu progreso</strong>: para que no lo pierdas todo si cambias o formateas el móvil, el juego sube una copia de tus ficheros de progreso. Esa copia contiene tu avance por niveles y estrellas, tus saldos de divisas (monedas, tickets dorados y la divisa del evento de temporada si la hay), tu inventario de power-ups, los packs cosméticos que tengas, tus logros, el estado de la recompensa diaria y del cofre gratis, tus misiones diarias y semanales, tu mejor marca del desafío semanal, y la skin de orbe y el marco de perfil que tengas elegidos. Las preferencias de Opciones de tu dispositivo (volumen, idioma, fondo del menú) <strong>no</strong> viajan.</span>
           </li>
           <li>
-            <span data-lang="en"><strong>Mailbox read state</strong>: which in-game announcements you have already opened, so they don't show up as unread again.</span>
-            <span data-lang="es"><strong>Mensajes del buzón leídos</strong>: qué avisos del juego has abierto ya, para que no vuelvan a salirte como no leídos.</span>
+            <span data-lang="en"><strong>Mailbox state</strong>: which in-game announcements you have opened, claimed or deleted, so they behave consistently across devices.</span>
+            <span data-lang="es"><strong>Estado del buzón</strong>: qué avisos del juego has abierto, reclamado o borrado, para que se comporten igual en todos tus dispositivos.</span>
+          </li>
+          <li>
+            <span data-lang="en"><strong>Account status</strong>: your account role (regular player, founder, staff) and, if it ever applies, whether the account is under a sanction, why and until when — see <a href="#fairplay">section 11</a>.</span>
+            <span data-lang="es"><strong>Estado de la cuenta</strong>: el rol de tu cuenta (jugador normal, founder, staff) y, si alguna vez procede, si está sancionada, por qué y hasta cuándo — ver el <a href="#fairplay">apartado 11</a>.</span>
           </li>
         </ul>
 
-        <h3>2.2 <span data-lang="en">Transfer codes (moving to another phone)</span><span data-lang="es">Códigos de transferencia (cambiar de móvil)</span></h3>
+        <h3>2.2 <span data-lang="en">Linking a Google account (optional)</span><span data-lang="es">Vincular una cuenta de Google (opcional)</span></h3>
         <p>
-          <span data-lang="en">Your account is tied to your device. To move it, the game lets you generate a <strong>transfer code</strong> from Settings → Cloud. About that code:</span>
-          <span data-lang="es">Tu cuenta va ligada a tu dispositivo. Para moverla, el juego te deja generar un <strong>código de transferencia</strong> desde Opciones → Nube. Sobre ese código:</span>
+          <span data-lang="en">Playing does not require signing in. The game opens an anonymous session on its own, and that session lives on the device.</span>
+          <span data-lang="es">Jugar no exige iniciar sesión. El juego abre por su cuenta una sesión anónima, y esa sesión vive en el dispositivo.</span>
+        </p>
+        <p>
+          <span data-lang="en">From <strong>Settings → Cloud</strong> you can link a Google account. It is entirely optional and its only purpose is recovery: it turns the anonymous account into a permanent one <strong>keeping the same identifier</strong>, so your progress, your scores and your profile carry over untouched.</span>
+          <span data-lang="es">Desde <strong>Opciones → Nube</strong> puedes vincular una cuenta de Google. Es totalmente opcional y su única finalidad es la recuperación: convierte la cuenta anónima en permanente <strong>conservando el mismo identificador</strong>, así que tu progreso, tus puntuaciones y tu perfil pasan intactos.</span>
+        </p>
+        <p>
+          <span data-lang="en">If you link it:</span>
+          <span data-lang="es">Si la vinculas:</span>
+        </p>
+        <ul>
+          <li>
+            <span data-lang="en">Google returns your <strong>email address</strong>, and we store it (in Supabase's authentication system) as the credential for that account. The game shows it in the Cloud panel so you know which account you linked.</span>
+            <span data-lang="es">Google nos devuelve tu <strong>dirección de correo</strong>, y la guardamos (en el sistema de autenticación de Supabase) como credencial de esa cuenta. El juego te la muestra en el panel de Nube para que sepas con qué cuenta la has vinculado.</span>
+          </li>
+          <li>
+            <span data-lang="en">We do <strong>not</strong> receive your Google password, your contacts, your Drive files, or anything else from your Google account.</span>
+            <span data-lang="es"><strong>No</strong> recibimos tu contraseña de Google, ni tus contactos, ni tus archivos de Drive, ni nada más de tu cuenta de Google.</span>
+          </li>
+          <li>
+            <span data-lang="en">Your email is never public: it does not appear in the ranking, in your profile, or to any other player.</span>
+            <span data-lang="es">Tu correo no es público en ningún momento: no aparece en el ranking, ni en tu perfil, ni para ningún otro jugador.</span>
+          </li>
+          <li>
+            <span data-lang="en">You can leave the link at any time from <strong>Settings → Cloud → Switch account</strong>, which returns the device to a fresh anonymous account. Deleting your account (<a href="#rights">section 9</a>) also erases the linked email.</span>
+            <span data-lang="es">Puedes deshacer la vinculación cuando quieras desde <strong>Opciones → Nube → Cambiar cuenta</strong>, que deja el dispositivo con una cuenta anónima nueva. Borrar la cuenta (<a href="#rights">apartado 9</a>) también elimina el correo vinculado.</span>
+          </li>
+        </ul>
+        <p>
+          <span data-lang="en">Google's privacy policy: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a></span>
+          <span data-lang="es">Política de privacidad de Google: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a></span>
+        </p>
+
+        <h3>2.3 <span data-lang="en">Transfer codes (moving to another phone)</span><span data-lang="es">Códigos de transferencia (cambiar de móvil)</span></h3>
+        <p>
+          <span data-lang="en">If you have not linked Google, your account stays tied to your device. To move it, the game lets you generate a <strong>transfer code</strong> from Settings → Cloud. About that code:</span>
+          <span data-lang="es">Si no has vinculado Google, tu cuenta va ligada a tu dispositivo. Para moverla, el juego te deja generar un <strong>código de transferencia</strong> desde Opciones → Nube. Sobre ese código:</span>
         </p>
         <ul>
           <li><span data-lang="en">It is <strong>single use</strong> and expires after <strong>72 hours</strong>.</span><span data-lang="es">Es de <strong>un solo uso</strong> y caduca a las <strong>72 horas</strong>.</span></li>
@@ -270,77 +341,152 @@
           <li><span data-lang="en">Redeeming it on the new phone <strong>moves</strong> the account: the origin account is deleted from the server, freeing up its nickname, and the origin device wipes its local progress the next time it opens the game. It is a move, not a copy.</span><span data-lang="es">Canjearlo en el móvil nuevo <strong>mueve</strong> la cuenta: la cuenta de origen se borra del servidor, liberando su apodo, y el dispositivo de origen limpia su progreso local la próxima vez que abras el juego. Es un traslado, no una copia.</span></li>
         </ul>
 
-        <h3>2.3 <span data-lang="en">Data stored ONLY on your device</span><span data-lang="es">Datos que se guardan SOLO en tu dispositivo</span></h3>
+        <h3>2.4 <span data-lang="en">Data stored ONLY on your device</span><span data-lang="es">Datos que se guardan SOLO en tu dispositivo</span></h3>
         <ul>
-          <li><span data-lang="en">Music and SFX volume, language, menu background, FPS limit, other Settings preferences.</span><span data-lang="es">Volumen de música y efectos, idioma, fondo del menú, límite de FPS, otras preferencias de Opciones.</span></li>
-          <li><span data-lang="en">Anonymous session refresh token (so you don't have to sign in every time).</span><span data-lang="es">Token de refresco de sesión anónima (para no tener que iniciar sesión cada vez).</span></li>
+          <li><span data-lang="en">Music and SFX volume, language, menu background, FPS limit, colourblind options, and the rest of your Settings preferences.</span><span data-lang="es">Volumen de música y efectos, idioma, fondo del menú, límite de FPS, opciones de daltonismo y el resto de preferencias de Opciones.</span></li>
+          <li><span data-lang="en">Session refresh token (so you don't have to sign in every time).</span><span data-lang="es">Token de refresco de sesión (para no tener que iniciar sesión cada vez).</span></li>
         </ul>
 
-        <h3>2.4 <span data-lang="en">Anonymous gameplay analytics (optional)</span><span data-lang="es">Analíticas de juego anónimas (opcional)</span></h3>
+        <h3>2.5 <span data-lang="en">Anonymous gameplay analytics (optional, on by default)</span><span data-lang="es">Analíticas de juego anónimas (opcional, activadas por defecto)</span></h3>
         <p>
-          <span data-lang="en">To calibrate difficulty and star thresholds during beta, the game sends a small telemetry payload after each attempt: final score, combo, active playtime (excluding paused time), how far the chain reached, hearts lost, powerups used, and cause of defeat. All are attached to your anonymous UUID; no personal data is included. You can <strong>turn this off at any time</strong> from <strong>Settings → Anonymous Stats</strong> — the switch is on by default. Turning it off takes immediate effect and does not affect any other functionality.</span>
-          <span data-lang="es">Para calibrar la dificultad y los umbrales de estrellas durante la beta, el juego envía después de cada partida un pequeño paquete de telemetría: puntuación final, combo, tiempo activo de juego (sin contar la pausa), hasta dónde llegó la cadena, corazones perdidos, power-ups usados y causa de la derrota. Todo se asocia a tu UUID anónimo; no se incluye ningún dato personal. Puedes <strong>desactivarlo en cualquier momento</strong> desde <strong>Opciones → Estadísticas anónimas</strong> — el interruptor está encendido por defecto. Al apagarlo el efecto es inmediato y no afecta al resto de funcionalidades.</span>
+          <span data-lang="en">To calibrate difficulty, star thresholds and the in-game economy, the game sends anonymous telemetry:</span>
+          <span data-lang="es">Para calibrar la dificultad, los umbrales de estrellas y la economía del juego, se envía telemetría anónima:</span>
+        </p>
+        <ul>
+          <li>
+            <span data-lang="en"><strong>After each attempt</strong>: final score and how it broke down, combo, active playtime (excluding paused time), how far the chain reached, hearts lost, power-ups used, cause of defeat, and whether the invisible difficulty assist was active.</span>
+            <span data-lang="es"><strong>Después de cada partida</strong>: puntuación final y su desglose, combo, tiempo activo de juego (sin contar la pausa), hasta dónde llegó la cadena, corazones perdidos, power-ups usados, causa de la derrota y si la asistencia invisible de dificultad estaba activa.</span>
+          </li>
+          <li>
+            <span data-lang="en"><strong>In-game economy</strong>: aggregate counters of how many coins you earn and spend, grouped by source (level victory, achievement, quest, purchase of a given power-up…). Totals only, never a transaction log.</span>
+            <span data-lang="es"><strong>Economía del juego</strong>: contadores agregados de cuántas monedas ganas y gastas, agrupados por origen (victoria de nivel, logro, misión, compra de un power-up concreto…). Solo totales, nunca un registro de operaciones.</span>
+          </li>
+          <li>
+            <span data-lang="en"><strong>Playtime</strong>: total time with the app in the foreground, alongside the time spent in actual matches.</span>
+            <span data-lang="es"><strong>Tiempo de uso</strong>: tiempo total con la app en primer plano, además del tiempo dentro de las partidas.</span>
+          </li>
+          <li>
+            <span data-lang="en"><strong>Technical metadata</strong>: game language, platform (Android), app version, session count and last activity timestamp.</span>
+            <span data-lang="es"><strong>Metadatos técnicos</strong>: idioma del juego, plataforma (Android), versión de la app, número de sesiones y fecha de última actividad.</span>
+          </li>
+        </ul>
+        <p>
+          <span data-lang="en">All of it is attached to your anonymous UUID and none of it contains personal data. You can <strong>turn all of it off at any time</strong> from <strong>Settings → Anonymous Stats</strong> — the switch is on by default and covers every item on this list. Turning it off takes effect immediately and does not affect any other functionality.</span>
+          <span data-lang="es">Todo se asocia a tu UUID anónimo y nada de ello contiene datos personales. Puedes <strong>desactivarlo entero en cualquier momento</strong> desde <strong>Opciones → Estadísticas anónimas</strong> — el interruptor está encendido por defecto y cubre todos los puntos de esta lista. Al apagarlo el efecto es inmediato y no afecta al resto de funcionalidades.</span>
         </p>
 
-        <h3>2.5 <span data-lang="en">What we do NOT collect</span><span data-lang="es">Lo que NO recogemos</span></h3>
+        <h3>2.6 <span data-lang="en">What we do NOT collect</span><span data-lang="es">Lo que NO recogemos</span></h3>
         <ul>
-          <li><span data-lang="en">Email.</span><span data-lang="es">Correo electrónico.</span></li>
-          <li><span data-lang="en">Real name, postal address, phone number.</span><span data-lang="es">Nombre real, dirección postal, teléfono.</span></li>
+          <li><span data-lang="en">Your real name, postal address or phone number.</span><span data-lang="es">Tu nombre real, dirección postal o teléfono.</span></li>
+          <li><span data-lang="en">Your email — unless you deliberately link a Google account (2.2).</span><span data-lang="es">Tu correo — salvo que vincules deliberadamente una cuenta de Google (2.2).</span></li>
           <li><span data-lang="en">Location (GPS, wifi, IP geolocation).</span><span data-lang="es">Ubicación (GPS, wifi, IP geolocalizada).</span></li>
           <li><span data-lang="en">Contacts, photos, calendar, microphone, camera.</span><span data-lang="es">Contactos, fotos, calendario, micrófono, cámara.</span></li>
-          <li><span data-lang="en">Android Advertising ID (AAID/GAID).</span><span data-lang="es">ID publicitario de Android (AAID/GAID).</span></li>
-          <li><span data-lang="en">Third-party tracking cookies or pixels.</span><span data-lang="es">Cookies o pixels de tracking de terceros.</span></li>
           <li><span data-lang="en">Biometric data.</span><span data-lang="es">Datos biométricos.</span></li>
           <li><span data-lang="en">Browsing history.</span><span data-lang="es">Historial de navegación.</span></li>
+          <li><span data-lang="en">Payment or card details (<a href="#purchases">section 4</a>).</span><span data-lang="es">Datos de pago o de tarjeta (<a href="#purchases">apartado 4</a>).</span></li>
         </ul>
       </section>
 
-      <section id="purpose" class="sect">
-        <h2 class="sect-h2">3. <span data-lang="en">Why we collect it</span><span data-lang="es">Para qué usamos tus datos</span></h2>
+      <section id="ads" class="sect">
+        <h2 class="sect-h2">3. <span data-lang="en">Advertising</span><span data-lang="es">Publicidad</span></h2>
         <p>
-          <span data-lang="en">We use your data exclusively for:</span>
-          <span data-lang="es">Los usamos exclusivamente para:</span>
+          <span data-lang="en">Orbex shows ads through <strong>Google AdMob</strong> (Google Ireland Limited). There are two kinds and they behave differently:</span>
+          <span data-lang="es">Orbex muestra anuncios a través de <strong>Google AdMob</strong> (Google Ireland Limited). Hay dos tipos y se comportan de forma distinta:</span>
         </p>
         <ul>
           <li>
-            <span data-lang="en"><strong>Game functionality</strong>: saving your progress, restoring it if you reinstall or change phones, showing your position in the global ranking, showing your public profile when other players tap your row.</span>
-            <span data-lang="es"><strong>Funcionalidad del juego</strong>: guardar tu progreso, restaurarlo si reinstalas o cambias de móvil, mostrar tu posición en el ranking mundial, mostrar tu perfil público cuando otros jugadores toquen tu fila.</span>
+            <span data-lang="en"><strong>Rewarded ads — always optional.</strong> They only play if you press a button that says so: continuing after a defeat, doubling the coins from a victory, tripling the daily reward, or opening the free chest. No content in the game is locked behind watching one.</span>
+            <span data-lang="es"><strong>Anuncios recompensados — siempre opcionales.</strong> Solo se reproducen si pulsas un botón que lo anuncia: continuar tras una derrota, doblar las monedas de una victoria, triplicar la recompensa diaria o abrir el cofre gratuito. Ningún contenido del juego está bloqueado detrás de ver uno.</span>
           </li>
           <li>
-            <span data-lang="en"><strong>Technical diagnostics</strong>: identifying bugs, understanding which languages and versions are in use.</span>
-            <span data-lang="es"><strong>Diagnóstico técnico</strong>: identificar bugs, entender qué idiomas y versiones se usan.</span>
+            <span data-lang="en"><strong>Interstitials — occasional.</strong> A full-screen ad between games, capped by frequency and never shown right after a campaign defeat.</span>
+            <span data-lang="es"><strong>Intersticiales — ocasionales.</strong> Un anuncio a pantalla completa entre partidas, limitado por frecuencia y nunca justo después de una derrota de campaña.</span>
           </li>
         </ul>
         <p>
-          <span data-lang="en"><strong>We do NOT use your data for</strong>: advertising, marketing, profiling, AI model training, or sale to third parties.</span>
-          <span data-lang="es"><strong>NO usamos tus datos para</strong>: publicidad, marketing, perfilado, entrenamiento de modelos de IA, venta a terceros.</span>
+          <span data-lang="en"><strong>What AdMob receives.</strong> Google receives your device's <strong>advertising ID (AAID)</strong>, IP address, device and app information, and how you interact with the ad. That is how ads are selected and how fraud is prevented. <strong>Google does not receive your nickname, your progress, your scores or your Orbex identifier</strong> — the game does not send them and the ad SDK has no access to them.</span>
+          <span data-lang="es"><strong>Qué recibe AdMob.</strong> Google recibe el <strong>identificador publicitario (AAID)</strong> de tu dispositivo, tu dirección IP, información del dispositivo y de la app, y cómo interactúas con el anuncio. Es así como se eligen los anuncios y como se previene el fraude. <strong>Google no recibe tu apodo, tu progreso, tus puntuaciones ni tu identificador de Orbex</strong> — el juego no se los envía y el SDK de anuncios no tiene acceso a ellos.</span>
+        </p>
+        <p>
+          <span data-lang="en"><strong>Consent.</strong> In the European Economic Area, the UK and Switzerland the game presents Google's official consent form (UMP) the first time it runs, and personalised ads are only served if you accept. Whatever you choose, the game works exactly the same.</span>
+          <span data-lang="es"><strong>Consentimiento.</strong> En el Espacio Económico Europeo, Reino Unido y Suiza el juego presenta el formulario oficial de consentimiento de Google (UMP) la primera vez que se abre, y solo se sirven anuncios personalizados si aceptas. Elijas lo que elijas, el juego funciona exactamente igual.</span>
+        </p>
+        <p>
+          <span data-lang="en"><strong>Managing it from your phone.</strong> You can reset or delete your advertising ID at any time from Android's <strong>Settings → Privacy → Ads</strong>. Deleting it stops ads from being personalised; you will still see ads, just untargeted ones.</span>
+          <span data-lang="es"><strong>Cómo gestionarlo desde tu móvil.</strong> Puedes restablecer o eliminar tu identificador publicitario cuando quieras desde <strong>Ajustes → Privacidad → Anuncios</strong> de Android. Al eliminarlo, los anuncios dejan de ser personalizados; seguirás viendo anuncios, pero sin segmentar.</span>
+        </p>
+        <p>
+          <span data-lang="en">Google's advertising policy: <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener">policies.google.com/technologies/ads</a></span>
+          <span data-lang="es">Política de publicidad de Google: <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener">policies.google.com/technologies/ads</a></span>
+        </p>
+      </section>
+
+      <section id="purchases" class="sect">
+        <h2 class="sect-h2">4. <span data-lang="en">Purchases</span><span data-lang="es">Compras</span></h2>
+        <p>
+          <span data-lang="en">Orbex does not currently sell anything inside the app. If and when in-app purchases are enabled, <strong>Google Play handles the payment end to end</strong>: we never see or store your card, your billing address or your Google account balance. All we would receive is confirmation that a given product was bought by your account, so the game can unlock it.</span>
+          <span data-lang="es">Ahora mismo Orbex no vende nada dentro de la app. Si en algún momento se activan las compras integradas, <strong>Google Play gestiona el pago de principio a fin</strong>: nunca vemos ni guardamos tu tarjeta, tu dirección de facturación ni el saldo de tu cuenta de Google. Lo único que recibiríamos es la confirmación de que tu cuenta ha comprado un producto concreto, para que el juego pueda desbloquearlo.</span>
+        </p>
+      </section>
+
+      <section id="purpose" class="sect">
+        <h2 class="sect-h2">5. <span data-lang="en">Why we use your data</span><span data-lang="es">Para qué usamos tus datos</span></h2>
+        <ul>
+          <li>
+            <span data-lang="en"><strong>Running the game</strong>: saving and restoring your progress, the ranking, the events, friends and the mailbox.<span class="basis">Legal basis: performance of the service you asked for (GDPR art. 6.1.b).</span></span>
+            <span data-lang="es"><strong>Hacer funcionar el juego</strong>: guardar y restaurar tu progreso, el ranking, los eventos, los amigos y el buzón.<span class="basis">Base legal: ejecución del servicio que has pedido (RGPD art. 6.1.b).</span></span>
+          </li>
+          <li>
+            <span data-lang="en"><strong>Keeping it working</strong>: fixing bugs, calibrating difficulty, preventing cheating and abuse.<span class="basis">Legal basis: legitimate interest (GDPR art. 6.1.f).</span></span>
+            <span data-lang="es"><strong>Mantenerlo en marcha</strong>: corregir errores, calibrar la dificultad y prevenir trampas y abusos.<span class="basis">Base legal: interés legítimo (RGPD art. 6.1.f).</span></span>
+          </li>
+          <li>
+            <span data-lang="en"><strong>Anonymous gameplay analytics</strong> (2.5).<span class="basis">Legal basis: your consent — the switch in Settings (GDPR art. 6.1.a).</span></span>
+            <span data-lang="es"><strong>Analíticas de juego anónimas</strong> (2.5).<span class="basis">Base legal: tu consentimiento — el interruptor de Opciones (RGPD art. 6.1.a).</span></span>
+          </li>
+          <li>
+            <span data-lang="en"><strong>Personalised advertising</strong> (<a href="#ads">section 3</a>).<span class="basis">Legal basis: your consent — Google's UMP form (GDPR art. 6.1.a).</span></span>
+            <span data-lang="es"><strong>Publicidad personalizada</strong> (<a href="#ads">apartado 3</a>).<span class="basis">Base legal: tu consentimiento — el formulario UMP de Google (RGPD art. 6.1.a).</span></span>
+          </li>
+        </ul>
+        <p>
+          <span data-lang="en"><strong>We do NOT use your data for</strong>: marketing emails, profiling you as a person, training AI models, or selling to third parties.</span>
+          <span data-lang="es"><strong>NO usamos tus datos para</strong>: correos comerciales, perfilarte como persona, entrenar modelos de IA o venderlos a terceros.</span>
         </p>
       </section>
 
       <section id="recipients" class="sect">
-        <h2 class="sect-h2">4. <span data-lang="en">Who sees your data</span><span data-lang="es">Quién ve tus datos</span></h2>
+        <h2 class="sect-h2">6. <span data-lang="en">Who sees your data</span><span data-lang="es">Quién ve tus datos</span></h2>
         <ul>
           <li>
-            <span data-lang="en"><strong>You</strong>: see all your data on the in-game Profile screen.</span>
-            <span data-lang="es"><strong>Tú</strong>: ves todos tus datos en la pantalla de Perfil dentro del juego.</span>
+            <span data-lang="en"><strong>You</strong>: all of your data is on the in-game Profile screen.</span>
+            <span data-lang="es"><strong>Tú</strong>: todos tus datos están en la pantalla de Perfil dentro del juego.</span>
           </li>
           <li>
-            <span data-lang="en"><strong>Other players</strong>: when they tap your row in the ranking, they see your nickname, avatar, profile frame, and public stats (stars, best combo, bosses defeated, best score, playtime, achievements). Nothing else.</span>
-            <span data-lang="es"><strong>Otros jugadores</strong>: al tocar tu fila en el ranking, ven tu nickname, avatar, marco cosmético y estadísticas públicas (estrellas, mejor combo, jefes derrotados, mejor puntuación, tiempo jugado, logros). No ven ningún otro dato.</span>
+            <span data-lang="en"><strong>Other players</strong>: when they tap your row in the ranking they see your nickname, avatar, profile frame and public stats (stars, best combo, bosses defeated, best score, playtime, achievements). If you add someone as a friend, that player is told you added them. Nothing else is visible to anyone.</span>
+            <span data-lang="es"><strong>Otros jugadores</strong>: al tocar tu fila en el ranking ven tu nickname, avatar, marco cosmético y estadísticas públicas (estrellas, mejor combo, jefes derrotados, mejor puntuación, tiempo jugado, logros). Si añades a alguien como amigo, esa persona ve que la has añadido. Nadie ve ningún otro dato.</span>
           </li>
           <li>
-            <span data-lang="en"><strong>Aleix (developer)</strong>: I have admin access to the database via the Supabase panel, solely for maintenance, bug fixing, and responding to deletion requests.</span>
-            <span data-lang="es"><strong>Aleix (desarrollador)</strong>: tengo acceso administrativo a la base de datos vía el panel de Supabase, exclusivamente para mantenimiento, corrección de errores y respuesta a solicitudes de borrado.</span>
+            <span data-lang="en"><strong>Aleix (developer)</strong>: I have admin access to the database, both through the Supabase panel and through an admin screen inside the game, solely for maintenance, bug fixing, moderation and answering deletion requests. That screen shows the same profile data plus technical fields (app version, session count, currency counters).</span>
+            <span data-lang="es"><strong>Aleix (desarrollador)</strong>: tengo acceso administrativo a la base de datos, tanto por el panel de Supabase como por una pantalla de administración dentro del juego, exclusivamente para mantenimiento, corrección de errores, moderación y respuesta a solicitudes de borrado. Esa pantalla muestra los mismos datos del perfil más campos técnicos (versión de la app, número de sesiones, contadores de divisas).</span>
           </li>
           <li>
-            <span data-lang="en"><strong>Nobody else</strong>.</span>
-            <span data-lang="es"><strong>Nadie más</strong>.</span>
+            <span data-lang="en"><strong>Supabase</strong>: the infrastructure provider hosting the database (processor).</span>
+            <span data-lang="es"><strong>Supabase</strong>: el proveedor de infraestructura que aloja la base de datos (encargado del tratamiento).</span>
+          </li>
+          <li>
+            <span data-lang="en"><strong>Google</strong>: AdMob for advertising (<a href="#ads">section 3</a>) and, only if you link it, Google Sign-In for authentication (2.2).</span>
+            <span data-lang="es"><strong>Google</strong>: AdMob para la publicidad (<a href="#ads">apartado 3</a>) y, solo si la vinculas, Google Sign-In para la autenticación (2.2).</span>
+          </li>
+          <li>
+            <span data-lang="en"><strong>Nobody else.</strong> We do not share, rent or sell data to any other party.</span>
+            <span data-lang="es"><strong>Nadie más.</strong> No compartimos, cedemos ni vendemos datos a ninguna otra parte.</span>
           </li>
         </ul>
       </section>
 
       <section id="storage" class="sect">
-        <h2 class="sect-h2">5. <span data-lang="en">Where your data is stored</span><span data-lang="es">Dónde se guardan tus datos</span></h2>
+        <h2 class="sect-h2">7. <span data-lang="en">Where your data is stored</span><span data-lang="es">Dónde se guardan tus datos</span></h2>
         <ul>
           <li>
             <span data-lang="en"><strong>On your device</strong>: in the app's private storage, isolated from other applications by Android.</span>
@@ -348,21 +494,25 @@
           </li>
           <li>
             <span data-lang="en"><strong>On the server</strong>: at Supabase (infrastructure provider), on servers located in the European Union. Supabase applies encryption in transit (HTTPS/TLS) and at rest.</span>
-            <span data-lang="es"><strong>En el servidor</strong>: en Supabase (proveedor de infraestructura), en servidores localizados en la Unión Europea. Supabase aplica encriptación en tránsito (HTTPS/TLS) y en reposo.</span>
+            <span data-lang="es"><strong>En el servidor</strong>: en Supabase (proveedor de infraestructura), en servidores localizados en la Unión Europea. Supabase aplica cifrado en tránsito (HTTPS/TLS) y en reposo.</span>
+          </li>
+          <li>
+            <span data-lang="en"><strong>Advertising data</strong> is processed by Google under its own terms and may be transferred outside the EU under the safeguards described in Google's policy.</span>
+            <span data-lang="es"><strong>Los datos de publicidad</strong> los trata Google bajo sus propios términos y pueden transferirse fuera de la UE con las garantías descritas en su política.</span>
           </li>
         </ul>
         <p>
           <span data-lang="en">Supabase's privacy policy (subprocessor): <a href="https://supabase.com/privacy" target="_blank" rel="noopener">supabase.com/privacy</a></span>
-          <span data-lang="es">Política de privacidad de Supabase (subprocesador): <a href="https://supabase.com/privacy" target="_blank" rel="noopener">supabase.com/privacy</a></span>
+          <span data-lang="es">Política de privacidad de Supabase (subencargado): <a href="https://supabase.com/privacy" target="_blank" rel="noopener">supabase.com/privacy</a></span>
         </p>
       </section>
 
       <section id="retention" class="sect">
-        <h2 class="sect-h2">6. <span data-lang="en">How long we keep it</span><span data-lang="es">Cuánto tiempo se conservan</span></h2>
+        <h2 class="sect-h2">8. <span data-lang="en">How long we keep it</span><span data-lang="es">Cuánto tiempo se conservan</span></h2>
         <ul>
           <li>
             <span data-lang="en"><strong>Local</strong>: until you uninstall the app, press "Reset Progress", or press "Delete Account".</span>
-            <span data-lang="es"><strong>Local</strong>: hasta que desinstalas la app, pulsas "Restablecer progreso", o pulsas "Borrar cuenta".</span>
+            <span data-lang="es"><strong>Local</strong>: hasta que desinstalas la app, pulsas "Restablecer progreso" o pulsas "Borrar cuenta".</span>
           </li>
           <li>
             <span data-lang="en"><strong>Server</strong>: indefinitely while your account is active, with these exceptions:</span>
@@ -373,16 +523,24 @@
                 <span data-lang="es"><strong>Telemetría por partida</strong> (<code>level_attempts</code>) se auto-purga a los 90 días mediante una tarea programada. Los agregados (mejor puntuación, medias, estrellas) se conservan indefinidamente.</span>
               </li>
               <li>
+                <span data-lang="en"><strong>Friend notifications</strong> are purged by a scheduled job: read ones after 90 days, plus anything beyond the 120 most recent per player. Pending notifications are never deleted by age — they are how you find out who added you.</span>
+                <span data-lang="es"><strong>Notificaciones de amistad</strong>: una tarea programada borra las leídas de más de 90 días y todo lo que quede fuera de las 120 más recientes por jugador. Las pendientes no se borran por antigüedad — son la forma que tienes de enterarte de quién te ha añadido.</span>
+              </li>
+              <li>
                 <span data-lang="en"><strong>Transfer codes</strong> expire 72 hours after being generated, and are deleted once redeemed.</span>
                 <span data-lang="es"><strong>Los códigos de transferencia</strong> caducan a las 72 horas de generarse, y se borran en cuanto se canjean.</span>
+              </li>
+              <li>
+                <span data-lang="en"><strong>Weekly challenge</strong>: each week's leaderboard is closed and its prizes delivered by a scheduled job. Prize messages that expire without being claimed are deleted.</span>
+                <span data-lang="es"><strong>Desafío semanal</strong>: cada semana una tarea programada cierra la tabla y reparte los premios. Los mensajes de premio que caducan sin reclamarse se eliminan.</span>
               </li>
               <li>
                 <span data-lang="en"><strong>Accounts that never chose a nickname</strong>: if you open the game but never pick a nickname, the only thing that exists on the server is an empty anonymous session. A scheduled job deletes it after <strong>30 days</strong> with no activity. Your local progress on the device is not affected.</span>
                 <span data-lang="es"><strong>Cuentas que nunca eligieron apodo</strong>: si abres el juego pero no llegas a poner apodo, lo único que existe en el servidor es una sesión anónima vacía. Una tarea programada la borra tras <strong>30 días</strong> sin actividad. Tu progreso local en el dispositivo no se toca.</span>
               </li>
               <li>
-                <span data-lang="en">When you press <strong>Delete Account</strong> (see next section) or write requesting deletion, your entire server-side record is erased immediately — including the authentication account itself, not just your game data.</span>
-                <span data-lang="es">Cuando pulsas <strong>Borrar cuenta</strong> (ver siguiente sección) o escribes solicitando borrado, todo tu registro en el servidor se elimina inmediatamente — incluida la propia cuenta de autenticación, no solo tus datos de juego.</span>
+                <span data-lang="en">When you press <strong>Delete Account</strong> (see next section) or write requesting deletion, your entire server-side record is erased immediately — including the authentication account itself and any linked Google email, not just your game data.</span>
+                <span data-lang="es">Cuando pulsas <strong>Borrar cuenta</strong> (ver siguiente apartado) o escribes solicitando el borrado, todo tu registro en el servidor se elimina inmediatamente — incluida la propia cuenta de autenticación y el correo de Google vinculado, no solo tus datos de juego.</span>
               </li>
             </ul>
           </li>
@@ -390,57 +548,77 @@
       </section>
 
       <section id="rights" class="sect">
-        <h2 class="sect-h2">7. <span data-lang="en">Your rights (GDPR)</span><span data-lang="es">Tus derechos (RGPD / LOPDGDD)</span></h2>
+        <h2 class="sect-h2">9. <span data-lang="en">Your rights (GDPR)</span><span data-lang="es">Tus derechos (RGPD / LOPDGDD)</span></h2>
         <p>
           <span data-lang="en">If you live in the European Union, you have the right to:</span>
           <span data-lang="es">Al vivir en la Unión Europea, tienes derecho a:</span>
         </p>
         <ul>
           <li>
-            <span data-lang="en"><strong>Access</strong> your data: visible in real time on the Profile screen.</span>
-            <span data-lang="es"><strong>Acceder</strong> a tus datos: los ves en tiempo real en la pantalla de Perfil.</span>
+            <span data-lang="en"><strong>Access</strong> your data: visible in real time on the Profile screen. For anything not shown there, ask by email.</span>
+            <span data-lang="es"><strong>Acceder</strong> a tus datos: los ves en tiempo real en la pantalla de Perfil. Para lo que no aparezca ahí, pídelo por email.</span>
           </li>
           <li>
-            <span data-lang="en"><strong>Correct</strong> your data: change nickname and avatar from the same screen.</span>
-            <span data-lang="es"><strong>Corregir</strong> tus datos: puedes cambiar nickname y avatar desde el mismo perfil.</span>
+            <span data-lang="en"><strong>Correct</strong> your data: change nickname, avatar and frame from that same screen.</span>
+            <span data-lang="es"><strong>Corregir</strong> tus datos: puedes cambiar nickname, avatar y marco desde esa misma pantalla.</span>
           </li>
           <li>
-            <span data-lang="en"><strong>Delete</strong> your data: <strong>Settings → Delete Account</strong> wipes everything permanently — your server-side profile, all your stats and scores, your local progress, and any purchases. If you only want to start over without losing your purchases, <strong>Settings → Reset Progress</strong> clears the local progress and your ranking score but keeps the account, nickname and purchases. You can also write to <a href="mailto:playorbex@gmail.com">playorbex@gmail.com</a> with the UUID shown on your profile screen and I will do it manually.</span>
-            <span data-lang="es"><strong>Borrar</strong> tus datos: <strong>Opciones → Borrar cuenta</strong> borra todo de forma permanente — tu perfil en el servidor, todas tus estadísticas y puntuaciones, tu progreso local y las compras. Si solo quieres empezar de cero sin perder las compras, <strong>Opciones → Restablecer progreso</strong> limpia el progreso local y tu puntuación del ranking pero mantiene la cuenta, el nickname y las compras. También puedes escribir a <a href="mailto:playorbex@gmail.com">playorbex@gmail.com</a> con el UUID de tu pantalla de perfil y lo hago manualmente.</span>
+            <span data-lang="en"><strong>Delete</strong> your data: <strong>Settings → Delete Account</strong> wipes everything permanently — your server-side profile, all your stats and scores, your friends, your mailbox, your cloud backup, your local progress and any linked Google account. If you only want to start over, <strong>Settings → Reset Progress</strong> clears your progress and your ranking score but keeps the account, the nickname and the cosmetics you own. You can also write to <a href="mailto:playorbex@gmail.com">playorbex@gmail.com</a> with the UUID shown on your profile screen and I will do it manually.</span>
+            <span data-lang="es"><strong>Borrar</strong> tus datos: <strong>Opciones → Borrar cuenta</strong> borra todo de forma permanente — tu perfil en el servidor, todas tus estadísticas y puntuaciones, tus amigos, tu buzón, tu copia en la nube, tu progreso local y la cuenta de Google vinculada. Si solo quieres empezar de cero, <strong>Opciones → Restablecer progreso</strong> limpia tu progreso y tu puntuación del ranking pero mantiene la cuenta, el apodo y los cosméticos que tengas. También puedes escribir a <a href="mailto:playorbex@gmail.com">playorbex@gmail.com</a> con el UUID de tu pantalla de perfil y lo hago manualmente.</span>
           </li>
           <li>
             <span data-lang="en"><strong>Portability</strong>: request a copy of your data by email; delivered in JSON format.</span>
             <span data-lang="es"><strong>Portabilidad</strong>: puedes pedir una copia de tus datos por email; te la envío en formato JSON.</span>
           </li>
           <li>
-            <span data-lang="en"><strong>Object</strong> to processing or <strong>withdraw</strong> consent at any time (uninstall the app + request server deletion).</span>
-            <span data-lang="es"><strong>Oponerte</strong> al tratamiento o <strong>retirar</strong> consentimiento en cualquier momento (borrando la app + solicitando borrado del servidor).</span>
+            <span data-lang="en"><strong>Object</strong> to processing or <strong>withdraw</strong> consent at any time: the analytics switch and Android's advertising settings both take effect immediately, and you can always uninstall the app and request server-side deletion.</span>
+            <span data-lang="es"><strong>Oponerte</strong> al tratamiento o <strong>retirar</strong> el consentimiento en cualquier momento: el interruptor de analíticas y los ajustes de publicidad de Android surten efecto inmediato, y siempre puedes desinstalar la app y solicitar el borrado del servidor.</span>
           </li>
           <li>
             <span data-lang="en"><strong>File a complaint</strong> with your local data protection authority (in Spain: <a href="https://www.aepd.es" target="_blank" rel="noopener">AEPD, aepd.es</a>).</span>
             <span data-lang="es"><strong>Reclamar</strong> ante la Agencia Española de Protección de Datos (<a href="https://www.aepd.es" target="_blank" rel="noopener">AEPD, aepd.es</a>) si consideras que no se están cumpliendo tus derechos.</span>
           </li>
         </ul>
+        <p>
+          <span data-lang="en">We answer any of these within 30 days, and normally much sooner.</span>
+          <span data-lang="es">Respondo a cualquiera de estas solicitudes en un plazo máximo de 30 días, y normalmente mucho antes.</span>
+        </p>
       </section>
 
       <section id="children" class="sect">
-        <h2 class="sect-h2">8. <span data-lang="en">Children</span><span data-lang="es">Menores</span></h2>
+        <h2 class="sect-h2">10. <span data-lang="en">Children</span><span data-lang="es">Menores</span></h2>
         <p>
-          <span data-lang="en">Orbex targets people aged <strong>13 and up</strong>. We do not knowingly collect data from children under 13. If you are the legal guardian of a minor and believe they have used the game, contact <a href="mailto:playorbex@gmail.com">playorbex@gmail.com</a> to delete the account.</span>
-          <span data-lang="es">Orbex está dirigido a personas de <strong>13 años o más</strong>. No recogemos deliberadamente datos de menores de 13 años. Si eres el tutor legal de un menor y crees que ha usado el juego, contacta con <a href="mailto:playorbex@gmail.com">playorbex@gmail.com</a> para eliminar la cuenta.</span>
+          <span data-lang="en">Orbex targets people aged <strong>13 and up</strong>, and its Google Play content rating reflects that. We do not knowingly collect data from children under 13, and the game is neither designed for nor directed at them. If you are the legal guardian of a minor and believe they have used the game, contact <a href="mailto:playorbex@gmail.com">playorbex@gmail.com</a> and we will delete the account.</span>
+          <span data-lang="es">Orbex está dirigido a personas de <strong>13 años o más</strong>, y su clasificación de contenido en Google Play lo refleja. No recogemos deliberadamente datos de menores de 13 años, y el juego ni está diseñado ni dirigido a ellos. Si eres el tutor legal de un menor y crees que ha usado el juego, escribe a <a href="mailto:playorbex@gmail.com">playorbex@gmail.com</a> y eliminaremos la cuenta.</span>
+        </p>
+      </section>
+
+      <section id="fairplay" class="sect">
+        <h2 class="sect-h2">11. <span data-lang="en">Fair play and account sanctions</span><span data-lang="es">Juego limpio y sanciones de cuenta</span></h2>
+        <p>
+          <span data-lang="en">Nicknames are public, so the game rejects impersonation of staff and offensive names at the point where you pick one. If an account breaks those rules or manipulates the leaderboards, we can restrict it: a sanctioned account disappears from the leaderboards and cannot submit scores, change its nickname or avatar, or add friends. <strong>It can still play</strong> — the single-player game is unaffected.</span>
+          <span data-lang="es">Los apodos son públicos, así que el juego rechaza la suplantación de personal del juego y los nombres ofensivos en el momento de elegirlos. Si una cuenta incumple esas normas o manipula las tablas de clasificación, podemos restringirla: una cuenta sancionada desaparece de las clasificaciones y no puede enviar puntuaciones, cambiar su apodo o avatar, ni añadir amigos. <strong>Puede seguir jugando</strong> — la parte de un jugador no se ve afectada.</span>
+        </p>
+        <p>
+          <span data-lang="en">When that happens we record the reason and the date. Sanctions can be temporary or permanent, they are always reversible on our side, and you can appeal any of them by writing to <a href="mailto:playorbex@gmail.com">playorbex@gmail.com</a>.</span>
+          <span data-lang="es">Cuando eso ocurre registramos el motivo y la fecha. Las sanciones pueden ser temporales o permanentes, siempre son reversibles por nuestra parte, y puedes recurrir cualquiera de ellas escribiendo a <a href="mailto:playorbex@gmail.com">playorbex@gmail.com</a>.</span>
         </p>
       </section>
 
       <section id="security" class="sect">
-        <h2 class="sect-h2">9. <span data-lang="en">Security</span><span data-lang="es">Seguridad</span></h2>
+        <h2 class="sect-h2">12. <span data-lang="en">Security</span><span data-lang="es">Seguridad</span></h2>
         <ul>
           <li>
             <span data-lang="en">All traffic to the server is encrypted via HTTPS/TLS.</span>
             <span data-lang="es">Todo el tráfico con el servidor va cifrado por HTTPS/TLS.</span>
           </li>
           <li>
-            <span data-lang="en">Database access is protected by Row Level Security (RLS): each player can only read and write their own rows.</span>
-            <span data-lang="es">El acceso a la base de datos está protegido por Row Level Security (RLS): cada jugador solo puede leer y escribir sus propias filas.</span>
+            <span data-lang="en">Database access is protected by Row Level Security (RLS): every write goes through a controlled procedure, and each player can only read and write their own rows.</span>
+            <span data-lang="es">El acceso a la base de datos está protegido por Row Level Security (RLS): toda escritura pasa por un procedimiento controlado y cada jugador solo puede leer y escribir sus propias filas.</span>
+          </li>
+          <li>
+            <span data-lang="en">Administrative operations are restricted to staff accounts and verified on the server, never trusted from the app.</span>
+            <span data-lang="es">Las operaciones administrativas están restringidas a cuentas de staff y se verifican en el servidor, nunca se dan por buenas desde la app.</span>
           </li>
           <li>
             <span data-lang="en">We periodically audit the code for vulnerabilities.</span>
@@ -454,15 +632,15 @@
       </section>
 
       <section id="changes" class="sect">
-        <h2 class="sect-h2">10. <span data-lang="en">Changes to this policy</span><span data-lang="es">Cambios en esta política</span></h2>
+        <h2 class="sect-h2">13. <span data-lang="en">Changes to this policy</span><span data-lang="es">Cambios en esta política</span></h2>
         <p>
-          <span data-lang="en">If we update this policy, we will publish the new version at this same URL with the updated "Last updated" date at the top. Changes take effect immediately.</span>
-          <span data-lang="es">Si actualizamos esta política, publicaremos la nueva versión en esta misma URL con la fecha de "Última actualización" al principio del documento. Los cambios entran en vigor inmediatamente.</span>
+          <span data-lang="en">If we update this policy, we will publish the new version at this same URL with the updated "Last updated" date at the top. For changes that materially affect how we use your data, we will also announce it in the in-game mailbox. Changes take effect on publication.</span>
+          <span data-lang="es">Si actualizamos esta política, publicaremos la nueva versión en esta misma URL con la fecha de "Última actualización" al principio del documento. Para cambios que afecten de forma sustancial a cómo usamos tus datos, lo anunciaremos además en el buzón dentro del juego. Los cambios entran en vigor al publicarse.</span>
         </p>
       </section>
 
       <section id="contact" class="sect">
-        <h2 class="sect-h2">11. <span data-lang="en">Contact</span><span data-lang="es">Contacto</span></h2>
+        <h2 class="sect-h2">14. <span data-lang="en">Contact</span><span data-lang="es">Contacto</span></h2>
         <p>Aleix — <a href="mailto:playorbex@gmail.com">playorbex@gmail.com</a></p>
       </section>
 
@@ -479,11 +657,11 @@
   var META = {
     en: {
       title: "Privacy policy — Orbex",
-      desc: "Orbex privacy policy — what we collect, why, where it's stored, and how to delete it. No email, no ads, no third-party tracking."
+      desc: "Orbex privacy policy — what we collect, why, where it's stored, and how to delete it. No location, no contacts, nothing sold to anyone."
     },
     es: {
       title: "Política de privacidad — Orbex",
-      desc: "Política de privacidad de Orbex. Qué datos recogemos, para qué, dónde se guardan y cómo borrarlos. Sin correo, sin anuncios, sin tracking de terceros."
+      desc: "Política de privacidad de Orbex. Qué datos recogemos, para qué, dónde se guardan y cómo borrarlos. Sin ubicación, sin contactos, sin vender nada a nadie."
     }
   };
   function applyMetaForLang(lang){
