@@ -370,7 +370,11 @@ Al tocarla, subir la fecha de "Última actualización" en los dos y en los dos i
 
 ⚠️ **Al tocar la política hay que revisar también la declaración de Data Safety de Play Console.** Las dos tienen que decir lo mismo; si divergen, Play rechaza la actualización.
 
-Al día desde el 2026-08-20 (14 apartados). Lo que cubre y que no estaba antes: publicidad y AdMob (§3), vinculación con Google (2.2), amigos, desafío semanal y supervivencia (2.1), economía y tiempo de app dentro de la telemetría opcional (2.5), base legal por finalidad (§5), compras (§4) y sanciones de cuenta (§11).
+Al día desde el 2026-08-24 (14 apartados). Lo que cubre y que no estaba antes: publicidad y AdMob (§3), vinculación con Google (2.2), amigos, desafío semanal y supervivencia (2.1), economía y tiempo de app dentro de la telemetría opcional (2.5), base legal por finalidad (§5), compras (§4) y sanciones de cuenta (§11).
+
+**Lo último que entró (2026-08-24) es el apartado 2.6, y viene de la 1.21**: CONTACTO y DENUNCIAR dejaron de abrir un `mailto:` y pasaron a guardar **texto que escribe el jugador** en la base. Eso obliga a tres cosas a la vez y ninguna se puede dejar a medias — el apartado que lo describe (2.6, con lo que se envía, quién lo lee y los 90 días de retención), **DeepL** como proveedor en §6 y §7 (la traducción del panel de soporte manda ese texto a un tercero), y la casilla **Mensajes › Otros mensajes in-app** de la Data Safety de Play Console.
+
+⚠️ **La clave de DeepL es la del plan API FREE, cuyos términos permiten a DeepL usar los textos enviados para mejorar su servicio.** La política lo dice con esas palabras porque es lo que hay, y por eso 2.6 le pide al jugador que no escriba datos personales que no hagan falta. Es también el matiz que §5 tiene que hacer sobre el "no entrenamos modelos de IA": no lo hacemos nosotros, pero el proveedor puede. **Pasar a la API Pro haría falso ese párrafo** — al hacerlo, reescribir los tres sitios (2.6, §5 y §6).
 
 Lo que queda pendiente:
 
@@ -379,7 +383,8 @@ Lo que queda pendiente:
 | Al pasar AdMob a **unidades reales** (`USE_TEST_AD_UNITS = false`) | Nada en el texto — §3 ya está redactado para los dos casos. Sí hay que repasar la Data Safety de Play. |
 | Al activar **Play Billing** (`BILLING_AVAILABLE = true`) | §4 dice "Orbex no vende nada dentro de la app": pasa a ser falso. Hay que describir qué recibimos de Google Play y revisar las menciones a compras de §9. |
 | Al añadir un **evento de temporada nuevo** | 2.1 nombra la divisa del evento de forma genérica a propósito; comprobar que sigue siendo cierto. |
-| Si alguna vez se recoge algo **nuevo del jugador** | La regla es que 2.1/2.5 lo listen ANTES de que la build salga. Los apartados que más envejecen son 2.1 (tablas nuevas) y 2.5 (telemetría nueva). |
+| Si se cambia el **plan de DeepL** a Pro | Sus términos sí garantizan borrado y no entrenamiento: 2.6, §5 y §6 pasan a decir de más. Reescribir los tres. |
+| Si alguna vez se recoge algo **nuevo del jugador** | La regla es que 2.1/2.5/2.6 lo listen ANTES de que la build salga. Los apartados que más envejecen son 2.1 (tablas nuevas), 2.5 (telemetría nueva) y 2.6 (texto libre nuevo). |
 
 ### Estructura
 
