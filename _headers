@@ -12,6 +12,12 @@
 /privacy
   Cache-Control: public, max-age=0, must-revalidate
 
+# app-ads.txt: sin caché. Es lo que AdMob rastrea para verificar la app, y
+# añadir una red de anuncios mañana tiene que propagarse ya, no en 24 h.
+/app-ads.txt
+  Cache-Control: public, max-age=0, must-revalidate
+  Content-Type: text/plain
+
 # Imágenes: cache largo (fingerprint en el nombre si cambian)
 /assets/images/*
   Cache-Control: public, max-age=31536000, immutable
