@@ -160,6 +160,7 @@ Hecho recientemente:
 - [x] Google Sign-In funcionando en dispositivo (2026-08-04).
 - [x] AdMob integrado con unidades de prueba y flujo de consentimiento UMP (2026-08-20).
 - [x] Política de privacidad al día con anuncios, Google Sign-In, modos nuevos y base legal (2026-08-20).
+- [x] **Juego publicado en Google Play y landing en `live`** (2026-08-28): CTA a la ficha, píldora "ya disponible", QR real y `availability: InStock` en el JSON-LD.
 
 ---
 
@@ -181,7 +182,7 @@ Hecho recientemente:
 
 ## Publicación en Google Play
 
-El juego está en **beta cerrada** en Play (AAB de release firmado con Play App Signing). Lo que queda para producción:
+El juego **ya está publicado** en Google Play: [`com.aleix.orbex`](https://play.google.com/store/apps/details?id=com.aleix.orbex) (AAB de release firmado con Play App Signing). Puntos de cumplimiento a mantener al día — conviene confirmar que quedaron cerrados en la publicación:
 
 - **Cumplimiento**: la política real vive en [`PRIVACY.md`](PRIVACY.md) de este repo y se sirve en [orbex.aleixaj.com/privacy](https://orbex.aleixaj.com/privacy). El flujo "delete my data" ya está implementado in-app.
 - ⚠️ **Data Safety pendiente de repasar.** Desde que el SDK de AdMob entró en la build (2026-08-20) la app recoge el identificador publicitario y Google Sign-In guarda un correo cuando el jugador vincula. La política ya lo declara; **la declaración de Play Console tiene que decir lo mismo o rechazan la actualización**.
@@ -232,22 +233,22 @@ HTML5 + CSS con custom properties + JS vanilla en un solo `<script>` inline. **C
 
 ### El interruptor de lanzamiento (`RELEASE`)
 
-El juego todavía no está publicado, así que **la página entera tiene dos caras** y las dos viven en el mismo HTML. Las conmuta CSS a partir del atributo `data-release` del `<html>`:
+**Ya está en `live`.** La página sigue teniendo dos caras en el mismo HTML por si hiciera falta volver atrás (una retirada temporal de la ficha, por ejemplo). Las conmuta CSS a partir del atributo `data-release` del `<html>`:
 
 ```css
 html[data-release="soon"] [data-when="live"]{display:none !important}
 html[data-release="live"] [data-when="soon"]{display:none !important}
 ```
 
-**El día del lanzamiento se toca UNA cosa**: `RELEASE.live = true` al principio del `<script>` (y la URL de Play, que ya está escrita ahí). Con eso los CTA pasan a apuntar a la ficha y reaparecen el botón grande, el badge y el QR.
+El estado vive en dos sitios que tienen que decir lo mismo: `data-release="live"` en el `<html>` (para que no haya parpadeo ni dependa del JS) y `RELEASE.live = true` al principio del `<script>`.
 
-> ⚠️ **Los cuatro CTA de PLAY apuntaban a `#PLACEHOLDER-play-store`**, o sea a ninguna parte: quien pulsaba el botón más grande de la página no iba a ningún sitio y la página se leía como rota. Hoy apuntan a `#descarga`, que es donde se explica en qué punto está el juego. El `href` real lo escribe el script cuando `live` es true; **sin JS se quedan en `#descarga`**, que es un destino honesto y no un enlace roto.
+> ⚠️ **Los cuatro CTA de PLAY llevan el `href` de la ficha escrito en el HTML**, no puesto por JS. Antes se quedaban en `#descarga` cuando no había JS, que con el juego sin publicar era un destino honesto; ahora que existe la ficha, el destino honesto es la ficha. El script sigue reescribiéndolos (es idempotente). Si algún día se vuelve a `live:false`, hay que devolver esos `href` a `#descarga`.
 >
 > ⚠️ **Los textos NO los pone JS**, los pone CSS. Así no hay parpadeo ni depende de que el script llegue a tiempo, que es el mismo criterio del toggle de idioma.
 >
-> ⚠️ **El botón, el badge y el QR de la sección de descarga se ven SIEMPRE**, también antes del lanzamiento: quedan preparados y el día que salga solo cambian de rótulo y de destino. Mientras tanto el botón dice "PRÓXIMAMENTE" (corto a propósito: el titular de dos líneas más arriba ya dice "Próximamente en Google Play", y repetirlo entero sonaba a eco) y baja a su propia sección.
+> ⚠️ **El botón y el QR de la sección de descarga se ven SIEMPRE**, en los dos estados: solo cambian de rótulo y de destino. En `soon` el botón dice "PRÓXIMAMENTE" (corto a propósito: el titular de dos líneas más arriba ya dice "Próximamente en Google Play", y repetirlo entero sonaba a eco) y baja a su propia sección.
 >
-> ⚠️ **El badge y el QR son placeholders** hasta que exista la ficha — ver *Lo que queda antes de anunciar*.
+> ⚠️ **El QR ya es real** (`assets/images/qr-google-play.png`, 444×444) y apunta a la ficha. Se generó offline con `segno`; el comando está en *Herramientas*. **El badge oficial de Google Play sigue faltando**: el placeholder se retiró porque no era el badge de Google y no se puede dibujar uno propio (lo prohíben sus normas de marca). Hay que descargarlo del Play Console Brand Guidelines y volver a añadir el `<img>` bajo el botón de la sección de descarga.
 >
 > ⚠️ La píldora del hero (`.status-pill`) es la única pieza que dice en qué punto está el juego, y es lo primero que quiere saber quien llega desde un enlace: si puede jugarlo ya o no.
 
@@ -435,26 +436,25 @@ Cualquier host estático. Recomendado **Cloudflare Pages**: framework "None", ou
 
 Custom domain `orbex.aleixaj.com` apunta al proyecto de Pages vía CNAME automático (dominio ya en Cloudflare).
 
-### Lo que queda antes de anunciar
+### Lo que queda pendiente
 
-**El enlace a Google Play ya no es un placeholder**: es el interruptor `RELEASE` (ver su apartado). El día del lanzamiento se pone `live: true` y se comprueba que la URL de la ficha es la buena.
+**El enlace a Google Play ya está en vivo**: `RELEASE.live = true`, `data-release="live"` y los cuatro CTA con el `href` de la ficha (ver su apartado).
 
-Lo que sí sigue siendo un placeholder, todo dentro de `assets/images/placeholders/`:
+Lo que sigue siendo un placeholder, dentro de `assets/images/placeholders/`:
 
 | Placeholder | Sustituir por | Dónde se ve |
 |---|---|---|
 | `og-image.png` | Imagen para redes, 1200×630 | Solo al compartir el enlace |
 | `favicon-32.png` · `favicon-192.png` | Favicons definitivos | Pestaña del navegador y `apple-touch-icon` |
-| `google-play-badge.png` | Badge oficial de Google Play | Solo con `RELEASE.live = true` |
-| `qr.png` | QR real a la ficha de Play | Solo con `RELEASE.live = true` |
 
-Los dos últimos **no se pintan hoy**, así que no corre prisa: entran con el mismo flip.
+`qr.png` ya no se usa: lo sustituye `assets/images/qr-google-play.png`, generado de verdad contra la URL de la ficha.
 
 También pendiente:
 
+- ⚠️ **Badge oficial de Google Play**: el `<img>` que había bajo el botón de descarga era un placeholder y se ha quitado. Para volver a ponerlo hay que bajar el badge oficial (Google no permite recrearlo) y añadirlo como hermano del `.btn-download`.
 - **Términos de uso**: su enlace se retiró del footer porque no llevaba a ninguna parte. Google Play no los exige (solo la política de privacidad); cuando exista la página, se vuelve a añadir el `<li>`.
 - ⚠️ **`screenshots/7.jpg` está desactualizada**: el ranking muestra pestañas de nivel 1-5 y el build actual tiene 8 niveles por mundo. Hay que recapturarla (y revisar si la misma imagen está subida a la ficha de Play). Al sustituirla hay que regenerar **las dos versiones** — la de 1280 y su `-thumb`.
-- Ya no se usan y se pueden borrar: `placeholders/hero-gameplay.png` y `placeholders/gameplay-1..3.png`.
+- Ya no se usan y se pueden borrar: `placeholders/hero-gameplay.png`, `placeholders/gameplay-1..3.png`, `placeholders/qr.png` y `placeholders/google-play-badge.png`.
 
 ### Herramientas (`scratchpad/`, no se despliega)
 
@@ -462,4 +462,5 @@ También pendiente:
 |---|---|
 | `webpify.py` | Regenera todos los `.webp` desde `_source/originals/` al tamaño en que se pintan |
 | `serve.py` | Servidor local sin caché y con los MIME correctos (ver *Probar localmente*) |
+| `genqr.py` | Regenera `assets/images/qr-google-play.png` desde la URL de la ficha. Offline con `segno`: un QR impreso no se puede corregir, así que no depende de ningún servicio externo |
 | `sim_demo.js` | Simula 4.000 disparos de la demo del canvas leyendo sus constantes del `index.html`. Es la única forma de medir el ritmo de combos: en el navegador rAF baja a 1 fps con la ventana en segundo plano y la medida miente |

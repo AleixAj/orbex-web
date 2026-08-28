@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light" data-release="soon">
+<html lang="en" data-theme="light" data-release="live">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -486,8 +486,11 @@
         "@type": "Offer",
         "price": "0",
         "priceCurrency": "EUR",
-        "availability": "https://schema.org/PreOrder"
+        "availability": "https://schema.org/InStock",
+        "url": "https://play.google.com/store/apps/details?id=com.aleix.orbex"
       },
+      "installUrl": "https://play.google.com/store/apps/details?id=com.aleix.orbex",
+      "downloadUrl": "https://play.google.com/store/apps/details?id=com.aleix.orbex",
       "trailer": {
         "@type": "VideoObject",
         "name": "Orbex - trailer",
@@ -555,16 +558,16 @@
         <svg class="icon-x" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
       </button>
 
-      <!-- El href lo reescribe el script cuando data-release pasa a "live";
-           mientras tanto baja a la seccion de descarga, que explica el estado. -->
-      <a href="#descarga" data-play class="btn-play-nav nav-play-top">
+      <!-- El href de la ficha va escrito aqui, no lo pone el script: el juego
+           ya esta publicado y sin JS el boton tiene que llevar al mismo sitio. -->
+      <a href="https://play.google.com/store/apps/details?id=com.aleix.orbex" rel="noopener" data-play class="btn-play-nav nav-play-top">
         <span data-when="live"><span data-lang="en">PLAY</span><span data-lang="es">JUGAR</span></span>
         <span data-when="soon"><span data-lang="en">SOON</span><span data-lang="es">PRONTO</span></span>
       </a>
     </nav>
 
     <div id="nav-panel" class="nav-panel">
-      <a href="#descarga" data-play class="btn-play-nav" onclick="closeMenu()">
+      <a href="https://play.google.com/store/apps/details?id=com.aleix.orbex" rel="noopener" data-play class="btn-play-nav" onclick="closeMenu()">
         <svg width="16" height="18" viewBox="0 0 20 22" fill="none" aria-hidden="true" style="flex:none"><path d="M1 1.5 11.5 11 1 20.5V1.5Z" fill="#fff8ec"/><path d="M1 1.5 11.5 11 15 7.6 3 1z" fill="#8ee6ff" opacity=".9"/><path d="M11.5 11 1 20.5 3 21 15 14.4z" fill="#ffd36e" opacity=".9"/><path d="m11.5 11 3.5-3.4 4 2.3c1.3.8 1.3 1.4 0 2.2l-4 2.3z" fill="#5ee08a"/></svg>
         <span data-when="live"><span data-lang="en">PLAY ON GOOGLE PLAY</span><span data-lang="es">JUGAR EN GOOGLE PLAY</span></span>
         <span data-when="soon"><span data-lang="en">COMING SOON TO GOOGLE PLAY</span><span data-lang="es">PRÓXIMAMENTE EN GOOGLE PLAY</span></span>
@@ -602,6 +605,11 @@
 
       <!-- Estado real del juego. Es lo primero que quiere saber quien llega
            desde un enlace: si puede jugarlo ya o no. -->
+      <p class="status-pill" data-when="live" style="margin:0 0 22px">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span data-lang="en">OUT NOW · FREE ON GOOGLE PLAY</span>
+        <span data-lang="es">YA DISPONIBLE · GRATIS EN GOOGLE PLAY</span>
+      </p>
       <p class="status-pill" data-when="soon" style="margin:0 0 22px">
         <span class="status-dot" aria-hidden="true"></span>
         <span data-lang="en">CLOSED BETA · LAUNCHING SOON</span>
@@ -609,7 +617,7 @@
       </p>
 
       <div style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center">
-        <a href="#descarga" data-play class="btn-hero-play">
+        <a href="https://play.google.com/store/apps/details?id=com.aleix.orbex" rel="noopener" data-play class="btn-hero-play">
           <svg width="20" height="22" viewBox="0 0 20 22" fill="none" aria-hidden="true" style="flex:none"><path d="M1 1.5 11.5 11 1 20.5V1.5Z" fill="#fff8ec"/><path d="M1 1.5 11.5 11 15 7.6 3 1z" fill="#8ee6ff" opacity=".9"/><path d="M11.5 11 1 20.5 3 21 15 14.4z" fill="#ffd36e" opacity=".9"/><path d="m11.5 11 3.5-3.4 4 2.3c1.3.8 1.3 1.4 0 2.2l-4 2.3z" fill="#5ee08a"/></svg>
           <span data-when="live"><span data-lang="en">PLAY ON GOOGLE PLAY</span><span data-lang="es">JUGAR EN GOOGLE PLAY</span></span>
           <span data-when="soon"><span data-lang="en">GET IT ON LAUNCH</span><span data-lang="es">CONSÍGUELO AL SALIR</span></span>
@@ -1398,17 +1406,19 @@
         <span data-when="soon"><span data-lang="en">Free, on Android. 10 worlds, 80 levels and a boss waiting for you in every era.</span><span data-lang="es">Gratis, en Android. 10 mundos, 80 niveles y un jefe esperándote en cada época.</span></span>
       </p>
       <div style="display:flex;flex-wrap:wrap;gap:32px;align-items:center;justify-content:center">
+        <!-- La columna deja sitio para el badge oficial de Google Play, que
+             todavia falta: no se puede dibujar uno propio, hay que bajar el
+             de Google y ponerlo aqui debajo del boton. -->
         <div style="display:flex;flex-direction:column;gap:16px;align-items:center">
-          <a href="#descarga" data-play class="btn-download" aria-label="Get it on Google Play">
+          <a href="https://play.google.com/store/apps/details?id=com.aleix.orbex" rel="noopener" data-play class="btn-download" aria-label="Get it on Google Play">
             <svg width="24" height="26" viewBox="0 0 20 22" fill="none" aria-hidden="true" style="flex:none"><path d="M1 1.5 11.5 11 1 20.5V1.5Z" fill="#3b2b18"/><path d="M1 1.5 11.5 11 15 7.6 3 1z" fill="#1e6fa0"/><path d="M11.5 11 1 20.5 3 21 15 14.4z" fill="#a5771c"/><path d="m11.5 11 3.5-3.4 4 2.3c1.3.8 1.3 1.4 0 2.2l-4 2.3z" fill="#2c7a3e"/></svg>
             <span data-when="live"><span data-lang="en">PLAY ON GOOGLE PLAY</span><span data-lang="es">JUGAR EN GOOGLE PLAY</span></span>
             <span data-when="soon"><span data-lang="en">COMING SOON</span><span data-lang="es">PRÓXIMAMENTE</span></span>
           </a>
-          <img src="assets/images/placeholders/google-play-badge.png" alt="PLACEHOLDER — official Google Play badge" width="140" height="52" style="height:52px;width:auto;opacity:.9">
         </div>
         <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
           <div style="background:#fff8ec;padding:12px;border-radius:12px;border:3px solid #a5771c;box-shadow:0 8px 18px rgba(30,18,4,.35)">
-            <img src="assets/images/placeholders/qr.png" alt="PLACEHOLDER — download QR" style="width:120px;height:120px;display:block;image-rendering:pixelated">
+            <img src="assets/images/qr-google-play.png" alt="QR code to the Orbex listing on Google Play" width="444" height="444" decoding="async" style="width:120px;height:120px;display:block;image-rendering:pixelated">
           </div>
           <span style="font-size:12px;color:#fff2dc;opacity:.85">
             <span data-lang="en">Scan from desktop</span><span data-lang="es">Escanea desde escritorio</span>
@@ -1509,21 +1519,23 @@
 
 <script>
   /* =====================================================================
-     EL DIA DEL LANZAMIENTO SE TOCA ESTO Y NADA MAS
+     ESTADO DE LANZAMIENTO — Orbex YA ESTA PUBLICADO
      ---------------------------------------------------------------------
-     live:false  -> la pagina entera se presenta como "proximamente": el CTA
-                    baja a la seccion de descarga, que explica el estado, y
-                    el badge y el QR de Google Play no se pintan.
-     live:true   -> los CTA apuntan a `url` y aparecen badge y QR.
+     El juego salio en Google Play, asi que live:true y el <html> nace ya
+     con data-release="live". Los dos estados siguen cableados por si hiciera
+     falta volver atras (una retirada temporal de la ficha, por ejemplo):
+
+     live:true   -> los CTA llevan a la ficha y la pagina dice "ya disponible".
+     live:false  -> la pagina vuelve a presentarse como "proximamente".
 
      Las dos caras del texto viven en el HTML (data-when="soon" / "live") y
      las conmuta CSS a partir de data-release del <html>, asi que no hay
-     parpadeo ni depende de que el script llegue a tiempo. Lo unico que hace
-     falta de JS es el href, que sin JS se queda en #descarga — un destino
-     honesto y no un enlace roto.
+     parpadeo ni depende de que el script llegue a tiempo. Los href tambien
+     estan escritos en el HTML: sin JS los botones siguen llevando a la ficha.
+     Si algun dia se pone live:false, hay que devolver esos href a #descarga.
      ===================================================================== */
   var RELEASE = {
-    live: false,
+    live: true,
     url:  'https://play.google.com/store/apps/details?id=com.aleix.orbex'
   };
   (function(){
