@@ -7,6 +7,8 @@ asi que no se versiona ni se despliega: son la FUENTE, no el asset.
 
     python scratchpad/webpify.py           regenera todo
     python scratchpad/webpify.py --dry     solo dice que haria
+    python scratchpad/webpify.py screenshots   solo los patrones que
+                                               contengan esa palabra
 
 Cada imagen se genera al tamano en que se PINTA, con el ancho a 2x del tamano
 CSS real. Ahi esta el 94 % del ahorro: los diez retratos de jefe llegaban en
@@ -30,13 +32,13 @@ JOBS = [
     ("images/avatars/*.png",       128, 85),   # 38 px CSS
     ("images/icons/*.png",         160, 88),
     ("images/orbex-title.png",    1120, 90),   # hero, max 560 px CSS
-    ("images/screenshots/*.jpg",  1280, 80),   # el lightbox la ensena a tamano real
+    ("images/screenshots/*.[jp][pn]g", 1280, 80),  # el lightbox la ensena a tamano real
     ("images/bg/espacio.jpg",     1600, 78),   # fondo del hero
 ]
 
 # Las capturas ademas llevan miniatura: la tarjeta de la galeria mide ~275 px,
 # asi que servirle la de 1280 costaba 1,5 MB en vez de 525 KB.
-THUMB = ("images/screenshots/*.jpg", 720, 78)
+THUMB = ("images/screenshots/*.[jp][pn]g", 720, 78)
 
 
 def convert(src, dst, maxw, quality, dry):
@@ -56,13 +58,15 @@ def convert(src, dst, maxw, quality, dry):
     return w, h, os.path.getsize(dst) if os.path.exists(dst) else 0
 
 
-def main(dry=False):
+def main(dry=False, only=""):
     if not os.path.isdir(SRC):
         sys.exit("No encuentro %s.\nAhi van los originales, con la misma "
                  "jerarquia de carpetas que assets/." % SRC)
 
     before = after = 0
     for pattern, maxw, q in JOBS:
+        if only and only not in pattern:
+            continue
         for src in sorted(glob.glob(os.path.join(SRC, pattern))):
             rel = os.path.relpath(src, SRC).replace("\\", "/")
             dst = os.path.join(ROOT, "assets", os.path.splitext(rel)[0] + ".webp")
@@ -73,7 +77,8 @@ def main(dry=False):
                   % (rel, os.path.getsize(src) // 1024, nsz // 1024, w, h))
 
     pattern, maxw, q = THUMB
-    for src in sorted(glob.glob(os.path.join(SRC, pattern))):
+    if not only or only in pattern:
+      for src in sorted(glob.glob(os.path.join(SRC, pattern))):
         rel = os.path.relpath(src, SRC).replace("\\", "/")
         dst = os.path.join(ROOT, "assets", os.path.splitext(rel)[0] + "-thumb.webp")
         w, h, nsz = convert(src, dst, maxw, q, dry)
@@ -88,4 +93,5 @@ def main(dry=False):
 
 
 if __name__ == "__main__":
-    main(dry="--dry" in sys.argv)
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    main(dry="--dry" in sys.argv, only=args[0] if args else "")
