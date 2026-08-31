@@ -1,466 +1,394 @@
-# Orbex
+# Orbex — landing pública + memoria técnica del juego
 
 ![Godot](https://img.shields.io/badge/Godot-4.6-478CBF?style=for-the-badge&logo=godotengine&logoColor=white&labelColor=2D2D2D)
-![GDScript](https://img.shields.io/badge/GDScript-static_typing-355170?style=for-the-badge&logo=godotengine&logoColor=white&labelColor=2D2D2D)
-![Android](https://img.shields.io/badge/Android-APK-3DDC84?style=for-the-badge&logo=android&logoColor=white&labelColor=2D2D2D)
-![Resolution](https://img.shields.io/badge/Base-1280x720-c08820?style=for-the-badge&labelColor=2D2D2D)
-![Pixel Art](https://img.shields.io/badge/Style-Pixel_Art-efe3cf?style=for-the-badge&labelColor=2D2D2D)
+![GDScript](https://img.shields.io/badge/GDScript-tipado_estático-355170?style=for-the-badge&logo=godotengine&logoColor=white&labelColor=2D2D2D)
+![PostgreSQL](https://img.shields.io/badge/Supabase-PostgreSQL_+_RLS-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white&labelColor=2D2D2D)
+![Deno](https://img.shields.io/badge/Edge_Functions-TypeScript-000000?style=for-the-badge&logo=deno&logoColor=white&labelColor=2D2D2D)
+![Google Play](https://img.shields.io/badge/Google_Play-publicado-3DDC84?style=for-the-badge&logo=googleplay&logoColor=white&labelColor=2D2D2D)
+![Landing](https://img.shields.io/badge/Landing-HTML_+_CSS_+_JS_vanilla-e34f26?style=for-the-badge&logo=html5&logoColor=white&labelColor=2D2D2D)
 
-**Orbex** es un juego pixel-art de acción y puntería para Android, desarrollado en **Godot 4.6** por una sola persona. Mecánica tipo *Zuma* con boss: lanzas orbes desde el centro, encadenas combos de 3+ del mismo color y vacías la vida del jefe antes de que la cadena hostil llegue al final del recorrido.
+**Orbex** es un juego de móvil publicado en Google Play ([`com.aleix.orbex`](https://play.google.com/store/apps/details?id=com.aleix.orbex)), hecho de principio a fin por una sola persona: cliente, backend, base de datos, pagos, telemetría, cumplimiento legal y la web que lo acompaña.
 
-10 mundos × 8 niveles ambientados en épocas históricas (dinosaurios → espacio). Proyecto a la vez juego y *showcase* técnico: motor de cadena propio, plugin de editor de paths, sistema de profundidad sin recortar PNGs, UI nativa completa y backend de ranking online.
+**Este repositorio contiene la landing** ([orbex.aleixaj.com](https://orbex.aleixaj.com)). El código del juego es privado, así que **este documento es su memoria técnica**: cómo está montado por dentro, qué problemas de ingeniería aparecieron de verdad y cómo se resolvieron.
 
-> 🌐 **Este repositorio (`orbex-web`) contiene la landing page pública** del juego, desplegada en **[orbex.aleixaj.com](https://orbex.aleixaj.com)**. Es un sitio estático (HTML + CSS + JS vanilla, cero build), bilingüe EN/ES y con tema claro/oscuro. Detalles técnicos al final del documento, en la sección [Landing page](#landing-page-orbex-web--este-repo).
->
-> El código del **juego** (Godot 4.6, GDScript) vive en el repositorio principal — lo que sigue documenta ese proyecto.
+> **Por qué puede interesarte aunque no te dediques a videojuegos.** El juego es la excusa; el trabajo es de software. Aquí hay un backend PostgreSQL en producción con RLS y pentest, un sistema de pagos con verificación en servidor e idempotencia frente al doble cobro, consultas optimizadas contra un banco de 200.000 filas, telemetría con retención automatizada, cumplimiento de GDPR y Play Data Safety, y una batería de pruebas verificada por mutación. Nada de eso es específico de un juego.
 
 ---
 
-## Tech stack
+## Índice
 
-| Categoría | Detalle |
+- [El proyecto en números](#el-proyecto-en-números)
+- [Parte 1 — La landing (este repositorio)](#parte-1--la-landing-este-repositorio)
+- [Parte 2 — El juego](#parte-2--el-juego)
+  - [Stack y forma del proyecto](#stack-y-forma-del-proyecto)
+  - [Arquitectura del cliente](#arquitectura-del-cliente)
+  - [El motor de cadena, y una optimización con medida](#el-motor-de-cadena-y-una-optimización-con-medida)
+  - [Backend: modelo de datos y API](#backend-modelo-de-datos-y-api)
+  - [Seguridad del backend](#seguridad-del-backend)
+  - [Escala: lo que se rompe con volumen](#escala-lo-que-se-rompe-con-volumen)
+  - [Pagos in-app](#pagos-in-app)
+  - [Publicidad](#publicidad)
+  - [Identidad y guardado en la nube](#identidad-y-guardado-en-la-nube)
+  - [Interruptor remoto de versión](#interruptor-remoto-de-versión)
+  - [Telemetría y balance por datos](#telemetría-y-balance-por-datos)
+  - [Anti-trampas: modelo de amenaza explícito](#anti-trampas-modelo-de-amenaza-explícito)
+  - [Moderación y soporte dentro de la app](#moderación-y-soporte-dentro-de-la-app)
+  - [Internacionalización](#internacionalización)
+  - [Accesibilidad](#accesibilidad)
+  - [Estrategia de pruebas sin CI](#estrategia-de-pruebas-sin-ci)
+  - [Herramientas propias](#herramientas-propias)
+  - [Rendimiento y despliegue en Android](#rendimiento-y-despliegue-en-android)
+- [Qué demuestra el proyecto](#qué-demuestra-el-proyecto)
+- [Contacto](#contacto)
+
+---
+
+## El proyecto en números
+
+| | |
 |---|---|
-| Motor | Godot 4.6 (Mobile / `gl_compatibility`) |
-| Lenguaje | GDScript tipado estático con `class_name` |
-| Plataforma | Android landscape, base 1280×720 |
-| Backend | Supabase (PostgreSQL + PostgREST + Auth anónima) |
-| Persistencia local | `user://*.save` |
-| Editor tooling | `EditorPlugin` custom (`@tool` + `_forward_canvas_gui_input`) |
+| Código de cliente | **265 ficheros GDScript**, ~98.000 líneas, tipado estático |
+| Backend | **27 ficheros SQL**, ~11.000 líneas, **112 funciones/RPC** en PostgreSQL |
+| Serverless | 3 **Edge Functions** en TypeScript: verificación de compra, sincronización de reembolsos y traducción de soporte |
+| Pruebas | **130 scripts de QA** headless (arneses, dobles, fuzzing y medición), la mayoría verificados por mutación |
+| Contenido | 237 escenas, **92 niveles**, 10 mundos, 16 combates de jefe |
+| Localización | **1.155 claves × 10 idiomas** |
+| Servicios globales | 26 autoloads: economía, progreso, ranking, eventos, pagos, anuncios, ajustes… |
+| Estado | Publicado en Google Play, versión **1.29**, con jugadores y compras reales |
 
 ---
 
-## Cómo probarlo
+## Parte 1 — La landing (este repositorio)
 
-1. Abre Godot 4.6 e importa la carpeta `orbex/`.
-2. El plugin **Orbex Path Editor** viene activado por defecto.
-3. Ejecuta `res://scenes/main.tscn` (F5).
-4. Clic / toque para apuntar y disparar.
-
-> El `.gitignore` excluye `.godot/`, `builds/`, APKs y `export_presets.cfg`.
-
----
-
-## Características principales
-
-**Gameplay**
-- Motor de cadena propio: avance por `path_progress`, inserción con `lerp`, snap-back, merge con shockwave, multi-cadena por nivel.
-- Sistema de profundidad sin recortar PNGs: `FrontMask` (polígonos), tótem universal (bola de cristal, 12 frames) que se ilumina al acercarse la cadena, portales `_Tp` con fade.
-- Personaje por mundo con 8 direcciones y profundidad por pose.
-- 9 power-ups consumibles (3 slots equipables) + combate de jefe (corazones + ataque propio por mundo).
-- Jefes multi-fase (2-3 fases) con transición de rotura de pantalla.
-- Bonus pickups deterministas (aparición por bolas destruidas del pool del nivel, sin RNG, sin respawn) para mantener el ranking como habilidad pura.
-- **Modo Supervivencia**: cualquier nivel ya superado, con el pool infinito y sin objetos, hasta que la cadena te alcanza. Rampa de velocidad normalizada por nivel y tabla propia.
-- **Desafío semanal**: un nivel sorteado en servidor, el mismo para todo el mundo, jugado sin objetos y aislado del resto del progreso. Tabla propia y premios por buzón.
-- **Asistencia invisible**: tras varias derrotas seguidas en el mismo nivel, la cadena afloja (o el jefe espacia sus ataques) sin anunciarlo y sin modo fácil que elegir.
-
-**UI**
-- Pantallas completas (menú, mapa, tienda, inventario, perfil, ranking, opciones, daily, buzón) sobre paleta *Light Bronze Forge*.
-- 103 avatares de perfil (10 free + 41 de mundo + 4 VIP + 40 exclusivos + 8 del evento de temporada) con sistema WYSIWYG de marcos, más 24 marcos, 42 skins de orbe y 45 fondos de menú.
-- Tienda de packs (Hero VIP + 10 packs de mundo + 5 packs de monedas) cableada end-to-end como stub local: la compra desbloquea avatars/frames/orb skins/backgrounds del mundo, activa perks VIP (+50 % monedas por partida, badge de ranking, cosméticos exclusivos) y refresca las cards con el checkmark de "poseído". Pendiente Google Play Billing para receipt validation.
-- Recompensa diaria de 7 días con queue, racha con multiplicador y anti-cheat contra cambio de reloj.
-- Cofre gratis por rewarded ad con loot table por rareza. **SDK de AdMob integrado** (unidades de prueba); los cuatro puntos de rewarded y el intersticial pasan por el autoload `Ads` y por ningún otro sitio.
-- Buzón de mensajes con backend Supabase (3 RPCs + fallback offline).
-- Skins de orbe por mundo (shader universal con recolor por luma).
-- Fondos temáticos del menú (2 variantes por mundo + clásico + VIP + exclusivos).
-- **Eventos de temporada**: ventana de fechas con divisa propia que caduca, catálogo de cosméticos exclusivos y fase de liquidación para gastar lo ganado.
-- **Amigos** (alta unilateral, notificaciones y tabla filtrada), **misiones** diarias y semanales con reroll, y **69 logros**.
-- **Panel de admin dentro del juego** (admin-only, verificado en servidor): buscador de jugadores, ficha completa, sanciones y herramientas de desarrollo.
-
-**Herramientas y arquitectura**
-- Plugin **Orbex Path Editor**: Shift+clic para trazar paths, sufijos especiales (`_Tp`, `_NoHook`, `_Front`, `_FrontMax`, `_Sprint`).
-- Backend Supabase: leaderboard, perfiles públicos, auth anónima, RLS, anti-trampas con caps en servidor, sistema de roles.
-- **Telemetría** (autoload `Analytics`): payload rico por partida a Supabase con caps + rate limit anti-bot; toggle en Opciones por GDPR. Con datos beta reales, `percentile_cont` sobre `level_attempts.score` recalibra los star_thresholds.
-- **Cron jobs**: purga automática a 90 días de `level_attempts` + roll-up diario de DAU.
-- **GDPR "delete my account"**: RPC + cascade + limpieza local → next launch parece primera instalación.
-- Audio: música por mundo (lazy load + caché), menú con 4 temas en rotación, pool polifónico de SFX.
-- **i18n** en 10 idiomas con auto-detección del locale del sistema.
-
----
-
-## Arquitectura
-
-```
-+-------------+     +----------------------+     +------------------+
-|  AppRouter  |---->|  OrbexScreen (UI)    |---->|  Nivel (main.gd) |
-| (main.tscn) |     |  menú/zona/nivel     |     |  + HUD overlay   |
-+-------------+     +----------------------+     +------------------+
-       |                                                  |
-       v                                                  v
-+-------------+                                   +------------------+
-|  Autoloads  |   notify / save / unlock          |  ChainBall x N   |
-|  (26 globs) |                                   |  ProjectileBall  |
-+-------------+                                   |  Boss            |
-                                                  +------------------+
-```
-
-- **`AppRouter`** (`scripts/systems/app_router.gd`): monta pantallas, gestiona overlays modales y carga niveles.
-- **`OrbexScreen`** (`scripts/ui/screens/orbex_screen.gd`): contenedor de pantallas. Secciones grandes extraídas en `scripts/ui/screens/sections/`.
-- **`main.gd`** (`scripts/systems/main.gd`): controlador del nivel — cadena, combos, vida del jefe.
-- **Autoloads** (26): `Notify`, `AchievementService`, `LevelProgress`, `Settings`, `Wallet`, `Inventory`, `DailyRewards`, `FreeReward`, `Quests`, `BackendConfig`, `RankingProvider`, `Challenge`, `SummerEvent`, `VersionGate`, `Anim`, `MusicPlayer`, `Sfx`, `OrbSkins`, `ProfileFrames`, `Analytics`, `SaveEpoch`, `CloudSave`, `KeyboardDismiss`, `GoogleSignIn`, `Ads`, `Purchases`.
-  > `Ads` y `Purchases` son **puertas**: el SDK entra por ahí y solo por ahí. Ninguna pantalla habla con el plugin — se pide `await Ads.request_reward(placement)` y punto. `Purchases` sigue vacío hasta que entre Play Billing.
-
-> Para detalles de mecánicas, balanceo, sistemas y "dónde está qué" → `CLAUDE.md` en el repo del juego.
-
----
-
-## Estructura del proyecto
-
-```
-orbex/
-|-- addons/orbex_path_editor/     Plugin de editor para trazar paths
-|-- assets/                       arte, audio, fuentes, sprites de UI
-|-- scenes/
-|   |-- entities/                 boss/ player/ totem/ bonus/ + chain_ball, projectile_ball
-|   |-- levels/NN_zona/           <zona>_01..08.tscn
-|   |-- ui/                       components/ screens/ overlays/ hud.tscn
-|   `-- main.tscn
-|-- scripts/
-|   |-- entities/                 chain_ball, player, boss, front_mask, totem...
-|   |-- systems/                  app_router, main, autoloads, sql/
-|   `-- ui/                       components/ overlays/ screens/sections/
-|-- design/                       docs internas (no se publican)
-|-- project.godot
-|-- README.md
-`-- CLAUDE.md                     mapa de navegación del repo
-```
-
----
-
-## Estado actual
-
-- **Mecánica**: completa (cadena, inserción, combos, multi-cadena, portales, profundidad, jefes multi-fase).
-- **Contenido**: 10 mundos, **80 niveles** + tutorial + 6 fases extra de jefe.
-- **Personajes**: los 10 mundos con 8 direcciones y profundidad por pose.
-- **UI**: menú, mapa, tiendas, inventario, perfil (103 avatares), ranking online, daily, misiones diarias y semanales, buzón, cofre gratis, amigos, eventos y panel de admin.
-- **Modos**: campaña, **supervivencia** (por nivel, al superarlo) y **desafío semanal** (nivel sorteado en servidor, con premios).
-- **Ranking**: Supabase con auth anónima + RLS + perfiles públicos + anti-trampas.
-- **Cloud save**: copia del progreso en Supabase + códigos de transferencia entre dispositivos (un solo uso, 72 h, con lápida anti-duplicación).
-- **Version gate**: dos umbrales en servidor (aviso y bloqueo) para sacar de circulación una build rota sin publicar nada. Falla en abierto.
-- **Telemetría de beta**: end-to-end con retention 90 días automatizada y queries de calibración listas.
-- **Base de datos**: endurecida (RLS optimizada, caps + rate limit, RPC de borrado GDPR, grants columnares, moderación de cuentas).
-- **Monetización**: SDK de AdMob integrado con unidades de prueba y consentimiento UMP; Play Billing pendiente (`BILLING_AVAILABLE = false`), así que hoy no se cobra nada dentro de la app.
-- **Identidad**: sesión anónima por dispositivo, vinculación opcional con Google (conservando el mismo `auth.uid()`) y códigos de transferencia.
-- **Audio**: música + SFX en los 10 mundos.
-- **i18n**: 10 idiomas con auto-detect y cambio en caliente.
-- **Mobile/APK**: landscape, touch validado, VRAM texture compression dual (desktop + Android).
-
----
-
-## Roadmap pendiente
-
-- [ ] Conectar Google Play Billing a los packs (Fase 3). Al activarlo hay que tocar §4 de la política — ver la tabla de [Política de privacidad](#política-de-privacidad).
-- [ ] AdMob: flip a unidades reales (`USE_TEST_AD_UNITS = false`) y repaso del match rate en el panel.
-- [ ] Haptic feedback en disparos críticos / combos.
-- [ ] Configuración de niveles desde JSON (`data/levels/`).
-- [ ] Editor de niveles ampliado (paleta de patrones).
-- [ ] Revisar traducciones con hablantes nativos (las 9 no-inglesas están asistidas).
-
-Hecho recientemente:
-
-- [x] Google Sign-In funcionando en dispositivo (2026-08-04).
-- [x] AdMob integrado con unidades de prueba y flujo de consentimiento UMP (2026-08-20).
-- [x] Política de privacidad al día con anuncios, Google Sign-In, modos nuevos y base legal (2026-08-20).
-- [x] **Juego publicado en Google Play y landing en `live`** (2026-08-28): CTA a la ficha, píldora "ya disponible", QR real y `availability: InStock` en el JSON-LD.
-
----
-
-## Localización (i18n)
-
-10 idiomas: **EN** (base), **ES**, **CA**, **pt-BR**, **FR**, **IT**, **DE**, **JA**, **KO**, **RU**.
-
-- Fuente única: `assets/i18n/translations.csv` (`keys,en,es,ca,pt_BR,...`).
-- Compilado a `.translation` por el importer de Godot y registrado vía `[internationalization]` en `project.godot`. **El CSV no se lee en runtime**.
-- Auto-detect en primer arranque (`OS.get_locale()`, fallback a EN). Selector con banderas en Opciones + name picker.
-- Cambio en caliente vía `Settings.set_language()` → señal `language_changed` → reconstrucción de la pantalla activa. Labels en `.tscn` con `auto_translate_mode = ALWAYS` se retraducen solas.
-- Persistencia por dispositivo en `user://settings.save`.
-
-**Añadir un idioma**: nueva columna en el CSV + entrada en `LANGUAGES` (`settings.gd`) + path en `project.godot`.
-
-**Añadir una clave**: fila al CSV + `tr("MI_CLAVE")` en el código.
-
----
-
-## Publicación en Google Play
-
-El juego **ya está publicado** en Google Play: [`com.aleix.orbex`](https://play.google.com/store/apps/details?id=com.aleix.orbex) (AAB de release firmado con Play App Signing). Puntos de cumplimiento a mantener al día — conviene confirmar que quedaron cerrados en la publicación:
-
-- **Cumplimiento**: la política real vive en [`PRIVACY.md`](PRIVACY.md) de este repo y se sirve en [orbex.aleixaj.com/privacy](https://orbex.aleixaj.com/privacy). El flujo "delete my data" ya está implementado in-app.
-- ⚠️ **Data Safety pendiente de repasar.** Desde que el SDK de AdMob entró en la build (2026-08-20) la app recoge el identificador publicitario y Google Sign-In guarda un correo cuando el jugador vincula. La política ya lo declara; **la declaración de Play Console tiene que decir lo mismo o rechazan la actualización**.
-- **IARC** y público objetivo (13+), con la clasificación al día tras añadir publicidad.
-- **Backend**: hardening completado. `players.role` default = `'user'` en prod (verificado 2026-08-20); las cuentas de staff se mantienen como `'admin'` para moderación y pruebas, y las nuevas altas caen en `'user'`.
-- **Ficha**: icono 512×512, gráfico destacado 1024×500, capturas landscape, textos EN/ES en `design/STORE_TEXTS.md` del repo del juego. Idioma primario: **English (US)**.
-
-Permisos mínimos ya validados (`INTERNET` + `ACCESS_NETWORK_STATE`), `targetSdk 36` / `minSdk 24`, solo `arm64-v8a`.
-
----
-
-## Autoría
-
-Proyecto personal de **Aleix**. Diseño, código, arte de UI y level design por una sola persona — pensado como showcase técnico y como excusa para construir un juego completo (gameplay, UI, herramientas, persistencia, plataforma) desde cero en un motor open source.
-
-Sugerencias y revisiones de código bienvenidas.
-
-- Email: [playorbex@gmail.com](mailto:playorbex@gmail.com)
-- Web: [aleixaj.com](https://aleixaj.com)
-
----
-
-## Landing page (`orbex-web` — este repo)
-
-Landing pública del juego, desplegada en **[orbex.aleixaj.com](https://orbex.aleixaj.com)**. Ese subdominio también es la URL de referencia de la política de privacidad exigida por Google Play.
+Sitio estático que sirve a la vez de página de producto y de URL de la política de privacidad exigida por Google Play.
 
 ### Stack
 
-HTML5 + CSS con custom properties + JS vanilla en un solo `<script>` inline. **Cero build**, **cero dependencias en runtime** y, desde el 2026-08-21, **cero peticiones a terceros**: la página entera se sirve desde el propio dominio. Ship the folder.
+**HTML5 + CSS con custom properties + JavaScript vanilla.** Cero build, cero dependencias en runtime y cero peticiones a terceros: la página entera se sirve desde el propio dominio.
 
-- Landing (`index.html`): 11 secciones — hero, el juego, **cómo se juega**, 10 mundos, 10 jefes, features, galería, **detrás del juego**, 10 idiomas, **FAQ** y descarga, más el footer. La galería son las 8 capturas del juego en tarjetas 16:9 con lightbox navegable; el tráiler tiene su propio botón en el hero.
-  - **Features son 9 tarjetas en una rejilla `auto-fit`**, o sea 3×3 exactas en escritorio. Añadir o quitar una descuadra la última fila: van de tres en tres.
-  - **Los fondos de sección ALTERNAN** `--paper` / `--paper2` de arriba abajo. Al insertar una sección hay que mirar las dos vecinas, o quedan dos tonos iguales seguidos y la página pierde el ritmo. Entre bloques hay además un separador de cinco orbes (`.chain-sep`), puro CSS.
-> ⚠️ **El bloque `FAQPage` del JSON-LD tiene que decir lo MISMO que las tarjetas de la página.** Google exige que la respuesta marcada sea visible; si se quita una pregunta del HTML y se olvida el JSON-LD, el buscador sigue enseñando una respuesta que ya no existe. Pasó al retirar la de los anuncios.
+Es una decisión, no una limitación. Una landing de una página no necesita bundler, framework ni pipeline: necesita cargar rápido, ser indexable y no romperse. Sin build, desplegar es copiar la carpeta, y el HTML que ve Google es el mismo que escribí.
 
-- Política de privacidad (`/privacy` → `privacy/index.html`): 14 secciones + resumen destacado, con GDPR/RGPD compliance.
-- **Bilingüe EN (default) / ES** — toggle en el header, persistencia en `localStorage`, ambos idiomas viven en el mismo HTML mediante `<span data-lang="en|es">` con CSS que oculta el inactivo. Actualiza también `<title>` y `<meta description>`.
-- **Tema claro/oscuro** — auto por `prefers-color-scheme` en la primera visita, persistente después.
-- **Tipografía** — la misma jerarquía que el juego, vía tres variables en `:root`: `--f-display` (**Lilita One**) para títulos, botones y etiquetas, `--f-body` (**Space Grotesk**) para el cuerpo, y `--f-pixel` (**Press Start 2P**) reservada a los números — contadores, dorsales de las tarjetas de mundo y de jefe, y las cifras de la sección "detrás del juego". Es lo que hace el juego, donde `OrbexUI` cambia el árbol entero a Lilita One y la pixel solo sobrevive en el HUD de partida (marcador, combo, vida del jefe). ⚠️ **Lilita One tiene un único peso**: los encabezados vienen en bold por defecto del navegador, así que hay una regla `h1,h2,h3,h4{font-weight:400}` para que no se sintetice la negrita. Los encabezados que sí van en negrita son los de Space Grotesk y declaran su peso inline, que gana a esa regla. Y como Lilita se lee más pequeña que la pixel al mismo tamaño, los `font-size` heredados van escalados hacia arriba (~×1.4 en textos pequeños, ~×1.35 en titulares) — el juego hace lo mismo con un ×1.5.
-- **Fuentes AUTOALOJADAS** (`assets/fonts/*.woff2`, 49 KB las tres) — ver el apartado propio más abajo.
-- **Tráiler** — embed de YouTube (`youtube-nocookie.com`) en modal. El `<iframe>` nace **sin `src`**: no se hace ninguna petición a Google hasta que el usuario pulsa "Ver tráiler", y al cerrar el modal se le quita el `src` para detener la reproducción. Es el patrón click-to-load, así que la landing no necesita banner de cookies.
-- **Navegación móvil** — por debajo de 1000 px (el mismo breakpoint donde `.navlink` desaparece) el JUGAR de la barra se oculta y aparece una hamburguesa que despliega un panel con el CTA en dorado arriba y los ocho enlaces debajo. Se cierra al elegir enlace, al tocar fuera de la cabecera, con Escape y al pasar a escritorio.
-  - ⚠️ **Ese número está en CUATRO sitios** — tres media queries y el `resize` del script — y hay que moverlos juntos. Subió de 860 a 1000 al entrar el enlace de FAQ: con siete enlaces, el idioma, el tema y el CTA, a 860 px la barra ya no cabía y se salía por la derecha (no daba scroll horizontal porque `body` lleva `overflow-x:hidden`, o sea que el síntoma quedaba tapado).
-  - ⚠️ Las reglas que ocultan `.nav-burger` y `.nav-play-top` van **cualificadas con `.nav-header`** a propósito: `.icon-btn` y `.btn-play-nav` se declaran más abajo en la hoja con la misma especificidad y ganarían por orden de aparición.
-- **A11y**: skip link, `aria-label` en todos los botones-icono, `aria-expanded` / `aria-controls` en la hamburguesa, `:focus-visible` propio (el outline por defecto sobre botones dorados no se veía), modales con `role="dialog"`, foco atrapado con Tab, foco devuelto al cerrar, scroll de fondo bloqueado, cierre por Escape, y respeta `prefers-reduced-motion`. `scroll-padding-top` descuenta la cabecera fija para que un ancla no deje el título debajo de ella.
-- **Rendimiento** — ver el apartado dedicado más abajo.
-- **SEO**: Open Graph + Twitter Card completos, canonical, `hreflang` alternates, `sitemap.xml`, `robots.txt` y **JSON-LD** (`VideoGame` + `FAQPage`). HTML estático — Google/Twitter ven el contenido en la respuesta inicial, no en un shell hidratado.
+### Lo que tiene por dentro
 
-### El interruptor de lanzamiento (`RELEASE`)
-
-**Ya está en `live`.** La página sigue teniendo dos caras en el mismo HTML por si hiciera falta volver atrás (una retirada temporal de la ficha, por ejemplo). Las conmuta CSS a partir del atributo `data-release` del `<html>`:
-
-```css
-html[data-release="soon"] [data-when="live"]{display:none !important}
-html[data-release="live"] [data-when="soon"]{display:none !important}
-```
-
-El estado vive en dos sitios que tienen que decir lo mismo: `data-release="live"` en el `<html>` (para que no haya parpadeo ni dependa del JS) y `RELEASE.live = true` al principio del `<script>`.
-
-> ⚠️ **Los cuatro CTA de PLAY llevan el `href` de la ficha escrito en el HTML**, no puesto por JS. Antes se quedaban en `#descarga` cuando no había JS, que con el juego sin publicar era un destino honesto; ahora que existe la ficha, el destino honesto es la ficha. El script sigue reescribiéndolos (es idempotente). Si algún día se vuelve a `live:false`, hay que devolver esos `href` a `#descarga`.
->
-> ⚠️ **Los textos NO los pone JS**, los pone CSS. Así no hay parpadeo ni depende de que el script llegue a tiempo, que es el mismo criterio del toggle de idioma.
->
-> ⚠️ **El botón y el QR de la sección de descarga se ven SIEMPRE**, en los dos estados: solo cambian de rótulo y de destino. En `soon` el botón dice "PRÓXIMAMENTE" (corto a propósito: el titular de dos líneas más arriba ya dice "Próximamente en Google Play", y repetirlo entero sonaba a eco) y baja a su propia sección.
->
-> ⚠️ **El QR ya es real** (`assets/images/qr-google-play.png`, 444×444) y apunta a la ficha. Se generó offline con `segno`; el comando está en *Herramientas*. **El badge oficial de Google Play sigue faltando**: el placeholder se retiró porque no era el badge de Google y no se puede dibujar uno propio (lo prohíben sus normas de marca). Hay que descargarlo del Play Console Brand Guidelines y volver a añadir el `<img>` bajo el botón de la sección de descarga.
->
-> ⚠️ La píldora del hero (`.status-pill`) es la única pieza que dice en qué punto está el juego, y es lo primero que quiere saber quien llega desde un enlace: si puede jugarlo ya o no.
-
-### La demo de la mecánica (sección "cómo se juega")
-
-Un `<canvas>` que dibuja lo que hace el juego: una cadena de orbes recorre un camino, el tirador del centro inserta uno y las combinaciones de tres o más revientan encadenando combos. Es la pieza que explica el juego a quien no ha jugado nunca a nada parecido, **sin pedirle que vea un vídeo**.
-
-Usa los sprites reales de los orbes (5 KB cada uno en webp, ya descargados por los orbes flotantes) y una polilínea Catmull-Rom parametrizada **por longitud de arco**, igual que el `path_progress` del juego.
-
-⚠️ **Debajo del marco va una nota que dice lo que la demo NO es** (`.demo-note`): una recreación en el navegador, sin las físicas del juego y sin el pixel art dibujado a mano — que es la mitad de lo que Orbex es. Antes había un rótulo DENTRO del marco que decía *"la misma mecánica del juego"*, y eso era vender la demo por lo que no es: enseña la idea, no el acabado.
-
-⚠️ **La nota va FUERA y al ancho del marco.** Dentro tapaba la cadena en el tramo bajo del camino, y una advertencia sobre lo que la demo no es no debería competir con lo que la demo está enseñando. Con `max-width` propio se leía como un párrafo suelto flotando debajo; al ancho del marco se lee como su pie.
-
-> ⚠️ **CUATRO colores, no cinco** — los mismos que `BALL_COLORS`; el morado es el comodín y no entra en el reparto. Con cinco, además, las cascadas casi no salían.
->
-> ⚠️ **El suministro lleva sesgo de pareja (0,3), igual que el `pair_bias` del spawn real.** Sin él, la junta que queda tras un estallido casi nunca vuelve a hacer tres y las cascadas —que son de lo que va el paso 02— no salen: medido, un combo cada 28 s contra los ~15 s de ahora. Por encima de 0,4 la cadena se apelmaza en tramos largos de un color y deja de parecer una partida.
->
-> ⚠️ **La cascada NO se resuelve en el mismo frame, y ahí estaba el fallo de diseño.** Con la recursión instantánea los seis orbes desaparecían de golpe: no había nada que ver, y del combo —que es justo lo que el paso 02 promete— solo quedaba un rótulo de 0,4 s. Hoy el estallido deja apuntada la **junta** (los dos tramos que quedan enfrentados y comparten color), el tramo de detrás se cierra con **imán** —más rápido que un hueco normal, `MAGNET` contra `CLOSE`— y revienta **al tocarse**. Que es lo que hace el juego, y convierte un frame en una secuencia de ~2 s que se entiende sola.
->
-> ⚠️ **El rótulo `COMBO xN` solo lo puede emitir ese camino**, así que verlo en pantalla es la prueba de que el diferido funciona: `land()` llama a `resolve()` con profundidad 1, que no rotula. Medido en la página real a 57 fps: **un combo cada 12,5 s**, rótulo 40 unidades de ancho sobre 160 y **0 de 333 frames de rótulo fuera del marco**.
->
-> ⚠️ **Flota hacia ABAJO si el combo cae en el tramo alto del camino.** Subía siempre, y ahí arriba (y ≈ 16) eso lo sacaba del marco: se veía cortado. La dirección se elige al crearlo y hay un clamp de red.
->
-> ⚠️ **La palanca de la frecuencia de combos es el SESGO DE PAREJA, no la preferencia del tirador.** Medido: de 0,30 a 0,35 las cascadas suben del 8,5 % al 12,5 % de los disparos, mientras que subir la preferencia de 0,7 a 0,95 aporta 1-2 puntos — en la mayoría de disparos solo hay un sitio donde combinar, así que no hay nada que preferir. Por encima de 0,38 la cadena se apelmaza en tramos largos de un color.
->
-> ⚠️ **El tirador PREFIERE la jugada que encadena** (85 % de las veces que puede elegir). No el 100 %, o la demo se lee como un vídeo en bucle.
->
-> ⚠️ **El orbe del cañón es EL QUE SALE.** Se elige un disparo antes (`loadGun`), y el disparo busca dónde ese color hace tres. Si no puede, lo pega junto a otro igual —un disparo de preparación, que también es jugar— y si tampoco, dispara donde sea. Fallar de vez en cuando es lo que hace que parezca una partida.
->
-> ⚠️ **El hueco que abre un estallido se cierra DESLIZANDO, y el signo importa.** `pos(j) = front - j*SPACING + off`, o sea que un índice mayor está más atrás: al quitar `n` orbes, los de detrás pasan a índices más bajos y su posición nominal **salta hacia delante**. Hay que arrancarlos con `off` NEGATIVO y dejar que suba a 0. Con el signo al revés saltan hacia delante y luego se deslizan hacia atrás, que es justo lo contrario de lo que hace el juego.
->
-> ⚠️ **Se para sola** al salir del viewport (IntersectionObserver) y con la pestaña en segundo plano, el delta va topado a 1/20 s (volver de segundo plano no puede adelantar la cadena media pantalla de un frame), y con `prefers-reduced-motion` no arranca: el hueco lo ocupa un texto que cuenta lo mismo.
->
-> ⚠️ **Asignar `canvas.width` LIMPIA el canvas**, así que `resize()` pinta un frame cuando la demo está parada. Sin eso el marco se queda en negro hasta que el observer la vuelva a arrancar — se ve al redimensionar con la sección fuera de pantalla.
->
-> ⚠️ **Medir esto en el navegador NO funciona**: con la ventana en segundo plano Chrome baja `requestAnimationFrame` a 1 fps y cualquier conteo de combinaciones sale a cero. La lógica es aritmética de arrays, así que se extrae y se corre en Node — `scratchpad/sim_demo.js` lee las constantes del propio `index.html` y simula 4.000 disparos. Estado actual: **84 % de disparos que combinan, un combo cada ~15 s**.
-
-#### La posición de cada orbe: dos desplazamientos, y los tres fallos que costaron
-
-`pos(j) = front - j*SPACING + off - pu`. El hueco nominal lo da el **índice**; encima van dos correcciones que siempre tienden a cero:
-
-| | qué es | quién lo pone |
-|---|---|---|
-| `off` | lo que le queda por deslizar tras un estallido | `resolve()`, en negativo: el orbe **salta** hacia delante al bajar de índice y `off` lo devuelve a donde estaba |
-| `pu` | el hueco que la cadena abre **mientras la bola llega** | el vuelo del disparo, creciendo de 0 a `SPACING` |
-
-⚠️ **La invariante es que dos orbes consecutivos nunca están a menos de `SPACING`.** Medida sobre la página real interceptando `drawImage` —que es lo único que dice dónde se pinta cada orbe de verdad— sobre 85.211 pares visibles: **mínimo 9,49 de 9,70 nominal y cero solapes**. Ese 9,49 no es un fallo: es la curva cerrada de la derecha, donde la distancia en línea recta es algo menor que la recorrida por el camino.
-
-Los tres fallos que rompían la invariante, y **ninguno daba error**: la cadena simplemente se montaba sobre sí misma.
-
-1. **El suministro miraba la posición NOMINAL del último orbe, ignorando su `off`.** Tras un estallido los de detrás llevan `off` negativo —están más atrás de lo que su índice dice—, así que la cuenta creía que sobraba sitio y metía orbes **nuevos en medio de la cadena**, encima de los que ya estaban. Es el que se veía. Medido: separación mínima **−222** (o sea que se cruzaban de sitio) en el 1,1 % de los pares.
-2. **El orbe insertado nacía con `off = 0`** en vez de heredar el del hueco que ocupa, así que aterrizaba desplazado siempre que la cadena viniera deslizando.
-3. **El objetivo del disparo viajaba como ÍNDICE.** Si la cabeza caía por el agujero durante el vuelo, todos los índices bajaban uno y la bola entraba un hueco por detrás de donde había volado. Pasa en ~1 de cada 8 disparos (la cabeza cae cada ~1,9 s y el vuelo dura 0,24 s). Hoy viaja como **referencia al orbe**, y `land()` lo localiza con `indexOf`.
-
-⚠️ **Y el hueco se abre DURANTE el vuelo, no al aterrizar** (`pu`), que es lo que hace el juego en `_push_subchain_until_clear`. No es cosmética: la bola nueva tiene que ocupar el sitio donde estaba la que desplaza, así que si el hueco se abriera al aterrizar las dos coincidirían **en el mismo punto** durante el tercio de segundo que tarda en deslizarse. Con el empuje ya hecho, al subir un índice cada orbe de detrás ese `SPACING` lo aporta el propio índice: se suelta el `pu` y las posiciones salen continuas.
-
-⚠️ **Al tocar cualquiera de las dos correcciones hay que volver a medir la separación**, y hacerlo **en la página**: un modelo aparte de la lógica se desincroniza del código real, y aquí el fallo era precisamente que el modelo mental (el índice) y la posición real no coincidían.
-
-#### Los contadores
-
-Las siete cifras que cuentan hacia arriba al entrar en pantalla (`.tally`). El valor final **ya viene escrito en el HTML**, y la animación arranca en el primer frame de `requestAnimationFrame`, no antes: sin JS, con `prefers-reduced-motion` o con rAF estrangulado, lo que se lee es el número bueno.
-
-⚠️ **La animación va en su PROPIA función, y eso no es estilo.** `var` es de ámbito de FUNCIÓN, así que con el bucle dentro del callback del observer las tres cifras que entran a la vez compartían `el`, `to` y `t0`: las tres acababan animando el **último** elemento y las anteriores se quedaban clavadas en el 0 del primer frame. En pantalla se leía **"0 mundos, 0 niveles, 16 jefes"** — y el patrón delata la causa, porque **siempre acierta la última de cada grupo**.
-
-⚠️ Diagnostiqué esto mal la primera vez: lo atribuí al estrangulamiento de rAF (con la ventana tapada Chrome lo baja a 1 fps, y la cifra se queda en 0 mientras tanto) y añadí una guarda de `document.hidden` que no arreglaba nada. **El síntoma es idéntico y la causa no**: si es el estrangulamiento, se recupera al volver a la ventana; si es el cierre, no se recupera nunca.
-
-⚠️ **Por debajo de 10 no se anima**: el "1" de "una persona" solo puede contarse desde 0, que es feo y además falso mientras dura.
-
-#### Los iconos de los CTA del hero van en SVG, no como glifo
-
-⚠️ **`text-shadow` SE HEREDA**, y los dos botones del hero llevan el contorno de ocho sombras (`--text-outline`) que esta página usa para sostener el texto claro sobre dorado. El triángulo de "ver tráiler" era un `&#9654;` de **9 px**: a ese tamaño ocho sombras a 1,5 px son tan gruesas como el propio carácter, y se veía **duplicado y emborronado**. Encima Lilita One no tiene ese carácter, así que caía a una fuente del sistema con sus propias métricas y quedaba descentrado dentro del círculo.
-
-Hoy es un SVG, que no hereda sombras de texto y se centra exactamente. Dos cosas suyas que **no se leen en el número del `width`**:
-
-- ⚠️ **Un triángulo se centra por su CENTROIDE, no por su caja.** La masa de uno que apunta a la derecha está a un tercio de la base, así que centrado por caja se ve corrido a la izquierda. El `viewBox` de 12×12 con la base en x=3,6 y el vértice en x=10,8 deja el centroide en (6,6) exacto — medido sobre el píxel: desvío **0,00 px** en los dos ejes.
-- ⚠️ **El dibujo no llena el `viewBox`**: ocupa el 60 % de ancho y el 63 % de alto. A `width=11` el triángulo salía de 5 px y se perdía dentro del círculo (**24 %** de su diámetro, cuando lo habitual en un botón de play es 40-45 %). A 16 mide ~10 px. **Al tocar el tamaño hay que mirar el DIBUJO, no la caja.**
-
-⚠️ La X de cerrar de los modales sí sigue siendo un glifo (`&times;`) y está bien: sus botones no heredan ningún contorno. Lo que no puede repetirse es meter un glifo **dentro de un botón que lleve `--text-outline`**.
+| | |
+|---|---|
+| **Bilingüe EN/ES** | Los dos idiomas viven en el mismo HTML (`<span data-lang>`), los conmuta CSS y la preferencia persiste en `localStorage`. Sin JS también se ve un idioma completo |
+| **Tema claro/oscuro** | Automático por `prefers-color-scheme` en la primera visita, persistente después |
+| **Demo interactiva en `<canvas>`** | Recreación de la mecánica del juego: una cadena sobre una polilínea Catmull-Rom parametrizada por longitud de arco, con la misma lógica de inserción y cascada. Explica el juego sin pedirle al visitante que vea un vídeo |
+| **Accesibilidad** | Skip link, `aria-expanded` / `aria-controls`, `:focus-visible` propio, modales con foco atrapado y devuelto, cierre por Escape, y respeta `prefers-reduced-motion` |
+| **SEO** | Open Graph, `hreflang`, sitemap y JSON-LD (`VideoGame` + `FAQPage`) sincronizado con el contenido visible |
+| **Sin banner de cookies** | El embed de YouTube nace sin `src` (patrón *click-to-load*) y las fuentes están autoalojadas, así que no hay ninguna petición a terceros hasta que el usuario la pide |
 
 ### Rendimiento
 
-**Los assets pasaron de 42 MB a 2,6 MB (−94 %) el 2026-08-21**, y una visita que recorre la página entera descarga hoy **1,34 MB en 47 peticiones, ninguna a un tercero**.
+Los assets pasaron de **42 MB a 2,6 MB (−94 %)**. Una visita que recorre la página entera descarga hoy **1,34 MB en 47 peticiones**.
 
-- **Los 10 retratos de jefe eran 34 MB de los 42** — PNG de 1152×2048 que se pintan a ~210 px de ancho. En webp a 576×1024 son ~75 KB cada uno. Iban con `loading="lazy"`, así que no rompían la carga inicial, pero llegar a la sección de jefes costaba 34 MB en datos móviles.
-- Los escudos de mundo (3,4 MB), los orbes, el wordmark y el fondo del hero siguieron el mismo camino: **cada asset se genera al tamaño en que se PINTA**, con el ancho a 2× del tamaño CSS.
-- **La galería tiene dos tamaños**: `N-thumb.webp` (720 px) para las tarjetas y `N.webp` (1280 px) para el lightbox, que es donde se mira de verdad. Con un solo fichero, entrar en la galería costaba 1,5 MB en vez de 525 KB.
-- Los originales están en **`_source/originals/`**, que está en `.gitignore` y no se despliega: no se ha borrado nada y se puede regenerar con `scratchpad/webpify.py`.
-- El **hero** precarga su fondo y el wordmark con `fetchpriority="high"` (son el LCP).
-- Todas las imágenes llevan `width`/`height` o van dentro de un contenedor con `aspect-ratio`, para que nada salte al cargar. ⚠️ Si el CSS fija solo el ancho, el `height` del HTML se aplica **como alto fijo** y deforma la imagen: por eso `.float-orb` lleva `height:auto`, que es lo que hace que los dos atributos sirvan solo de proporción.
+- Los 10 retratos de jefe eran 34 MB de esos 42: PNG de 1152×2048 que se pintan a ~210 px de ancho. Cada asset se regenera al tamaño en el que se pinta (2× del CSS) en `.webp`, con un script Python reproducible.
+- La galería tiene dos resoluciones por imagen: miniatura de 720 px para las tarjetas y 1280 px para el visor.
+- Las tres fuentes van autoalojadas con subset latino (**49 KB en total**), frente a dos conexiones a terceros y una hoja bloqueante en el camino crítico.
+- Un único listener de scroll para las tres cosas que dependen de él, escribiendo una vez por frame con `requestAnimationFrame`. Las animaciones decorativas se congelan mientras hay un modal abierto: animaban `filter` y `background-position`, que repintan en vez de componer.
 
-Y lo que ya estaba, que **no conviene deshacer**:
+### Despliegue
 
-- **`.modal-backdrop` no lleva `backdrop-filter`.** Un desenfoque a pantalla completa se recalcula cada vez que cambia algo por debajo, y con el tráiler abierto eso es cada fotograma. Peor todavía: `#orbex-trail` está en z-index 90 y el modal en 100, así que cada partícula del rastro nacía *debajo* del desenfoque y disparaba un reblur de toda la ventana ~35 veces por segundo. Se compensa con la opacidad del fondo (0,93).
-- **`body.modal-open` congela lo decorativo** mientras hay un modal: oculta el rastro (y corta su generación), apaga el `backdrop-filter` de la cabecera y pausa `logoPulse` y `forgeShift`. Esas dos animan `filter` y `background-position`, que repintan en vez de componer, y corrían siempre aunque estuvieran fuera de pantalla.
-- La clase la recalcula `syncModalOpen()` mirando si queda **algún** `.modal-backdrop.open`. Escape llama a los dos cierres, y uno no puede descongelar lo que el otro sigue usando.
-- **UN solo listener de scroll** para las tres cosas que dependen de él —parallax del hero, barra de progreso de lectura y enlace activo de la barra— y escribiendo **una vez por frame** (`requestAnimationFrame`). El evento se dispara muchas más veces que fotogramas hay; con tres listeners separados se paga tres veces el mismo trabajo. La barra de progreso anima `transform` y no `width`, que dispararía layout en cada frame.
-- Las partículas del rastro se limpian con `animationend`, no con un `setTimeout` cada una.
-- Todas las imágenes `loading="lazy"` llevan `decoding="async"`.
+Cualquier host estático. Está en **Cloudflare Pages** con dominio propio, y hay configuración lista también para Netlify y Vercel. Las cabeceras de caché (`immutable` en fuentes e imágenes) se declaran en los tres formatos.
 
-### Fuentes propias
-
-Las tres fuentes se sirven desde `assets/fonts/` como woff2 con subset latino (**49 KB en total**), en vez de pedirlas a Google Fonts.
-
-- Quita **dos conexiones a terceros** y una hoja de estilos bloqueante del camino crítico.
-- Y quita una petición a Google en cada visita, que es lo coherente con una landing que no necesita banner de cookies — y con una **política de privacidad** que explica qué datos se recogen y a quién se le mandan. La página de `/privacy` usa las mismas.
-- El subset cubre latino + latin-ext + puntuación + unos símbolos. **Lo que caiga fuera** —el 日本語 / 한국어 / РУССКИЙ de la sección de idiomas— cae al `system-ui` de la pila, que es exactamente lo que ya pasaba con Google Fonts: ninguna de las tres fuentes tiene esos alfabetos.
-- Space Grotesk va como **variable** (un solo fichero para los pesos 300-700).
-- Se regeneran desde los TTF de `_source/_ds/.../assets/fonts/` con `fontTools` (`pip install fonttools brotli`); la receta está en `scratchpad/`.
-- ⚠️ Llevan `Cache-Control: immutable` en los tres ficheros de host (`_headers`, `netlify.toml`, `vercel.json`). Sin esa regla se revalidarían en cada visita, que es justo lo que se gana al autoalojarlas.
-
-### Política de privacidad
-
-Vive en dos ficheros que hay que editar **siempre a la vez** o divergen: `PRIVACY.md` (source of truth bilingüe) y `privacy/index.html` (la página servida). Cada uno lleva el texto EN y ES completo.
-
-Al tocarla, subir la fecha de "Última actualización" en los dos y en los dos idiomas — son cuatro sitios.
-
-⚠️ **La política ya no se puede regenerar desde `_source/Orbex Privacy.dc.html`.** Ese fichero es el canvas de diseño original y se quedó en la versión del 2026-08-04; además está en `.gitignore`, así que ni se versiona ni se despliega. La fuente de verdad son los dos ficheros de arriba.
-
-**Tiene que ir por delante de lo que hace el juego, no por detrás**, y la versión del 2026-08-04 demostró lo fácil que es que se quede detrás: siguió diciendo "no pedimos tu correo" y "no mostramos anuncios" durante dos semanas en las que Google Sign-In ya vinculaba correos y el SDK de AdMob ya estaba dentro de la build. Las dos frases eran justo las dos que Google Play contrasta con la declaración de Data Safety.
-
-⚠️ **Al tocar la política hay que revisar también la declaración de Data Safety de Play Console.** Las dos tienen que decir lo mismo; si divergen, Play rechaza la actualización.
-
-Al día desde el 2026-08-24 (14 apartados). Lo que cubre y que no estaba antes: publicidad y AdMob (§3), vinculación con Google (2.2), amigos, desafío semanal y supervivencia (2.1), economía y tiempo de app dentro de la telemetría opcional (2.5), base legal por finalidad (§5), compras (§4) y sanciones de cuenta (§11).
-
-**Lo último que entró (2026-08-24) es el apartado 2.6, y viene de la 1.21**: CONTACTO y DENUNCIAR dejaron de abrir un `mailto:` y pasaron a guardar **texto que escribe el jugador** en la base. Eso obliga a tres cosas a la vez y ninguna se puede dejar a medias — el apartado que lo describe (2.6, con lo que se envía, quién lo lee y los 90 días de retención), **DeepL** como proveedor en §6 y §7 (la traducción del panel de soporte manda ese texto a un tercero), y la casilla **Mensajes › Otros mensajes in-app** de la Data Safety de Play Console.
-
-⚠️ **La clave de DeepL es la del plan API FREE, cuyos términos permiten a DeepL usar los textos enviados para mejorar su servicio.** La política lo dice con esas palabras porque es lo que hay, y por eso 2.6 le pide al jugador que no escriba datos personales que no hagan falta. Es también el matiz que §5 tiene que hacer sobre el "no entrenamos modelos de IA": no lo hacemos nosotros, pero el proveedor puede. **Pasar a la API Pro haría falso ese párrafo** — al hacerlo, reescribir los tres sitios (2.6, §5 y §6).
-
-Lo que queda pendiente:
-
-| Cuándo | Qué cambia |
-|---|---|
-| Al pasar AdMob a **unidades reales** (`USE_TEST_AD_UNITS = false`) | Nada en el texto — §3 ya está redactado para los dos casos. Sí hay que repasar la Data Safety de Play. |
-| Al activar **Play Billing** (`BILLING_AVAILABLE = true`) | §4 dice "Orbex no vende nada dentro de la app": pasa a ser falso. Hay que describir qué recibimos de Google Play y revisar las menciones a compras de §9. |
-| Al añadir un **evento de temporada nuevo** | 2.1 nombra la divisa del evento de forma genérica a propósito; comprobar que sigue siendo cierto. |
-| Si se cambia el **plan de DeepL** a Pro | Sus términos sí garantizan borrado y no entrenamiento: 2.6, §5 y §6 pasan a decir de más. Reescribir los tres. |
-| Si alguna vez se recoge algo **nuevo del jugador** | La regla es que 2.1/2.5/2.6 lo listen ANTES de que la build salga. Los apartados que más envejecen son 2.1 (tablas nuevas), 2.5 (telemetría nueva) y 2.6 (texto libre nuevo). |
-
-### Estructura
+### Estructura y desarrollo local
 
 ```
 orbex-web/
-├── index.html               landing (bilingüe)
-├── privacy/index.html       /privacy — política real
-├── PRIVACY.md               source-of-truth bilingüe
+├── index.html              landing bilingüe (11 secciones, demo en canvas)
+├── privacy/index.html      /privacy — política servida
+├── PRIVACY.md              fuente de verdad bilingüe de la política
 ├── assets/
-│   ├── fonts/               3 woff2 con subset latino (49 KB)
-│   └── images/
-│       ├── orbex-title.webp wordmark
-│       ├── zones/           10 escudos de mundo
-│       ├── bosses/          10 retratos verticales de jefe
-│       ├── orbs/            5 orbes (también los usa la demo del canvas)
-│       ├── icons/           UI icons
-│       ├── avatars/         3 avatares
-│       ├── bg/              fondo del hero
-│       ├── screenshots/     8 capturas + sus 8 miniaturas (-thumb)
-│       ├── flags/           10 banderas de idioma (PNG: pixel art)
-│       └── placeholders/    ⚠️ sustituir antes de lanzar
-├── _source/originals/       ⚠️ los PNG/JPG originales, gitignored
-├── robots.txt sitemap.xml
-├── _headers _redirects       Cloudflare Pages / Netlify
-├── netlify.toml vercel.json
-└── README.md                 este archivo
+│   ├── fonts/              3 woff2 con subset latino (49 KB)
+│   └── images/             wordmark, mundos, jefes, orbes, capturas, banderas
+├── _headers · _redirects · netlify.toml · vercel.json
+└── scratchpad/             herramientas (no se despliega)
 ```
-
-> ⚠️ **Todo lo que se pinta va en `.webp` menos las banderas**, que son pixel art de 4-5 KB y no ganan nada al convertirse. Los `.png`/`.jpg` de los que salen viven en `_source/originals/` con la misma jerarquía de carpetas: `_source/` está en `.gitignore` y en `.netlifyignore`, así que ni se versiona ni se despliega. Para regenerarlo todo, `python scratchpad/webpify.py`.
-
-### Probar localmente
 
 ```bash
-python scratchpad/serve.py
-# → http://localhost:8000/   y   http://localhost:8000/privacy/
+python scratchpad/serve.py     # http://localhost:8000
 ```
 
-Es `python -m http.server` con dos cosas encima, y las dos hacen falta:
+Es `python -m http.server` con dos cosas encima, y las dos hacen falta: `Cache-Control: no-store` —el servidor pelado cachea el HTML de forma agresiva y editar el fichero no se ve al recargar— y los tipos MIME de `.webp` y `.woff2`, sin los cuales Chrome rechaza las fuentes **en silencio** y la página cae a la del sistema, que parece un problema de CSS.
 
-- **`Cache-Control: no-store`** — el servidor pelado manda `Last-Modified` y el navegador cachea el HTML de forma agresiva: editas `index.html`, recargas y no ves el cambio. Es lo que obliga a andar recargando con `?v=2`.
-- **Tipos MIME de `.webp` y `.woff2`** — sin ellos las fuentes se sirven como `application/octet-stream` y Chrome las rechaza **en silencio**: la página cae a la fuente del sistema y parece un problema del CSS.
+La **política de privacidad** vive en dos ficheros que se editan siempre a la vez (`PRIVACY.md` y la página servida) y tiene que ir por delante de lo que hace la app, no por detrás: la versión anterior siguió diciendo "no mostramos anuncios" durante dos semanas en las que el SDK ya estaba dentro de la build — y ésa es justo una de las frases que Google Play contrasta con la declaración de Data Safety.
 
-⚠️ Solo para desarrollo. En producción las cabeceras las ponen `_headers`, `netlify.toml` o `vercel.json`, que sí cachean de verdad.
+---
 
-### Deploy
+## Parte 2 — El juego
 
-Cualquier host estático. Recomendado **Cloudflare Pages**: framework "None", output `/`, `_headers` + `_redirects` se aplican automáticamente. Alternativas con config incluida: **Netlify** (`netlify.toml`) y **Vercel** (`vercel.json`).
+### Stack y forma del proyecto
 
-Custom domain `orbex.aleixaj.com` apunta al proyecto de Pages vía CNAME automático (dominio ya en Cloudflare).
-
-### Lo que queda pendiente
-
-**El enlace a Google Play ya está en vivo**: `RELEASE.live = true`, `data-release="live"` y los cuatro CTA con el `href` de la ficha (ver su apartado).
-
-Lo que sigue siendo un placeholder, dentro de `assets/images/placeholders/`:
-
-| Placeholder | Sustituir por | Dónde se ve |
-|---|---|---|
-| `og-image.png` | Imagen para redes, 1200×630 | Solo al compartir el enlace |
-| `favicon-32.png` · `favicon-192.png` | Favicons definitivos | Pestaña del navegador y `apple-touch-icon` |
-
-`qr.png` ya no se usa: lo sustituye `assets/images/qr-google-play.png`, generado de verdad contra la URL de la ficha.
-
-También pendiente:
-
-- ⚠️ **Badge oficial de Google Play**: el `<img>` que había bajo el botón de descarga era un placeholder y se ha quitado. Para volver a ponerlo hay que bajar el badge oficial (Google no permite recrearlo) y añadirlo como hermano del `.btn-download`.
-- **Términos de uso**: su enlace se retiró del footer porque no llevaba a ninguna parte. Google Play no los exige (solo la política de privacidad); cuando exista la página, se vuelve a añadir el `<li>`.
-- ⚠️ **`screenshots/7.jpg` está desactualizada**: el ranking muestra pestañas de nivel 1-5 y el build actual tiene 8 niveles por mundo. Hay que recapturarla (y revisar si la misma imagen está subida a la ficha de Play). Al sustituirla hay que regenerar **las dos versiones** — la de 1280 y su `-thumb`.
-- Ya no se usan y se pueden borrar: `placeholders/hero-gameplay.png`, `placeholders/gameplay-1..3.png`, `placeholders/qr.png` y `placeholders/google-play-badge.png`.
-
-### Herramientas (`scratchpad/`, no se despliega)
-
-| Script | Para qué |
+| | |
 |---|---|
-| `webpify.py` | Regenera todos los `.webp` desde `_source/originals/` al tamaño en que se pintan |
-| `serve.py` | Servidor local sin caché y con los MIME correctos (ver *Probar localmente*) |
-| `genqr.py` | Regenera `assets/images/qr-google-play.png` desde la URL de la ficha. Offline con `segno`: un QR impreso no se puede corregir, así que no depende de ningún servicio externo |
-| `sim_demo.js` | Simula 4.000 disparos de la demo del canvas leyendo sus constantes del `index.html`. Es la única forma de medir el ritmo de combos: en el navegador rAF baja a 1 fps con la ventana en segundo plano y la medida miente |
+| Motor | Godot 4.6, perfil Mobile (`gl_compatibility`) |
+| Lenguaje | GDScript con tipado estático y `class_name` |
+| Plataforma | Android, landscape, base 1280×720, `minSdk 24` / `targetSdk 36`, `arm64-v8a` |
+| Backend | Supabase — PostgreSQL + PostgREST + Auth anónima + Edge Functions (Deno/TS) |
+| Persistencia local | Ficheros JSON en `user://` con escritura atómica propia |
+| Servicios nativos | Google Play Billing 8.3.0, AdMob con flujo de consentimiento UMP, Google Sign-In |
+
+### Arquitectura del cliente
+
+```
++-------------+     +----------------------+     +--------------------+
+|  AppRouter  |---->|  OrbexScreen (UI)    |---->|  Nivel (main.gd)   |
+| (main.tscn) |     |  menú / mundo / mapa |     |  + HUD overlay     |
++-------------+     +----------------------+     +--------------------+
+       |                                                    |
+       v                                                    v
++-------------+                                    +--------------------+
+|  Autoloads  |  progreso · economía · red         |  ChainBall x N     |
+|    (26)     |  ajustes · eventos · pagos         |  ProjectileBall    |
++-------------+                                    |  Boss              |
+       |                                           +--------------------+
+       v
++---------------------------------------------------------------------+
+|  Supabase — PostgREST (112 RPC) · RLS · pg_cron · Edge Functions     |
++---------------------------------------------------------------------+
+```
+
+Tres reglas sostienen la separación:
+
+- **`AppRouter` es la única vía para cambiar de pantalla.** Ninguna pantalla navega a otra: todas se lo piden al router. Eso concentra en un sitio la carga de escenas, los modales, la pila del botón atrás de Android y el ciclo de vida de la partida.
+- **Los SDK nativos entran por una puerta y solo por una.** `Ads` y `Purchases` son autoloads-fachada: ninguna pantalla habla con el plugin de Java. Se pide `await Ads.request_reward(placement)` o `Purchases.buy(sku)` y punto. El día que haya que portar a iOS (StoreKit) o cambiar de proveedor de anuncios, el cambio queda dentro de dos ficheros en vez de repartido por las cinco pantallas que reparten dinero.
+- **Lo que se GUARDA y lo que se PINTA son cosas distintas.** Un cosmético equipado se conserva en disco aunque su desbloqueo no se pueda confirmar en ese momento (arranque sin red, rol del servidor que aún no ha llegado); lo que cambia es qué se dibuja. Sin esa separación, un arranque sin cobertura destruía la selección del jugador de forma permanente, porque el siguiente guardado hacía definitiva la pérdida.
+
+### El motor de cadena, y una optimización con medida
+
+El núcleo del juego es una fila de orbes que avanza por un camino y admite inserciones en cualquier punto: posición por longitud de arco (`path_progress`), inserción interpolada, empuje de la subcadena para abrir hueco, recolocación tras una eliminación y unión magnética de dos tramos separados cuando comparten color. Un nivel puede tener varios carriles independientes.
+
+**El problema.** La función que coloca cada orbe hacía cinco consultas al camino por bola y por frame (posición, tramos con portal, tramos no enganchables y dos capas de profundidad), y las cinco eran **barridos lineales del camino entero**. Los caminos se trazan a mano y son densos: 164 puntos en el primer nivel, **361 en el más largo**. El coste iba con `bolas × puntos_del_camino`, no con bolas.
+
+**La medida.** Con un banco de frames instrumentado, el nivel más caro costaba **3,9 ms por frame con 72 orbes** en una partida normal, y **9,1 ms** en el modo de supervivencia, que suelta el límite de orbes en pantalla. A 60 fps el presupuesto entero de un frame son 16,6 ms.
+
+**La solución.** Búsqueda binaria sobre las distancias acumuladas del camino, más índices precalculados de los tramos marcados. Con un detalle que no perdona: los tramos de teletransporte miden 0 px, así que hay valores repetidos y hace falta un `lower_bound` real —quedarse con el primero de los empates— en lugar de una búsqueda binaria genérica. Con la genérica, un orbe sale por el portal equivocado.
+
+| | antes | después |
+|---|---|---|
+| Nivel más caro, partida normal | 3,90 ms/frame | **0,22 ms** |
+| Nivel más caro, modo supervivencia | 9,10 ms/frame | **2,94 ms** |
+
+**La verificación.** Reimplementé las cinco versiones lineales dentro del arnés de prueba y las comparé con las nuevas sobre **los 92 niveles y sus 112 carriles**: 178.303 muestras, barrido fino más los bordes exactos de cada segmento y sus vecinos a un epsilon. De estas funciones cuelgan dónde se dibuja cada orbe, el fundido de los portales y si un disparo atraviesa un tramo. Un *off-by-one* aquí no lo caza ninguna otra prueba y no da error: simplemente se ve mal.
+
+### Backend: modelo de datos y API
+
+**Supabase, con toda la lógica en funciones de PostgreSQL.** El cliente no hace `INSERT` ni `UPDATE` contra ninguna tabla: cada escritura pasa obligatoriamente por una RPC `SECURITY DEFINER` que valida antes de escribir.
+
+Subsistemas con esquema propio:
+
+| Subsistema | Qué resuelve |
+|---|---|
+| Ranking | Tableros paginados por ámbito y nivel, posición exacta del jugador y vecindario (tú ± N rivales) |
+| Perfiles públicos | Ficha de otro jugador: apodo, cosméticos equipados y estadísticas |
+| Cloud save | Copia del progreso y códigos de transferencia entre dispositivos, de un solo uso y con caducidad |
+| Compras | Catálogo, canje de recibos, entrega idempotente y revocación por reembolso |
+| Desafío semanal | Nivel sorteado en servidor, el mismo para todos, con tablero propio y premios automáticos |
+| Buzón | Mensajería del servidor al jugador, con lectura y cobro de recompensas |
+| Amigos | Alta unilateral, notificaciones y tablero filtrado |
+| Moderación | Sanciones, denuncias entre jugadores y soporte in-app |
+| Telemetría | Fila por partida más agregados, con purga automática |
+
+Cuatro tareas nocturnas con **`pg_cron`**: purga de telemetría a 90 días, roll-up diario de usuarios activos, limpieza de cuentas huérfanas y sincronización de reembolsos con Google.
+
+### Seguridad del backend
+
+La clave anónima va embebida en el APK por diseño, así que **el modelo de amenaza asume que cualquiera puede invocar cualquier RPC con cualquier argumento**. Lo que impide el abuso es el servidor, nunca la pantalla.
+
+- **Toda función `SECURITY DEFINER` fija su `search_path`.** Sin eso, un `search_path` manipulado secuestra las llamadas de dentro del cuerpo.
+- **Ninguna tabla tiene política de escritura.** RLS es la única barrera y no se desactiva en ninguna.
+- **Guards de propiedad** (`auth.uid() = p_id`) en toda RPC que acepte un identificador de jugador.
+- **Grants columnares** sobre la tabla de jugadores: la lectura pública sirve 16 columnas de perfil, y la economía, la telemetría y el estado de sanción quedan fuera.
+- **A `anon` le llegan siete funciones, y las siete son de lectura.**
+
+> **Un fallo real que enseña la lección.** `REVOKE EXECUTE ... FROM anon` **no hace nada por sí solo**: PostgreSQL concede `EXECUTE` a `PUBLIC` al crear cualquier función, y los roles heredan de ahí. La forma correcta es `FROM public, anon`. Trece funciones tenían ese error y una era grave: la que asigna roles quedó alcanzable desde la API pública, o sea que cualquiera con la clave del APK podía concederse permisos de administrador. Corregido y verificado con un **pentest de 8 vectores** —asignación de rol, escritura directa en tablas, envío de puntuaciones, borrado de cuenta ajena, restauración de progreso ajeno—: todos bloqueados, con los datos de la víctima intactos.
+
+También hay verificación de forma: una RPC no se da por buena hasta **haberla llamado contra la base**. Dos funciones se crearon sin una queja y reventaron al ejecutarse — una por una variable con el mismo nombre que una columna (`plpgsql` resuelve primero contra sus variables), otra por tratar como booleano una función que lanza excepción. Los ensayos funcionales se hacen con un bloque `DO` que termina en `raise exception`: la transacción se aborta sola y no persiste ni una fila.
+
+### Escala: lo que se rompe con volumen
+
+Con 20 jugadores todo va rápido. Los problemas aparecen con padrón, así que las consultas críticas se midieron contra un **banco de 200.000 jugadores y 400.000 filas de puntuación**, con `EXPLAIN (ANALYZE, BUFFERS)`.
+
+**1. El `OR` del desempate impedía usar el índice.** "Cuánta gente va por delante de mí" se traduce de forma natural a `score > X OR (score = X AND fecha < Y)`, y el planificador no puede acotar por índice ninguna rama dentro de un `OR`: cae a un escaneo con la condición como filtro. Partido en dos conteos por rango —los conjuntos son disjuntos—, cada rama entra por el índice.
+
+| | plan | buffers | ms |
+|---|---|---|---|
+| Antes | Bitmap Heap Scan de 154.915 filas | 2.283 | 28,9 |
+| Después | dos Index Only Scan, `Heap Fetches: 0` | **618** | 18,8 |
+
+**2. Un `JOIN` normal se leía la tabla de jugadores entera en cada llamada.** El `LIMIT` de una página es un valor de *runtime*, así que el planificador estimaba miles de filas, elegía Hash Join y hacía `Seq Scan on players`. Un `JOIN LATERAL` no se puede *hash*-joinear, de modo que fuerza el Nested Loop contra la clave primaria y el join se aplica solo a las 50 filas de la página. Es una constante que crece con el **padrón**, no con quien juega:
+
+| | antes | después |
+|---|---|---|
+| Primera página del ranking | 1.432 buffers / 11,1 ms | **785 / 2,6 ms** |
+| Primera página de supervivencia | 2.505 / 31,6 ms | **885 / 4,8 ms** |
+
+**3. Autovacuum afinado.** Los tableros reciben un `upsert` por partida jugada, y los `Index Only Scan` dependen del mapa de visibilidad. Con el valor por defecto la limpieza no se dispara hasta que el 20 % de la tabla son tuplas muertas: con 200.000 filas eso es el mapa obsoleto casi toda la semana activa, y la misma consulta pasa de 202.847 a **601.921 buffers (×3)**. Bajado a 0,02, con el `insert_scale_factor` incluido, que es el que importa en tablas que crecen por inserción.
+
+**Antes de desplegar cada reescritura, comparación fila a fila contra la versión vigente sobre los datos reales**: 5.460 casos en el vecindario del ranking (todos los ámbitos × todos los jugadores × tres radios), 1.155 en la consulta de posición y 273 en la de página. **Cero diferencias.** Una consulta cuyo resultado el jugador ve como su puesto no se puede validar a ojo.
+
+> Un aviso de método que costó una tarde: un micro-benchmark que mide las dos versiones **en bloques seguidos** no vale para comparar consultas — el orden y el estado de caché deciden el resultado, y la primera medición dio exactamente lo contrario de lo real. Lo que no miente es `EXPLAIN (ANALYZE, BUFFERS)` con medición alternada y calentamiento previo.
+
+### Pagos in-app
+
+Google Play Billing 8.3.0 con **verificación en servidor**. Es el subsistema con más superficie de fallo del proyecto, porque los errores cuestan dinero de verdad en las dos direcciones: entregar sin cobrar, o cobrar sin entregar.
+
+**El flujo.** El cliente lanza la pasarela → Google devuelve un recibo → una **Edge Function** lo valida contra la API de `androidpublisher` con una service account → una RPC atómica registra la compra y devuelve qué conceder → el cliente entrega → el servidor confirma el acuse de recibo con Google.
+
+Las decisiones que lo sostienen:
+
+- **El importe lo pone el catálogo del servidor, no el cliente.** El cliente manda el SKU; si el servidor responde otra cantidad, se ingresa la del servidor. Lo único que el cliente elige es qué SKU va a la pasarela.
+- **El token de compra es único GLOBALMENTE, no por jugador.** Con un índice único por `(jugador, token)` —que es lo que sale de pensar "cada jugador tiene sus compras"— un recibo comprado una vez valdría para todas las cuentas a las que le pasaras el token.
+- **Tres cinturones contra la doble entrega**, y hacen falta los tres: el atajo de tokens ya liquidados, el registro local de entregados y el campo `delivered` del servidor. Google **reentrega** en cada conexión todo lo que no se ha consumido, así que el mismo token vuelve de forma normal; basta con que la app se cierre entre la entrega y el consumo para ingresar dos veces. Se reproduce a voluntad con el modo avión.
+- **El acuse de recibo lo hace el servidor.** Google reembolsa sola toda compra no confirmada en 3 días: dejarlo al cliente significa que quien no vuelve a abrir el juego deshace su propia compra con el producto ya entregado.
+- **Los reembolsos se aplican solos.** Una Edge Function nocturna consulta la lista de compras anuladas de Google y revoca el contenido permanente. La ventana consultada se **persiste**, porque la API solo devuelve 30 días: sin eso, un mes sin ejecutarla deja el hueco fuera de alcance para siempre.
+
+**Cómo se prueba algo que mueve dinero.** Con un doble del cliente de facturación y otro del backend, un arnés recorre los **19 motivos de fallo del servidor** —los de Google, los del SQL y los del transporte— más cinco respuestas malformadas, y comprueba en cada uno que **no se concede nada y no se consume el token**; consumirlo tiraría una compra pagada. Y otro arnés responde la pregunta que se hace el jugador —*¿me llevo algo poniendo el modo avión?*— midiendo el saldo y el inventario antes y después de cada camino, en vez de leer el código.
+
+> El fallo más caro de este subsistema no dio ningún error: el permiso remoto de venta llegaba al cliente y **se descartaba en la última línea**, porque el parseo construía su diccionario a mano con tres claves y la cuarta se caía por el camino. La tienda decía "Próximamente" pasara lo que pasara en la base de datos. La regla que salió de ahí —una clave nueva en la respuesta hay que añadirla también al parseo del cliente— la vigila ahora una prueba que extrae las claves del propio SQL.
+
+### Publicidad
+
+AdMob detrás del autoload-fachada, con tres piezas que no son evidentes hasta probarlo en un móvil real:
+
+- **Caché por unidad con caducidad.** El anuncio recompensado se pedía dentro del propio `await`, así que cada toque esperaba hasta 10 segundos con el botón mudo. Hoy se sirve de una caché que se repone sola, con caducidad de 50 minutos: AdMob da un anuncio precargado por bueno alrededor de una hora, y pasado el plazo el jugador se quedaría **sin recompensa después de haber pulsado**, que es peor que esperar.
+- **Un velo con retardo de 350 ms.** Con el anuncio precargado no hay espera, y un parpadeo de medio frame se lee como un fallo, no como "cargando".
+- **Topes de seguridad sobre cada estado montado alrededor de un `await`.** Una corrutina puede morir a media espera —el plugin revienta, el árbol se va— y entonces la línea que libera el estado no se ejecuta nunca. Ese patrón mordió tres veces en el mismo fichero, y las tres con precio distinto: pantalla bloqueada para siempre, una unidad que no vuelve a precargarse nunca, y un botón muerto. Los tres se cierran igual: el estado **caduca** en vez de fiarse de su propia liberación.
+
+### Identidad y guardado en la nube
+
+Jugar no requiere cuenta: sesión anónima por dispositivo. Vincular Google es opcional y **convierte la cuenta anónima en permanente conservando el mismo `auth.uid()`**, así que puntuaciones, perfil y guardado sobreviven sin migrar nada.
+
+Los tres casos difíciles:
+
+1. **Vincular a una cuenta de Google que ya tiene identidad propia** (reinstalar, cambiar de móvil) es el caso *frecuente*, no el excepcional. Se detecta, se cae a un inicio de sesión normal y se abre un diálogo que compara los dos progresos para que el jugador elija; la cuenta anónima huérfana se borra para no duplicarlo en el ranking.
+2. **Un enlace que triunfa en el servidor pero cuya respuesta se pierde** (tiempo de espera en red móvil) devuelve "esa identidad ya existe" **sobre uno mismo** al reintentar. Sin una comprobación explícita, el flujo de conflicto acababa borrando la propia cuenta.
+3. **Transferir progreso a otro dispositivo** es *mover*, no copiar: el canje planta una lápida que el dispositivo origen consume en su siguiente arranque y limpia lo local. Sin eso, el origen vuelve a subir su copia intacta y duplica compras en bucle.
+
+El guardado local usa **escritura atómica propia**: fichero temporal, relectura y validación, rotación del actual a `.bak`, renombrado. El modo `WRITE` de Godot trunca al abrir, así que un proceso muerto a media escritura dejaba el fichero vacío y el jugador perdía monedas, estrellas e inventario de golpe — riesgo nada teórico, porque varios servicios vuelcan a disco justo en `APPLICATION_PAUSED`. La restauración desde la nube es además transaccional, con un centinela que permite reanudarla si muere a mitad.
+
+### Interruptor remoto de versión
+
+Google Play no fuerza nada por su cuenta: una build vieja se abre igual para siempre. Dos umbrales en una tabla del servidor —aviso y bloqueo— permiten sacar de circulación una build rota sin publicar nada, y sirven de *kill switch*.
+
+Tres propiedades decididas a propósito:
+
+- **Falla en abierto.** Sin red, con la RPC caída o con una respuesta ilegible, se juega. Bloquear a quien no ha podido verificar deja tirado a cualquiera en el metro.
+- **"No aplica" y "no lo he podido comprobar" son estados distintos.** Colapsarlos dejaba al cliente convencido de estar al día durante todo el proceso; separados, el segundo reintenta con esperas crecientes.
+- **El aviso sale una vez por versión**, no una por arranque —se convierte en la pantalla que se cierra sin leer— ni una por instalación, que silenciaría todas las actualizaciones futuras.
+
+La comparación de versiones es numérica por tramos y tolerante a formatos raros: un `1.10 < 1.9` lexicográfico habría bloqueado a todo el que estuviera en la 1.10.
+
+### Telemetría y balance por datos
+
+Cada partida terminada manda a Supabase una fila con ~40 campos: resultado, causa de derrota, hasta dónde llegó la cadena, precisión, desglose de la puntuación, objetos usados, tiempo neto de pausas y la dificultad real con la que se jugó. Hay agregados por jugador y nivel, purga automática a 90 días, límite de frecuencia por clase de fila y un interruptor en Opciones por GDPR.
+
+**Para qué sirve de verdad:** el listón de las estrellas de cada nivel se calibra con `percentile_cont` sobre las puntuaciones reales, no a ojo. Y las decisiones de diseño se toman con la medida delante:
+
+- La curva de dificultad se aplanó al comprobar que del mundo 5 al 9 la exigencia se movía ±3 % y el mundo 10 estaba **por debajo** del 3.
+- Una familia de misiones se reescribió entera al descubrir que el jugador más activo llevaba **cero monedas de misiones en 78 partidas**: tres objetivos eran matemáticamente inalcanzables, y uno pedía un combo que no había salido ni una vez en 268 partidas.
+- El listón de la tercera estrella se bajó al medir que **ninguna de 51 victorias** llegaba a él; la mejor se quedó a un 1,3 %.
+
+> **Y un fallo de datos que costó seis días.** La puntuación de un combate multifase llegaba con la primera fase contada dos veces. No daba error: el único síntoma era un residuo en una comprobación de consistencia, y se explicó con una hipótesis razonable y falsa. Sobre esos ratios inflados se recalibraron cuatro combates **en la dirección contraria**, dejándolos regalados durante casi una semana. La lección quedó escrita en el repositorio: un residuo sistemático se **contrasta con otra fuente** antes de explicarlo — bastaba comparar contra la tabla que el ranking escribe por otro camino.
+
+### Anti-trampas: modelo de amenaza explícito
+
+Lo importante aquí no es la lista de defensas, es dónde está la línea y por qué.
+
+**Lo que el servidor impone**, y no depende del cliente: topes por puntuación enviada, límite de frecuencia por jugador, lista blanca de mundos y niveles, guards de propiedad en cada RPC, y triggers de tabla —no un `if` repartido por seis funciones— para que un jugador sancionado no pueda escribir en ningún tablero, hoy ni en el séptimo tablero que se añada dentro de un año.
+
+**Lo que se asume perdido**: en un dispositivo con acceso a ficheros, el monedero es un JSON local. Quien pueda editarlo no necesita trampear ninguna compra. Cerrarlo exigiría mover toda la economía al servidor, que es un coste que este proyecto no paga.
+
+**Lo que sí queda cerrado, porque es lo que cuesta dinero**: que una compra real no se pueda convertir en dos. Las defensas se dimensionan con esa jerarquía delante — blindar las misiones dejando el monedero en local sería seguridad de escaparate.
+
+Todo eso está razonado por escrito en un documento de diseño interno, incluida la decisión de **no** llevar los contadores de misiones a la base de datos: un servidor no puede validar una misión sin validar el gameplay, así que sigue siendo el cliente quien dice "hecho".
+
+### Moderación y soporte dentro de la app
+
+Con jugadores reales aparecen problemas que no son técnicos, y necesitan herramientas.
+
+- **Panel de administración dentro del juego**, con el rol verificado en el servidor (`auth.uid()`, nunca un parámetro): buscador de jugadores, ficha completa, sanciones reversibles y utilidades de desarrollo. La función que asigna roles **no se expone**: su abuso es irreversible por definición, así que se queda en el panel de la base de datos. Un administrador no puede sancionar a otro ni a sí mismo.
+- **Denuncias entre jugadores** con cinco defensas contra la campaña coordinada —una fila por pareja, límite diario, exigir haber jugado, un sancionado no denuncia, purga acotada— y **sin sanción automática**: el recuento ordena la lista, pero decidir sigue siendo un botón que pulsa una persona.
+- **Contacto y apelación in-app**: el jugador escribe dentro del juego y la respuesta le llega a su buzón. Un sancionado **sí puede escribir**, porque es su única vía de apelación y cerrarla dejaría cualquier error sin vuelta atrás.
+- **Traducción del soporte** con DeepL a través de una Edge Function, porque el juego se publica en diez idiomas. La clave vive en el servidor y el endpoint comprueba el rol del llamante: sin eso es un proxy de traducción de pago gratis para cualquiera que lea la clave del APK.
+
+### Internacionalización
+
+**1.155 claves × 10 idiomas** (EN, ES, CA, pt-BR, FR, IT, DE, JA, KO, RU) desde un CSV único que compila el importador de Godot; el CSV no se lee en runtime. Detección automática del idioma del sistema en el primer arranque y cambio en caliente.
+
+Lo que aprendí haciéndolo, que no aparece en ningún tutorial:
+
+- **Sin plurales.** El objetivo no va en la frase, va en la barra de progreso. Con el ruso teniendo tres formas de plural, meter `{n}` en cada cadena es la vía rápida a traducciones rotas. Cuando sí hay cifra, la unidad va en la etiqueta y el valor va solo: `DÍAS DE RACHA: 3` en lugar de `3 DÍAS`, que el primer día de cualquier instalación mostraba **"1 DÍAS"** en ocho idiomas.
+- **La concordancia de género es el mismo problema con otra cara**, y la salida no es una tabla de géneros: es escribir una frase que no concuerde.
+- **El texto es una restricción de layout, no un detalle final.** Hay arneses que miden el ancho real de cada botón en los diez idiomas contra su hueco, porque una etiqueta que se pasa no se recorta: **ensancha el contenedor**, y en un panel centrado eso lo saca por los dos lados sin que el layout se queje.
+- **Una auditoría de vocabulario por idioma** encontró hasta cuatro palabras distintas para el mismo concepto dentro de un mismo idioma —el tutorial usaba un término que no volvía a aparecer en todo el juego— y dos cadenas que decían algo **falso**: una prometía a los jugadores coreanos que no podían escribir su nombre en su alfabeto, cuando sí podían.
+
+### Accesibilidad
+
+Modo daltónico con dos interruptores independientes: paleta alternativa y figuras geométricas sobre el orbe.
+
+La primera paleta **no funcionaba**, y lo dijo un jugador daltónico real: "lo veo prácticamente igual". Medida con la transformación de Viénot-Brettel-Mollon sobre el color que sale del shader, en deuteranopia dos de los cuatro colores quedaban a distancia 23, y en escala de grises los cuatro caían dentro de 5,6 — colapsaban a dos colores. La paleta actual (Okabe-Ito adaptada) sube el peor caso a 17,2, y lo que de verdad la separa **es la luminosidad** (L\* 43 / 60 / 79 / 97), que es lo único que conserva cualquier tipo de daltonismo.
+
+Aun así, el color solo no basta: un optimizador sobre los cuatro tipos a la vez topa alrededor de distancia 20. Por eso el canal primario son las **figuras**, con el grosor del contorno medido a la resolución real en la que se pintan — sobre un orbe claro, un relleno blanco tiene contraste 1,06:1 contra el cuerpo, así que la figura se lee solo por su borde. Y las texturas del modo clásico se **generan** con la misma fórmula del shader, para que un orbe se vea igual con y sin skin por construcción.
+
+### Estrategia de pruebas sin CI
+
+**130 scripts de QA en GDScript**, ejecutables en headless, más un lanzador que los corre todos y resume qué falla. No hay framework de testing: son scripts que montan el juego de verdad, hacen algo y miden.
+
+Los principios que hacen que sirvan para algo:
+
+- **Verificación por mutación.** Un arnés que nunca ha estado en rojo no prueba nada. Casi todos se validan reintroduciendo a mano el fallo que persiguen y comprobando que dan rojo. Varias veces eso destapó que la prueba medía otra cosa: una comprobación buscaba un identificador que también aparecía en un comentario, así que pasaba en verde con la línea borrada.
+- **Medir el resultado, no el código fuente.** "¿Me llevo algo en modo avión?" se responde midiendo el saldo antes y después, no leyendo el `if`.
+- **El arnés monta el estado que quiere medir, nunca lo hereda.** Varias pruebas fallaban o pasaban según quién las lanzara, porque leían el progreso real de la máquina. Y todo script que escriba en disco pasa por una red de seguridad que respalda y restaura los ficheros de guardado, con identificación por PID, porque dos arneses en paralelo se pisaban el respaldo.
+- **Hay cosas que solo se ven mirando.** Un efecto de partículas nacía entero fuera de pantalla y su propio comentario afirmaba lo contrario; el estado del árbol de nodos era perfecto. Para eso los arneses de captura rasterizan y **miden el píxel**: el oscurecido de un velo se comprueba por luminancia media, no por el valor de la propiedad `alpha`.
+- **La primera pasada completa del lanzador encontró tres arneses en rojo sobre código sano**: comprobaciones ancladas a la posición de un literal que había cambiado de sitio. Un arnés que falla sin motivo es peor que no tenerlo, porque enseña a ignorar los rojos.
+
+Además: un fuzzer que dispara a puntos aleatorios durante miles de frames sobre una muestra de niveles, con semilla derivada de la ruta para que un fallo se reproduzca, y un script que carga todos los GDScript del proyecto para cazar errores de compilación que ninguna prueba tocaría — el fichero raíz de la aplicación no lo compila ningún arnés, y un error de sintaxis ahí deja el juego sin arrancar con toda la batería en verde.
+
+### Herramientas propias
+
+- **Plugin de editor de Godot** (`EditorPlugin` + `@tool` + `_forward_canvas_gui_input`): Shift+clic en el viewport para trazar los caminos, con sufijos en el nombre del marcador que definen tramos especiales (portal, no enganchable, dos capas de profundidad, fin del sprint de entrada) y renumeración automática en dos pasadas.
+- **Scripts Python** para lo que no debe hacerse a mano: medición de la longitud real de los 92 caminos —replicando la métrica exacta del juego— para recalibrar la velocidad por nivel, generación de las texturas del modo daltónico, preparación de skins de orbe con remapeo de rango tonal, y regeneración de todos los assets de la web al tamaño en que se pintan.
+- **Simulador en Node** de la demo del canvas de la landing, que lee las constantes del propio HTML. En el navegador la medición miente: con la pestaña en segundo plano `requestAnimationFrame` baja a 1 fps y cualquier conteo sale a cero.
+
+### Rendimiento y despliegue en Android
+
+- Compresión de texturas VRAM dual (escritorio y Android) con auditorías automáticas de los ficheros de importación: Godot crea el `.import` de una textura nueva con los valores por defecto y no hereda los de sus vecinas — 40 texturas entraron sin comprimir en una sola tanda, sin dar ningún aviso.
+- Presupuesto de assets vigilado: 45 retratos de perfil pasaron de PNG a JPG (4,2 MB → 1,7 MB) por ser ilustraciones opacas, que es justo lo que peor comprime en PNG.
+- Límite de FPS configurable (30/60) y nunca "sin límite", por estrangulamiento térmico. Los topes de velocidad de la simulación van en píxeles por **segundo**, no por frame, o el ajuste de FPS cambiaría la velocidad de la simulación — inadmisible con un ranking detrás.
+- Cumplimiento de Google Play: política de privacidad propia con GDPR/RGPD, borrado de cuenta in-app (RPC + cascada + limpieza local, incluida la fila de `auth.users`, que es donde vive el correo), declaración de Data Safety sincronizada con lo que la app hace de verdad, y clasificación IARC.
+
+---
+
+## Qué demuestra el proyecto
+
+Traducido a lo que se busca en una oferta:
+
+| Competencia | Dónde está en el proyecto |
+|---|---|
+| **Diseño de bases de datos** | 27 esquemas, 112 RPC, RLS, triggers, índices parciales, jobs con `pg_cron` |
+| **Optimización de consultas** | Banco de 200.000 filas, `EXPLAIN (ANALYZE, BUFFERS)`, `JOIN LATERAL`, autovacuum afinado, verificación fila a fila antes de desplegar |
+| **Seguridad** | Pentest de la API pública, `SECURITY DEFINER` con `search_path` fijo, grants columnares, modelo de amenaza escrito |
+| **Integración de pagos** | Billing con verificación en servidor, idempotencia, doble entrega cerrada con tres cinturones, reembolsos automatizados |
+| **Optimización de rendimiento** | Perfilado, cuello de botella algorítmico identificado y medido (x18), presupuesto de assets |
+| **Arquitectura** | Fachadas sobre SDK nativos, router único de navegación, separación entre estado guardado y estado pintado |
+| **Testing** | 130 scripts de QA, verificación por mutación, fuzzing, pruebas que miden píxeles |
+| **Ingeniería de datos** | Telemetría con retención automatizada y decisiones de producto tomadas con percentiles reales |
+| **i18n y a11y** | 10 idiomas con auditoría de vocabulario; accesibilidad para daltonismo validada con literatura científica y con un usuario real |
+| **Cumplimiento** | GDPR, Play Data Safety, borrado de cuenta, moderación, política de privacidad mantenida |
+| **Autonomía** | De la idea a la tienda sin equipo: producto, backend, cliente, arte de UI, web, legal y operación |
+
+Y una cosa que no cabe en la tabla: **la documentación**. El repositorio del juego lleva un mapa de decisiones donde cada elección no obvia está escrita con su porqué, su medida y lo que costó el error anterior. Muchos de los avisos que citan estas secciones vienen de ahí. Es lo que hace que un proyecto de 98.000 líneas escrito por una persona siga siendo modificable un año después.
+
+---
+
+## Contacto
+
+**Aleix** — desarrollo, backend, diseño, arte de UI y web.
+
+- Email: [aleixauque@gmail.com](mailto:aleixauque@gmail.com)
+- Web: [aleixaj.com](https://aleixaj.com)
+- El juego: [Orbex en Google Play](https://play.google.com/store/apps/details?id=com.aleix.orbex) · [orbex.aleixaj.com](https://orbex.aleixaj.com)
+
+> El código del juego es privado. Puedo enseñarlo o comentar cualquiera de los sistemas de arriba en una entrevista.
