@@ -546,7 +546,7 @@
       <a href="#jefes" class="navlink"><span data-lang="en">Bosses</span><span data-lang="es">Jefes</span></a>
       <a href="#caracteristicas" class="navlink"><span data-lang="en">Features</span><span data-lang="es">Características</span></a>
       <a href="#galeria" class="navlink"><span data-lang="en">Gallery</span><span data-lang="es">Galería</span></a>
-      <a href="https://kylen02.itch.io/orbex" target="_blank" rel="noopener" class="navlink"><span data-lang="en">Demo</span><span data-lang="es">Demo</span></a>
+      <a href="https://kylen02.itch.io/orbex?utm_source=orbexweb&amp;utm_medium=nav&amp;utm_campaign=orbex_site" target="_blank" rel="noopener" class="navlink"><span data-lang="en">Demo</span><span data-lang="es">Demo</span></a>
       <a href="#faq" class="navlink">FAQ</a>
       <a href="/privacy" class="navlink"><span data-lang="en">Privacy</span><span data-lang="es">Privacidad</span></a>
 
@@ -589,7 +589,7 @@
       <a href="#caracteristicas" class="nav-panel-link" onclick="closeMenu()"><span data-lang="en">Features</span><span data-lang="es">Características</span></a>
       <a href="#comojugar" class="nav-panel-link" onclick="closeMenu()"><span data-lang="en">How to play</span><span data-lang="es">Cómo se juega</span></a>
       <a href="#galeria" class="nav-panel-link" onclick="closeMenu()"><span data-lang="en">Gallery</span><span data-lang="es">Galería</span></a>
-      <a href="https://kylen02.itch.io/orbex" target="_blank" rel="noopener" class="nav-panel-link" onclick="closeMenu()"><span data-lang="en">Play free demo</span><span data-lang="es">Jugar demo gratis</span></a>
+      <a href="https://kylen02.itch.io/orbex?utm_source=orbexweb&amp;utm_medium=nav_mobile&amp;utm_campaign=orbex_site" target="_blank" rel="noopener" class="nav-panel-link" onclick="closeMenu()"><span data-lang="en">Play free demo</span><span data-lang="es">Jugar demo gratis</span></a>
       <a href="#faq" class="nav-panel-link" onclick="closeMenu()">FAQ</a>
       <a href="/privacy" class="nav-panel-link" onclick="closeMenu()"><span data-lang="en">Privacy</span><span data-lang="es">Privacidad</span></a>
     </div>
@@ -636,8 +636,14 @@
         </a>
         <!-- ⚠️ LA URL DE LA DEMO ESTA EN TRES SITIOS DE ESTE FICHERO (este
              boton y los dos enlaces del nav). Si el slug de itch.io no es
-             este, cambiar las tres. -->
-        <a href="https://kylen02.itch.io/orbex" target="_blank" rel="noopener" class="btn-hero-demo">
+             este, cambiar las tres.
+             ⚠️ Y las tres NO son identicas: solo cambian en `utm_medium`
+             (hero / nav / nav_mobile), que es lo unico que distingue en las
+             analiticas de itch desde donde se pulso. Copiar una URL encima
+             de las otras dos no rompe nada visible: simplemente las tres
+             pasan a contar como una sola y la atribucion se pierde en
+             silencio. -->
+        <a href="https://kylen02.itch.io/orbex?utm_source=orbexweb&amp;utm_medium=hero&amp;utm_campaign=orbex_site" target="_blank" rel="noopener" class="btn-hero-demo">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" style="flex:none"><circle cx="10" cy="10" r="8.2" fill="#fff8ec"/><path d="M8 6.2 14 10l-6 3.8Z" fill="#1b6b2c"/></svg>
           <span data-lang="en">PLAY FREE DEMO</span><span data-lang="es">JUGAR DEMO GRATIS</span>
         </a>
