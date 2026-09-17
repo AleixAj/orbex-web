@@ -21,6 +21,7 @@
 - [Parte 1 — La landing (este repositorio)](#parte-1--la-landing-este-repositorio)
 - [Parte 2 — El juego](#parte-2--el-juego)
   - [Stack y forma del proyecto](#stack-y-forma-del-proyecto)
+  - [Contenido y modos de juego](#contenido-y-modos-de-juego)
   - [Arquitectura del cliente](#arquitectura-del-cliente)
   - [El motor de cadena, y una optimización con medida](#el-motor-de-cadena-y-una-optimización-con-medida)
   - [Backend: modelo de datos y API](#backend-modelo-de-datos-y-api)
@@ -48,13 +49,14 @@
 | | |
 |---|---|
 | Código de cliente | **265 ficheros GDScript**, ~98.000 líneas, tipado estático |
-| Backend | **27 ficheros SQL**, ~11.000 líneas, **112 funciones/RPC** en PostgreSQL |
+| Backend | **27 ficheros SQL**, ~11.000 líneas, **113 funciones/RPC** en PostgreSQL |
 | Serverless | 3 **Edge Functions** en TypeScript: verificación de compra, sincronización de reembolsos y traducción de soporte |
-| Pruebas | **130 scripts de QA** headless (arneses, dobles, fuzzing y medición), la mayoría verificados por mutación |
-| Contenido | 237 escenas, **92 niveles**, 10 mundos, 16 combates de jefe |
+| Pruebas | **132 scripts de QA** headless (arneses, dobles, fuzzing y medición), la mayoría verificados por mutación |
+| Contenido | 256 escenas, **92 niveles**, 10 mundos, 16 combates de jefe, 3 modos de juego |
+| Catálogo | 214 cosméticos, 75 logros, 54 misiones, 9 objetos consumibles |
 | Localización | **1.155 claves × 10 idiomas** |
 | Servicios globales | 26 autoloads: economía, progreso, ranking, eventos, pagos, anuncios, ajustes… |
-| Estado | Publicado en Google Play, versión **1.29**, con jugadores y compras reales |
+| Estado | Publicado en Google Play, versión **1.30**, con jugadores, anuncios y compras reales |
 
 ---
 
@@ -75,13 +77,14 @@ Es una decisión, no una limitación. Una landing de una página no necesita bun
 | **Bilingüe EN/ES** | Los dos idiomas viven en el mismo HTML (`<span data-lang>`), los conmuta CSS y la preferencia persiste en `localStorage`. Sin JS también se ve un idioma completo |
 | **Tema claro/oscuro** | Automático por `prefers-color-scheme` en la primera visita, persistente después |
 | **Demo interactiva en `<canvas>`** | Recreación de la mecánica del juego: una cadena sobre una polilínea Catmull-Rom parametrizada por longitud de arco, con la misma lógica de inserción y cascada. Explica el juego sin pedirle al visitante que vea un vídeo |
+| **Build web jugable** | Export HTML5 del juego real alojado en itch.io, enlazado desde el hero y los dos menús. Va en una pestaña aparte y no como *embed*, que es lo que mantiene la promesa de cero peticiones a terceros |
 | **Accesibilidad** | Skip link, `aria-expanded` / `aria-controls`, `:focus-visible` propio, modales con foco atrapado y devuelto, cierre por Escape, y respeta `prefers-reduced-motion` |
 | **SEO** | Open Graph, `hreflang`, sitemap y JSON-LD (`VideoGame` + `FAQPage`) sincronizado con el contenido visible |
 | **Sin banner de cookies** | El embed de YouTube nace sin `src` (patrón *click-to-load*) y las fuentes están autoalojadas, así que no hay ninguna petición a terceros hasta que el usuario la pide |
 
 ### Rendimiento
 
-Los assets pasaron de **42 MB a 2,6 MB (−94 %)**. Una visita que recorre la página entera descarga hoy **1,34 MB en 47 peticiones**.
+Los assets pasaron de **42 MB a 2,6 MB (−94 %)** en la pasada de optimización. Hoy la carpeta pesa **4,7 MB** —ha crecido con la galería— y lo que importa sigue medido: recorrer la página entera son **496 KB en 30 peticiones, ninguna a terceros** (medido contra producción, no contra el servidor local).
 
 - Los 10 retratos de jefe eran 34 MB de esos 42: PNG de 1152×2048 que se pintan a ~210 px de ancho. Cada asset se regenera al tamaño en el que se pinta (2× del CSS) en `.webp`, con un script Python reproducible.
 - La galería tiene dos resoluciones por imagen: miniatura de 720 px para las tarjetas y 1280 px para el visor.
@@ -129,6 +132,26 @@ La **política de privacidad** vive en dos ficheros que se editan siempre a la v
 | Persistencia local | Ficheros JSON en `user://` con escritura atómica propia |
 | Servicios nativos | Google Play Billing 8.3.0, AdMob con flujo de consentimiento UMP, Google Sign-In |
 
+### Contenido y modos de juego
+
+10 mundos ambientados en épocas históricas, 8 niveles cada uno y un combate de jefe cerrando cada mundo —cuatro en dos fases y el último en tres, con una rotura de pantalla entre fase y fase—, más un tutorial de cinco pantallas encadenadas.
+
+Sobre ese mismo contenido corren **dos modos más y un evento semanal**, y ahí está la parte de ingeniería: un modo no es contenido nuevo, es un juego de banderas sobre el mismo nivel. Lo delicado no es lo que cada modo hace, sino **qué se le permite escribir**.
+
+| Modo | Qué cambia | Qué no puede tocar |
+|---|---|---|
+| **Supervivencia** | El suministro de orbes no se agota y la velocidad sube por orbes destruidos, no por tiempo. Sin objetos, sin victoria posible | Estrellas y récord de campaña. Tablero propio |
+| **Infernal** | La campaña entera rejugada más dura. Se abre al terminar los 10 mundos y da acceso a los 80 niveles de golpe | El progreso de campaña: libreta de estrellas y récords **separada**, y tablero aparte |
+| **Desafío semanal** | Un nivel elegido por el servidor, el mismo para todos, jugable aunque su mundo esté bloqueado | Nada del jugador: ni estrellas, ni monedas, ni misiones, ni logros |
+
+Tres lecciones que salieron de construirlos:
+
+- **La separación de libretas se pone antes de subir la dificultad, no después.** Mientras Infernal y campaña pesaban lo mismo, mezclar sus récords daba casi el mismo resultado y parecía código de más. En cuanto el modo aprieta, mezclarlos significa **machacar el récord de campaña del jugador con una marca hecha en otro juego**, y eso ya no se arregla a posteriori.
+- **El aislamiento son dos mitades, y la que se olvida es la que corre en vivo.** El desafío bloqueaba lo que se escribe *al terminar* la partida, pero los contadores de combos y disparos se registran disparo a disparo: durante un tiempo, una partida de un modo declarado aislado seguía desbloqueando logros y avanzando misiones. No dio ningún error — se vio mirando la cuenta de un jugador que solo había jugado el evento.
+- **Un modo repetible sin límite no puede alimentar un contador.** Supervivencia e Infernal se rejuegan sin coste, así que sus logros cuentan *niveles distintos* y no partidas. Con un contador, la escalera entera —2.050 monedas— se cierra en una tarde repitiendo el primer nivel del juego.
+
+**Evento de temporada.** Una divisa paralela que se gana jugando y **caduca**, canjeable por un catálogo cosmético propio dentro de su ventana de fechas. Tiene tres fases y la de en medio es la que no es obvia: tras cerrarse el reparto hay un periodo de **liquidación** en el que ya no se gana pero todavía se puede gastar. Sin ella, el evento castiga justo a quien jugó hasta el último día y se encuentra el saldo evaporado — que es exactamente lo que enseña a no molestarse en el evento siguiente. Lo comprado se queda para siempre; lo que caduca es la divisa.
+
 ### Arquitectura del cliente
 
 ```
@@ -145,7 +168,7 @@ La **política de privacidad** vive en dos ficheros que se editan siempre a la v
        |                                           +--------------------+
        v
 +---------------------------------------------------------------------+
-|  Supabase — PostgREST (112 RPC) · RLS · pg_cron · Edge Functions     |
+|  Supabase — PostgREST (113 RPC) · RLS · pg_cron · Edge Functions     |
 +---------------------------------------------------------------------+
 ```
 
@@ -190,7 +213,9 @@ Subsistemas con esquema propio:
 | Moderación | Sanciones, denuncias entre jugadores y soporte in-app |
 | Telemetría | Fila por partida más agregados, con purga automática |
 
-Cuatro tareas nocturnas con **`pg_cron`**: purga de telemetría a 90 días, roll-up diario de usuarios activos, limpieza de cuentas huérfanas y sincronización de reembolsos con Google.
+Ocho tareas programadas con **`pg_cron`**: siete nocturnas —purga de telemetría a 90 días, roll-up diario de usuarios activos, limpieza de cuentas anónimas huérfanas, sincronización de reembolsos con Google y el recorte de notificaciones de amigos, denuncias y mensajes de soporte— más el cierre semanal del desafío, que reparte sus premios por el buzón.
+
+> Lo que no se purga es tan deliberado como lo que sí: una denuncia sin resolver o un mensaje de soporte sin responder **no se borran por viejos**, porque son justo lo que nadie ha atendido todavía.
 
 ### Seguridad del backend
 
@@ -289,6 +314,9 @@ Cada partida terminada manda a Supabase una fila con ~40 campos: resultado, caus
 - La curva de dificultad se aplanó al comprobar que del mundo 5 al 9 la exigencia se movía ±3 % y el mundo 10 estaba **por debajo** del 3.
 - Una familia de misiones se reescribió entera al descubrir que el jugador más activo llevaba **cero monedas de misiones en 78 partidas**: tres objetivos eran matemáticamente inalcanzables, y uno pedía un combo que no había salido ni una vez en 268 partidas.
 - El listón de la tercera estrella se bajó al medir que **ninguna de 51 victorias** llegaba a él; la mejor se quedó a un 1,3 %.
+- La dificultad del modo Infernal se repartió **a partes iguales entre cantidad de orbes y velocidad**, y no es simetría decorativa: las dos mitades tiran en sentidos opuestos sobre el reloj —más orbes alarga la partida, más velocidad la acorta—, así que cargarlo todo en una cambia la duración un 9 % sin que nadie lo haya pedido. Repartido a la raíz del factor, la exigencia sube y la partida dura lo mismo.
+
+> **Un sesgo que invalida la medida antes de empezar: contra qué jugador mides.** Calibrar el modo Infernal con la telemetría general no servía de nada — 69 de las 82 victorias con contexto eran de jugadores nuevos en los tres primeros mundos, y a ese modo solo se entra habiéndose terminado el juego. Son dos poblaciones distintas disparando a ritmos distintos, así que el percentil agregado describe a alguien que nunca va a jugarlo.
 
 > **Y un fallo de datos que costó seis días.** La puntuación de un combate multifase llegaba con la primera fase contada dos veces. No daba error: el único síntoma era un residuo en una comprobación de consistencia, y se explicó con una hipótesis razonable y falsa. Sobre esos ratios inflados se recalibraron cuatro combates **en la dirección contraria**, dejándolos regalados durante casi una semana. La lección quedó escrita en el repositorio: un residuo sistemático se **contrasta con otra fuente** antes de explicarlo — bastaba comparar contra la tabla que el ranking escribe por otro camino.
 
@@ -334,7 +362,7 @@ Aun así, el color solo no basta: un optimizador sobre los cuatro tipos a la vez
 
 ### Estrategia de pruebas sin CI
 
-**130 scripts de QA en GDScript**, ejecutables en headless, más un lanzador que los corre todos y resume qué falla. No hay framework de testing: son scripts que montan el juego de verdad, hacen algo y miden.
+**132 scripts de QA en GDScript**, ejecutables en headless, más un lanzador que los corre todos y resume qué falla. No hay framework de testing: son scripts que montan el juego de verdad, hacen algo y miden.
 
 Los principios que hacen que sirvan para algo:
 
@@ -367,13 +395,13 @@ Traducido a lo que se busca en una oferta:
 
 | Competencia | Dónde está en el proyecto |
 |---|---|
-| **Diseño de bases de datos** | 27 esquemas, 112 RPC, RLS, triggers, índices parciales, jobs con `pg_cron` |
+| **Diseño de bases de datos** | 27 esquemas, 113 RPC, RLS, triggers, índices parciales, jobs con `pg_cron` |
 | **Optimización de consultas** | Banco de 200.000 filas, `EXPLAIN (ANALYZE, BUFFERS)`, `JOIN LATERAL`, autovacuum afinado, verificación fila a fila antes de desplegar |
 | **Seguridad** | Pentest de la API pública, `SECURITY DEFINER` con `search_path` fijo, grants columnares, modelo de amenaza escrito |
 | **Integración de pagos** | Billing con verificación en servidor, idempotencia, doble entrega cerrada con tres cinturones, reembolsos automatizados |
 | **Optimización de rendimiento** | Perfilado, cuello de botella algorítmico identificado y medido (x18), presupuesto de assets |
 | **Arquitectura** | Fachadas sobre SDK nativos, router único de navegación, separación entre estado guardado y estado pintado |
-| **Testing** | 130 scripts de QA, verificación por mutación, fuzzing, pruebas que miden píxeles |
+| **Testing** | 132 scripts de QA, verificación por mutación, fuzzing, pruebas que miden píxeles |
 | **Ingeniería de datos** | Telemetría con retención automatizada y decisiones de producto tomadas con percentiles reales |
 | **i18n y a11y** | 10 idiomas con auditoría de vocabulario; accesibilidad para daltonismo validada con literatura científica y con un usuario real |
 | **Cumplimiento** | GDPR, Play Data Safety, borrado de cuenta, moderación, política de privacidad mantenida |
