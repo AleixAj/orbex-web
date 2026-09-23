@@ -7,6 +7,11 @@
 ![Google Play](https://img.shields.io/badge/Google_Play-publicado-3DDC84?style=for-the-badge&logo=googleplay&logoColor=white&labelColor=2D2D2D)
 ![Landing](https://img.shields.io/badge/Landing-HTML_+_CSS_+_JS_vanilla-e34f26?style=for-the-badge&logo=html5&logoColor=white&labelColor=2D2D2D)
 
+<p>
+  <img src="docs/readme/lang-es-active.svg" alt="Español" width="170">
+  <a href="README.en.md"><img src="docs/readme/lang-en.svg" alt="English" width="170"></a>
+</p>
+
 **Orbex** es un juego de móvil publicado en Google Play ([`com.aleix.orbex`](https://play.google.com/store/apps/details?id=com.aleix.orbex)), hecho de principio a fin por una sola persona: cliente, backend, base de datos, pagos, telemetría, cumplimiento legal y la web que lo acompaña.
 
 **Este repositorio contiene la landing** ([orbex.aleixaj.com](https://orbex.aleixaj.com)). El código del juego es privado, así que **este documento es su memoria técnica**: cómo está montado por dentro, qué problemas de ingeniería aparecieron de verdad y cómo se resolvieron.
