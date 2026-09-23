@@ -10,6 +10,7 @@
 <p>
   <a href="README.md"><img src="docs/readme/lang-es.svg" alt="Español" width="170"></a>
   <img src="docs/readme/lang-en-active.svg" alt="English" width="170">
+  <a href="README.ca.md"><img src="docs/readme/lang-ca.svg" alt="Català" width="170"></a>
 </p>
 
 **Orbex** is a mobile game published on Google Play ([`com.aleix.orbex`](https://play.google.com/store/apps/details?id=com.aleix.orbex)), built end to end by a single person: client, backend, database, payments, telemetry, legal compliance and the website that goes with it.
@@ -58,7 +59,7 @@
 | Serverless | 3 **Edge Functions** in TypeScript: purchase verification, refund sync and support translation |
 | Tests | **132 headless QA scripts** (harnesses, test doubles, fuzzing and measurement), most of them verified by mutation |
 | Content | 256 scenes, **92 levels**, 10 worlds, 16 boss fights, 3 game modes |
-| Catalog | 214 cosmetics, 75 achievements, 54 missions, 9 consumable items |
+| Catalog | 214 cosmetics, 75 achievements, 54 quests, 9 consumable items |
 | Localization | **1,155 keys × 10 languages** |
 | Global services | 26 autoloads: economy, progress, leaderboard, events, payments, ads, settings… |
 | Status | Published on Google Play, version **1.30**, with real players, ads and purchases |
@@ -147,12 +148,12 @@ On top of that same content run **two more modes and a weekly event**, and that'
 |---|---|---|
 | **Survival** | The orb supply never runs out and speed increases with orbs destroyed, not with time. No items, no possible victory | Campaign stars and high score. Its own leaderboard |
 | **Infernal** | The whole campaign replayed harder. Unlocks after finishing all 10 worlds and gives access to all 80 levels at once | Campaign progress: a **separate** record book for stars and high scores, and a separate leaderboard |
-| **Weekly challenge** | A level chosen by the server, the same for everyone, playable even if its world is locked | Nothing of the player's: no stars, no coins, no missions, no achievements |
+| **Weekly challenge** | A level chosen by the server, the same for everyone, playable even if its world is locked | Nothing that belongs to the player: no stars, no coins, no quests, no achievements |
 
 Three lessons that came out of building them:
 
 - **Separating the record books goes in before raising the difficulty, not after.** While Infernal and the campaign weighed the same, mixing their records gave almost the same result and looked like unnecessary code. As soon as the mode gets tougher, mixing them means **overwriting the player's campaign record with a score set in a different game**, and that can't be fixed after the fact.
-- **Isolation has two halves, and the one that gets forgotten is the one that runs live.** The challenge blocked what gets written *at the end* of the match, but the combo and shot counters are recorded shot by shot: for a while, a match in a mode declared isolated kept unlocking achievements and advancing missions. It raised no error — it was spotted by looking at the account of a player who had only played the event.
+- **Isolation has two halves, and the one that gets forgotten is the one that runs live.** The challenge blocked what gets written *at the end* of the match, but the combo and shot counters are recorded shot by shot: for a while, a match in a mode declared isolated kept unlocking achievements and advancing quests. It raised no error — it was spotted by looking at the account of a player who had only played the event.
 - **A mode that can be replayed without limit can't feed a counter.** Survival and Infernal can be replayed at no cost, so their achievements count *distinct levels*, not matches. With a counter, the whole ladder —2,050 coins— gets completed in an afternoon by repeating the game's first level.
 
 **Seasonal event.** A parallel currency that's earned by playing and **expires**, redeemable for its own cosmetic catalog within its date window. It has three phases and the middle one is the non-obvious one: after earning closes there's a **settlement** period in which you can no longer earn but can still spend. Without it, the event punishes precisely those who played until the last day and then find their balance evaporated — which is exactly what teaches them not to bother with the next event. What you buy stays forever; what expires is the currency.
@@ -181,7 +182,7 @@ Three rules hold the separation together:
 
 - **`AppRouter` is the only way to change screens.** No screen navigates to another: they all ask the router. That concentrates scene loading, modals, the Android back-button stack and the match lifecycle in one place.
 - **Native SDKs come in through one door and one door only.** `Ads` and `Purchases` are facade autoloads: no screen talks to the Java plugin. You call `await Ads.request_reward(placement)` or `Purchases.buy(sku)` and that's it. The day it has to be ported to iOS (StoreKit) or the ad provider changes, the change stays inside two files instead of being spread across the five screens that hand out money.
-- **What gets SAVED and what gets DRAWN are different things.** An equipped cosmetic is kept on disk even if its unlock can't be confirmed at that moment (offline startup, server role not yet received); what changes is what gets drawn. Without that separation, starting up without coverage permanently destroyed the player's selection, because the next save made the loss final.
+- **What gets SAVED and what gets DRAWN are different things.** An equipped cosmetic is kept on disk even if its unlock can't be confirmed at that moment (offline startup, server role not yet received); what changes is what gets drawn. Without that separation, starting up with no signal permanently destroyed the player's selection, because the next save made the loss final.
 
 ### The chain engine, and a measured optimization
 
@@ -214,7 +215,7 @@ Subsystems with their own schema:
 | Purchases | Catalog, receipt redemption, idempotent delivery and revocation on refund |
 | Weekly challenge | Level drawn on the server, the same for everyone, with its own leaderboard and automatic rewards |
 | Mailbox | Server-to-player messaging, with read status and reward claiming |
-| Friends | One-way following, notifications and a filtered leaderboard |
+| Friends | One-way adding, notifications and a filtered leaderboard |
 | Moderation | Sanctions, player reports and in-app support |
 | Telemetry | One row per match plus aggregates, with automatic purging |
 
@@ -234,7 +235,7 @@ The anonymous key is embedded in the APK by design, so **the threat model assume
 
 > **A real bug that teaches the lesson.** `REVOKE EXECUTE ... FROM anon` **does nothing on its own**: PostgreSQL grants `EXECUTE` to `PUBLIC` when any function is created, and roles inherit from there. The correct form is `FROM public, anon`. Thirteen functions had that mistake and one was serious: the one that assigns roles was reachable from the public API, meaning anyone with the APK's key could grant themselves admin permissions. Fixed and verified with an **8-vector pentest** —role assignment, direct table writes, score submission, deleting someone else's account, restoring someone else's progress—: all blocked, with the victim's data intact.
 
-There's also shape verification: an RPC isn't considered good until **it has been called against the database**. Two functions were created without a complaint and blew up when executed — one because of a variable with the same name as a column (`plpgsql` resolves against its variables first), the other because it treated as a boolean a function that raises an exception. Functional trials are done with a `DO` block that ends in `raise exception`: the transaction aborts itself and not a single row persists.
+There's also a verification rule: an RPC isn't considered good until **it has been called against the database**. Two functions were created without a complaint and blew up when executed — one because of a variable with the same name as a column (`plpgsql` resolves against its variables first), the other because it treated as a boolean a function that raises an exception. Functional trials are done with a `DO` block that ends in `raise exception`: the transaction aborts itself and not a single row persists.
 
 ### Scale: what breaks under volume
 
@@ -312,12 +313,12 @@ Version comparison is numeric per segment and tolerant of odd formats: a lexicog
 
 ### Telemetry and data-driven balancing
 
-Every finished match sends Supabase a row with ~40 fields: outcome, cause of defeat, how far the chain got, accuracy, score breakdown, items used, net time excluding pauses and the actual difficulty it was played at. There are aggregates per player and level, automatic purging at 90 days, a rate limit per row class and a toggle in Options for GDPR.
+Every finished match sends Supabase a row with ~40 fields: outcome, cause of defeat, how far the chain got, accuracy, score breakdown, items used, net time excluding pauses and the actual difficulty it was played at. There are aggregates per player and level, automatic purging at 90 days, a rate limit per row class and a toggle in Settings for GDPR.
 
 **What it's really for:** the star threshold for each level is calibrated with `percentile_cont` over real scores, not by eye. And design decisions are made with the measurement in front of you:
 
 - The difficulty curve was flattened after confirming that from world 5 to 9 the demand moved ±3% and world 10 was **below** world 3.
-- An entire family of missions was rewritten after discovering that the most active player had **zero mission coins in 78 matches**: three objectives were mathematically unreachable, and one asked for a combo that hadn't happened even once in 268 matches.
+- An entire family of quests was rewritten after discovering that the most active player had **zero quest coins in 78 matches**: three objectives were mathematically unreachable, and one asked for a combo that hadn't happened even once in 268 matches.
 - The third-star threshold was lowered after measuring that **none of 51 victories** reached it; the best one fell 1.3% short.
 - Infernal mode's difficulty was split **equally between orb count and speed**, and it isn't decorative symmetry: the two halves pull in opposite directions on the clock —more orbs lengthen the match, more speed shortens it—, so loading everything onto one changes the duration by 9% without anyone asking for it. Split at the square root of the factor, the demand goes up and the match lasts the same.
 
@@ -329,13 +330,13 @@ Every finished match sends Supabase a row with ~40 fields: outcome, cause of def
 
 What matters here isn't the list of defenses, it's where the line is and why.
 
-**What the server enforces**, independently of the client: caps per submitted score, a per-player rate limit, a whitelist of worlds and levels, ownership guards on every RPC, and table triggers —not an `if` spread across six functions— so that a sanctioned player can't write to any leaderboard, today or to the seventh leaderboard added a year from now.
+**What the server enforces**, independently of the client: caps per submitted score, a per-player rate limit, a whitelist of worlds and levels, ownership guards on every RPC, and table triggers —not an `if` spread across six functions— so that a sanctioned player can't write to any leaderboard, neither today nor on the seventh leaderboard added a year from now.
 
-**What's assumed lost**: on a device with file access, the wallet is a local JSON file. Whoever can edit it doesn't need to cheat any purchase. Closing that would require moving the entire economy to the server, which is a cost this project doesn't pay.
+**What's assumed lost**: on a device with file access, the wallet is a local JSON file. Whoever can edit it doesn't need to fake any purchase. Closing that would require moving the entire economy to the server, which is a cost this project doesn't pay.
 
-**What is closed, because it's what costs money**: a real purchase can't be turned into two. The defenses are sized with that hierarchy in mind — hardening missions while leaving the wallet local would be security theater.
+**What is closed, because it's what costs money**: a real purchase can't be turned into two. The defenses are sized with that hierarchy in mind — hardening quests while leaving the wallet local would be security theater.
 
-All of this is reasoned in writing in an internal design document, including the decision **not** to move mission counters to the database: a server can't validate a mission without validating the gameplay, so it's still the client that says "done".
+All of this is reasoned in writing in an internal design document, including the decision **not** to move quest counters to the database: a server can't validate a quest without validating the gameplay, so it's still the client that says "done".
 
 ### In-app moderation and support
 

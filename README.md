@@ -10,6 +10,7 @@
 <p>
   <img src="docs/readme/lang-es-active.svg" alt="Español" width="170">
   <a href="README.en.md"><img src="docs/readme/lang-en.svg" alt="English" width="170"></a>
+  <a href="README.ca.md"><img src="docs/readme/lang-ca.svg" alt="Català" width="170"></a>
 </p>
 
 **Orbex** es un juego de móvil publicado en Google Play ([`com.aleix.orbex`](https://play.google.com/store/apps/details?id=com.aleix.orbex)), hecho de principio a fin por una sola persona: cliente, backend, base de datos, pagos, telemetría, cumplimiento legal y la web que lo acompaña.
