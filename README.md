@@ -235,11 +235,11 @@ La clave anónima va embebida en el APK por diseño, así que **el modelo de ame
 
 > **Un fallo real que enseña la lección.** `REVOKE EXECUTE ... FROM anon` **no hace nada por sí solo**: PostgreSQL concede `EXECUTE` a `PUBLIC` al crear cualquier función, y los roles heredan de ahí. La forma correcta es `FROM public, anon`. Trece funciones tenían ese error y una era grave: la que asigna roles quedó alcanzable desde la API pública, o sea que cualquiera con la clave del APK podía concederse permisos de administrador. Corregido y verificado con un **pentest de 8 vectores** —asignación de rol, escritura directa en tablas, envío de puntuaciones, borrado de cuenta ajena, restauración de progreso ajeno—: todos bloqueados, con los datos de la víctima intactos.
 
-También hay verificación de forma: una RPC no se da por buena hasta **haberla llamado contra la base**. Dos funciones se crearon sin una queja y reventaron al ejecutarse — una por una variable con el mismo nombre que una columna (`plpgsql` resuelve primero contra sus variables), otra por tratar como booleano una función que lanza excepción. Los ensayos funcionales se hacen con un bloque `DO` que termina en `raise exception`: la transacción se aborta sola y no persiste ni una fila.
+Además, una RPC no se da por buena solo porque se haya creado sin errores: hay que **haberla llamado contra la base**. Dos funciones se crearon sin una queja y reventaron al ejecutarse — una por una variable con el mismo nombre que una columna (`plpgsql` resuelve primero contra sus variables), otra por tratar como booleano una función que lanza excepción. Los ensayos funcionales se hacen con un bloque `DO` que termina en `raise exception`: la transacción se aborta sola y no persiste ni una fila.
 
 ### Escala: lo que se rompe con volumen
 
-Con 20 jugadores todo va rápido. Los problemas aparecen con padrón, así que las consultas críticas se midieron contra un **banco de 200.000 jugadores y 400.000 filas de puntuación**, con `EXPLAIN (ANALYZE, BUFFERS)`.
+Con 20 jugadores todo va rápido. Los problemas aparecen cuando hay muchos jugadores, así que las consultas críticas se midieron contra un **banco de 200.000 jugadores y 400.000 filas de puntuación**, con `EXPLAIN (ANALYZE, BUFFERS)`.
 
 **1. El `OR` del desempate impedía usar el índice.** "Cuánta gente va por delante de mí" se traduce de forma natural a `score > X OR (score = X AND fecha < Y)`, y el planificador no puede acotar por índice ninguna rama dentro de un `OR`: cae a un escaneo con la condición como filtro. Partido en dos conteos por rango —los conjuntos son disjuntos—, cada rama entra por el índice.
 
