@@ -90,7 +90,7 @@ Lloc estàtic que serveix alhora de pàgina de producte i d'URL de la política 
 
 ### Rendiment
 
-Els assets van passar de **42 MB a 2,6 MB (−94 %)** en la passada d'optimització. Avui la carpeta pesa **4,7 MB** —ha crescut amb la galeria— i el que importa continua mesurat: recórrer la pàgina sencera són **496 KB en 30 peticions, cap a tercers** (mesurat contra producció, no contra el servidor local).
+Els assets van passar de **42 MB a 2,6 MB (−94 %)** en la passada d'optimització. Avui la carpeta pesa **4,1 MB** —va créixer amb la galeria i va aprimar-se en retirar els placeholders que ja no s'usaven— i el que importa continua mesurat: recórrer la pàgina sencera són **496 KB en 30 peticions, cap a tercers** (mesurat contra producció, no contra el servidor local).
 
 - Els 10 retrats de cap eren 34 MB d'aquells 42: PNG de 1152×2048 que es pinten a ~210 px d'amplada. Cada asset es regenera a la mida a què es pinta (2× la del CSS) en `.webp`, amb un script Python reproduïble.
 - La galeria té dues resolucions per imatge: miniatura de 720 px per a les targetes i 1280 px per al visor.
@@ -118,6 +118,8 @@ orbex-web/
 ```bash
 python scratchpad/serve.py     # http://localhost:8000
 ```
+
+Els comentaris del codi (`index.html`, `privacy/index.html` i les eines de `scratchpad/`) són **en anglès**; la documentació llarga —aquest README i `PRIVACY.md`— va en castellà, anglès i català.
 
 És `python -m http.server` amb dues coses a sobre, i totes dues calen: `Cache-Control: no-store` —el servidor nu desa l'HTML a la memòria cau de manera agressiva i, si edites el fitxer, en recarregar no es veu el canvi— i els tipus MIME de `.webp` i `.woff2`, sense els quals Chrome rebutja les fonts **en silenci** i la pàgina recorre a la del sistema, cosa que sembla un problema de CSS.
 

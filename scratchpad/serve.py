@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-"""Servidor local para desarrollo.
+"""Local development server.
 
     python scratchpad/serve.py           http://localhost:8000
-    python scratchpad/serve.py 8080      otro puerto
+    python scratchpad/serve.py 8080      another port
 
-Es `python -m http.server` con dos cosas encima:
+It is `python -m http.server` with two things on top:
 
-- **`Cache-Control: no-store`**. El servidor pelado manda `Last-Modified` y el
-  navegador se queda con el HTML cacheado: editas `index.html`, recargas y no
-  ves nada. Es lo que obliga a andar recargando con `?v=2`.
-- **Tipos MIME correctos** para `.webp` y `.woff2`. Sin ellos las fuentes se
-  sirven como `application/octet-stream` y Chrome las rechaza en silencio: la
-  pagina cae a la fuente del sistema y parece un problema del CSS.
+- **`Cache-Control: no-store`**. The plain server sends `Last-Modified` and the
+  browser keeps the cached HTML: you edit `index.html`, reload and see nothing.
+  That is what forces people to reload with `?v=2`.
+- **Correct MIME types** for `.webp` and `.woff2`. Without them the fonts are
+  served as `application/octet-stream` and Chrome rejects them silently: the
+  page falls back to the system font and it looks like a CSS problem.
 
-No sirve para nada mas: en produccion las cabeceras las ponen `_headers`,
-`netlify.toml` o `vercel.json`, que si cachean de verdad.
+It does nothing else. In production the headers come from `_headers`,
+`netlify.toml` or `vercel.json`, which do cache for real.
 """
 import os
 import sys
@@ -37,7 +37,7 @@ class Handler(SimpleHTTPRequestHandler):
         SimpleHTTPRequestHandler.end_headers(self)
 
     def log_message(self, fmt, *args):
-        # Solo lo que falla: el log de cada .webp tapa lo unico que interesa.
+        # Only what fails: one log line per .webp buries the one thing we care about.
         if args and str(args[1]).startswith(('4', '5')):
             sys.stderr.write("  %s %s\n" % (args[1], args[0]))
 
@@ -46,14 +46,14 @@ def main():
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8000
     handler = functools.partial(Handler, directory=ROOT)
     srv = ThreadingHTTPServer(('127.0.0.1', port), handler)
-    print("Orbex - servidor local")
-    print("  landing     http://localhost:%d/" % port)
-    print("  privacidad  http://localhost:%d/privacy/" % port)
-    print("  (sin cache: recarga normal y ves el cambio)   Ctrl+C para parar")
+    print("Orbex - local server")
+    print("  landing   http://localhost:%d/" % port)
+    print("  privacy   http://localhost:%d/privacy/" % port)
+    print("  (no cache: a normal reload shows the change)   Ctrl+C to stop")
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
-        print("\nparado")
+        print("\nstopped")
 
 
 if __name__ == '__main__':

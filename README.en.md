@@ -90,7 +90,7 @@ It's a decision, not a limitation. A one-page landing doesn't need a bundler, a 
 
 ### Performance
 
-Assets went from **42 MB to 2.6 MB (−94%)** in the optimization pass. Today the folder weighs **4.7 MB** —it has grown with the gallery— and what matters is still measured: scrolling through the entire page costs **496 KB in 30 requests, none to third parties** (measured against production, not against the local server).
+Assets went from **42 MB to 2.6 MB (−94%)** in the optimization pass. Today the folder weighs **4.1 MB** —it grew with the gallery and got lighter when the unused placeholders were dropped— and what matters is still measured: scrolling through the entire page costs **496 KB in 30 requests, none to third parties** (measured against production, not against the local server).
 
 - The 10 boss portraits were 34 MB of those 42: 1152×2048 PNGs rendered at ~210 px wide. Each asset is regenerated at the size it's rendered at (2× the CSS size) as `.webp`, with a reproducible Python script.
 - The gallery has two resolutions per image: a 720 px thumbnail for the cards and 1280 px for the viewer.
@@ -118,6 +118,8 @@ orbex-web/
 ```bash
 python scratchpad/serve.py     # http://localhost:8000
 ```
+
+Code comments (`index.html`, `privacy/index.html` and the `scratchpad/` tools) are **in English**; the long documentation —this README and `PRIVACY.md`— comes in Spanish, English and Catalan.
 
 It's `python -m http.server` with two things on top, and both are needed: `Cache-Control: no-store` —the bare server caches HTML aggressively and editing the file doesn't show up on reload— and the MIME types for `.webp` and `.woff2`, without which Chrome rejects the fonts **silently** and the page falls back to the system font, which looks like a CSS problem.
 

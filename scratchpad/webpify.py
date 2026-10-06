@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
-"""Regenera los .webp de la landing desde los originales.
+"""Rebuilds the .webp files of the landing page from the originals.
 
-Los originales (PNG/JPG) viven en `_source/originals/` con la misma jerarquia
-de carpetas que `assets/`. Esa carpeta esta en .gitignore y en .netlifyignore,
-asi que no se versiona ni se despliega: son la FUENTE, no el asset.
+The originals (PNG/JPG) live in `_source/originals/` with the same folder
+layout as `assets/`. That folder is in .gitignore and in .netlifyignore, so it
+is neither versioned nor deployed: it is the SOURCE, not the asset.
 
-    python scratchpad/webpify.py           regenera todo
-    python scratchpad/webpify.py --dry     solo dice que haria
-    python scratchpad/webpify.py screenshots   solo los patrones que
-                                               contengan esa palabra
+    python scratchpad/webpify.py           rebuild everything
+    python scratchpad/webpify.py --dry     only say what it would do
+    python scratchpad/webpify.py screenshots   only the patterns containing
+                                               that word
 
-Cada imagen se genera al tamano en que se PINTA, con el ancho a 2x del tamano
-CSS real. Ahi esta el 94 % del ahorro: los diez retratos de jefe llegaban en
-PNG de 1152x2048 (34 MB entre los diez) para pintarse a ~210 px de ancho.
+Every image is built at the size it is PAINTED at, with the width at 2x the
+real CSS size. That is where 94 % of the saving is: the ten boss portraits
+arrived as 1152x2048 PNGs (34 MB between them) to be painted about 210 px wide.
 
-Requiere Pillow:  pip install pillow
+Needs Pillow:  pip install pillow
 """
 import os
 import sys
@@ -24,20 +24,20 @@ from PIL import Image
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "_source", "originals", "assets")
 
-# (patron dentro de assets/, ancho maximo, calidad)
+# (pattern inside assets/, max width, quality)
 JOBS = [
-    ("images/bosses/*.png",        576, 80),   # tarjeta ~230 px CSS
-    ("images/zones/*.png",         256, 85),   # escudo ~150 px CSS
-    ("images/orbs/*.png",          160, 88),   # 38-54 px CSS (y la demo del canvas)
+    ("images/bosses/*.png",        576, 80),   # card about 230 px CSS
+    ("images/zones/*.png",         256, 85),   # crest about 150 px CSS
+    ("images/orbs/*.png",          160, 88),   # 38-54 px CSS (and the canvas demo)
     ("images/avatars/*.png",       128, 85),   # 38 px CSS
     ("images/icons/*.png",         160, 88),
-    ("images/orbex-title.png",    1120, 90),   # hero, max 560 px CSS
-    ("images/screenshots/*.[jp][pn]g", 1280, 80),  # el lightbox la ensena a tamano real
-    ("images/bg/espacio.jpg",     1600, 78),   # fondo del hero
+    ("images/orbex-title.png",    1120, 90),   # hero, 560 px CSS at most
+    ("images/screenshots/*.[jp][pn]g", 1280, 80),  # the lightbox shows it full size
+    ("images/bg/espacio.jpg",     1600, 78),   # hero background
 ]
 
-# Las capturas ademas llevan miniatura: la tarjeta de la galeria mide ~275 px,
-# asi que servirle la de 1280 costaba 1,5 MB en vez de 525 KB.
+# Screenshots also get a thumbnail: the gallery card is about 275 px wide, so
+# serving it the 1280 one cost 1.5 MB instead of 525 KB.
 THUMB = ("images/screenshots/*.[jp][pn]g", 720, 78)
 
 
@@ -60,8 +60,8 @@ def convert(src, dst, maxw, quality, dry):
 
 def main(dry=False, only=""):
     if not os.path.isdir(SRC):
-        sys.exit("No encuentro %s.\nAhi van los originales, con la misma "
-                 "jerarquia de carpetas que assets/." % SRC)
+        sys.exit("Cannot find %s.\nThat is where the originals go, with the "
+                 "same folder layout as assets/." % SRC)
 
     before = after = 0
     for pattern, maxw, q in JOBS:
@@ -78,16 +78,16 @@ def main(dry=False, only=""):
 
     pattern, maxw, q = THUMB
     if not only or only in pattern:
-      for src in sorted(glob.glob(os.path.join(SRC, pattern))):
-        rel = os.path.relpath(src, SRC).replace("\\", "/")
-        dst = os.path.join(ROOT, "assets", os.path.splitext(rel)[0] + "-thumb.webp")
-        w, h, nsz = convert(src, dst, maxw, q, dry)
-        after += nsz
-        print("  %-40s          %5dK  %dx%d (miniatura de galeria)"
-              % (rel, nsz // 1024, w, h))
+        for src in sorted(glob.glob(os.path.join(SRC, pattern))):
+            rel = os.path.relpath(src, SRC).replace("\\", "/")
+            dst = os.path.join(ROOT, "assets", os.path.splitext(rel)[0] + "-thumb.webp")
+            w, h, nsz = convert(src, dst, maxw, q, dry)
+            after += nsz
+            print("  %-40s          %5dK  %dx%d (gallery thumbnail)"
+                  % (rel, nsz // 1024, w, h))
 
     if before:
-        print("\n  originales %.1f MB -> webp %.2f MB  (%.1f%% menos)"
+        print("\n  originals %.1f MB -> webp %.2f MB  (%.1f%% less)"
               % (before / 1048576.0, after / 1048576.0,
                  100 - after * 100.0 / before))
 

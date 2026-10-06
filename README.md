@@ -90,7 +90,7 @@ Es una decisión, no una limitación. Una landing de una página no necesita bun
 
 ### Rendimiento
 
-Los assets pasaron de **42 MB a 2,6 MB (−94 %)** en la pasada de optimización. Hoy la carpeta pesa **4,7 MB** —ha crecido con la galería— y lo que importa sigue medido: recorrer la página entera son **496 KB en 30 peticiones, ninguna a terceros** (medido contra producción, no contra el servidor local).
+Los assets pasaron de **42 MB a 2,6 MB (−94 %)** en la pasada de optimización. Hoy la carpeta pesa **4,1 MB** —creció con la galería y adelgazó al retirar los placeholders que ya no se usaban— y lo que importa sigue medido: recorrer la página entera son **496 KB en 30 peticiones, ninguna a terceros** (medido contra producción, no contra el servidor local).
 
 - Los 10 retratos de jefe eran 34 MB de esos 42: PNG de 1152×2048 que se pintan a ~210 px de ancho. Cada asset se regenera al tamaño en el que se pinta (2× del CSS) en `.webp`, con un script Python reproducible.
 - La galería tiene dos resoluciones por imagen: miniatura de 720 px para las tarjetas y 1280 px para el visor.
@@ -118,6 +118,8 @@ orbex-web/
 ```bash
 python scratchpad/serve.py     # http://localhost:8000
 ```
+
+Los comentarios del código (`index.html`, `privacy/index.html` y las herramientas de `scratchpad/`) están **en inglés**; la documentación larga —este README y `PRIVACY.md`— va en castellano, inglés y catalán.
 
 Es `python -m http.server` con dos cosas encima, y las dos hacen falta: `Cache-Control: no-store` —el servidor pelado cachea el HTML de forma agresiva y editar el fichero no se ve al recargar— y los tipos MIME de `.webp` y `.woff2`, sin los cuales Chrome rechaza las fuentes **en silencio** y la página cae a la del sistema, que parece un problema de CSS.
 

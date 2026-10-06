@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+<!--
+  Orbex privacy policy, served at /privacy. Same idea as the landing page:
+  one static file, both languages in the markup, CSS hides one of them.
+  The source of truth for this text is PRIVACY.md in the root of the repo.
+-->
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
@@ -34,8 +39,8 @@
   })();
 </script>
 <style>
-  /* Fuentes propias, las mismas que la landing. Una politica de privacidad que
-     pida las fuentes a Google es justo lo que no toca. */
+  /* Self-hosted fonts, the same as the landing page. A privacy policy that
+     asks Google for its fonts is exactly what not to do. */
   @font-face{font-family:'Lilita One';src:url('../assets/fonts/lilita-one.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
   @font-face{font-family:'Press Start 2P';src:url('../assets/fonts/press-start-2p.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
   @font-face{font-family:'Space Grotesk';src:url('../assets/fonts/space-grotesk.woff2') format('woff2-variations'),url('../assets/fonts/space-grotesk.woff2') format('woff2');font-weight:300 700;font-style:normal;font-display:swap}
@@ -56,19 +61,19 @@
     --ink:#ecdfc6; --ink-dim:#ab9270; --title:#ffe9bf;
     --gold:#d9a43a; --gold-dk:#c08820;
   }
-  /* Misma jerarquía que la landing y que el juego: Lilita One para títulos,
-     Space Grotesk para el cuerpo. Los subtítulos (h3, resumen) se quedan en
-     Space Grotesk a propósito: es un documento largo y conviene que el nivel
-     de encabezado se distinga por familia, no solo por tamaño.
-     Lilita One tiene un único peso — nada de font-weight aquí o el navegador
-     sintetiza la negrita y la emborrona. */
+  /* Same hierarchy as the landing page and as the game: Lilita One for
+     titles, Space Grotesk for the body. The subheadings (h3, summary) stay in
+     Space Grotesk on purpose: this is a long document and the heading level
+     should be told apart by family, not only by size.
+     Lilita One has a single weight, so no font-weight here or the browser
+     fakes the bold and blurs it. */
   :root{
     --f-display:'Lilita One',system-ui,sans-serif;
     --f-body:'Space Grotesk',system-ui,sans-serif;
   }
-  /* Sin esto el navegador sintetiza la negrita sobre Lilita (los encabezados
-     vienen en bold por defecto) y la emborrona. Los de Space Grotesk que sí
-     van en negrita declaran su peso aparte y ganan a esta regla. */
+  /* Without this the browser fakes the bold on Lilita (headings come in bold
+     by default) and blurs it. The Space Grotesk ones that really are bold
+     declare their own weight and win over this rule. */
   h1,h2,h3,h4{font-weight:400}
   a{color:var(--gold);text-underline-offset:3px}
   a:hover{color:var(--gold-dk)}
@@ -84,8 +89,8 @@
   .icon-btn:hover{background:var(--hi)}
   [data-theme="light"] .icon-sun{display:none}
   [data-theme="dark"] .icon-moon{display:none}
-  /* Mismo selector que la landing: las dos banderas visibles, la activa
-     resaltada. Aquí los botones miden 42px en vez de 44. */
+  /* Same selector as the landing page: both flags visible, the active one
+     highlighted. Here the buttons are 42px instead of 44. */
   .lang-switch{display:inline-flex;align-items:center;gap:3px;height:42px;padding:0 4px;border:2px solid var(--frame);background:var(--panel);border-radius:10px}
   .lang-flag{display:grid;place-items:center;padding:3px;border:2px solid transparent;border-radius:7px;background:none;cursor:pointer;line-height:0;opacity:.4;filter:grayscale(.7);transition:opacity .15s,filter .15s,border-color .15s,background .15s}
   .lang-flag:hover{opacity:.8;filter:grayscale(.2)}
@@ -121,8 +126,8 @@
   .summary-box ul{margin:0 0 10px;padding-left:20px;color:var(--ink)}
   .summary-box li{margin:0 0 8px}
   .summary-box li strong{color:var(--title)}
-  /* Base legal de cada finalidad: linea aparte y en tono secundario, para
-     que el apartado 5 se lea como "para que" y no como jerga juridica. */
+  /* Legal basis for each purpose: its own line and a quieter tone, so
+     section 5 reads as "what for" and not as legal jargon. */
   .sect .basis{display:block;font-size:13.5px;color:var(--ink-dim);margin-top:3px}
   .sect code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;background:color-mix(in srgb,var(--frame) 18%,transparent);padding:1px 5px;border-radius:4px}
 </style>

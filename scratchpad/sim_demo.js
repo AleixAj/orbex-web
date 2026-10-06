@@ -1,20 +1,25 @@
-// Extrae del index.html las funciones puras de la demo (resolve, pairsOf,
-// cascadeAt, fire, land) y las corre miles de disparos sin navegador. Es la
-// unica forma de medir el ritmo de combinaciones y combos: en el navegador
-// rAF se limita a 1 fps con la ventana en segundo plano y la medida miente.
+// Pulls the pure functions of the canvas demo out of index.html (resolve,
+// pairsOf, cascadeAt, fire, land) and runs thousands of shots with no browser.
+// It is the only way to measure the rate of matches and combos: in the browser
+// rAF drops to 1 fps with the window in the background and the measurement lies.
+//
+//     node scratchpad/sim_demo.js
 const fs = require('fs');
-const html = fs.readFileSync('C:/Users/Kylen/Desktop/Projects/Orbex-web/index.html', 'utf8');
+const path = require('path');
+
+// Resolved from this file, so the script works from any clone and any folder.
+const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
 
 function num(re, name) {
   const m = html.match(re);
-  if (!m) throw new Error('no encuentro ' + name);
+  if (!m) throw new Error('cannot find ' + name);
   return parseFloat(m[1]);
 }
 const NCOL = (html.match(/var NAMES = \[([^\]]+)\]/)[1].match(/'/g).length) / 2;
-const BIAS = num(/Math\.random\(\) < ([\d.]+)\) \? tail\.c/, 'sesgo de pareja');
-const PREF = num(/multi\.length && Math\.random\(\) < ([\d.]+)\)/, 'preferencia de cascada');
-const GUN  = num(/Math\.random\(\) < ([\d.]+)\)\{\s*[\r\n]+\s*var opts/, 'sesgo del canon');
-const MAXC = num(/chain\.length < (\d+) &&/, 'tope de cadena');
+const BIAS = num(/Math\.random\(\) < ([\d.]+)\) \? tail\.c/, 'pair bias');
+const PREF = num(/multi\.length && Math\.random\(\) < ([\d.]+)\)/, 'cascade preference');
+const GUN  = num(/Math\.random\(\) < ([\d.]+)\)\{\s*[\r\n]+\s*var opts/, 'gun bias');
+const MAXC = num(/chain\.length < (\d+) &&/, 'chain cap');
 
 const R = () => Math.floor(Math.random() * NCOL);
 
@@ -76,9 +81,9 @@ function loadGun() {
 loadGun();
 
 const SHOTS = 4000;
-let sinMatch = 0;
+let noMatch = 0;
 for (let s = 0; s < SHOTS; s++) {
-  // suministro por la cola, con el mismo sesgo de pareja del juego
+  // refill from the tail, with the same pair bias the game uses
   while (chain.length < MAXC) {
     const tail = chain[chain.length - 1];
     chain.push((tail !== undefined && Math.random() < BIAS) ? tail : R());
@@ -98,16 +103,16 @@ for (let s = 0; s < SHOTS; s++) {
   const before = matches;
   chain.splice(idx, 0, col);
   resolve(idx, 1);
-  if (matches === before) sinMatch++;
+  if (matches === before) noMatch++;
   loadGun();
 }
 
 const combos = Object.values(comboHist).reduce((a, b) => a + b, 0);
-console.log('  colores en juego        ', NCOL);
-console.log('  sesgo de pareja         ', BIAS, ' preferencia de cascada', PREF, ' canon', GUN);
-console.log('  disparos simulados      ', SHOTS);
-console.log('  disparos que combinan   ', ((SHOTS - sinMatch) * 100 / SHOTS).toFixed(1) + '%');
-console.log('  orbes reventados/disparo', (popped / SHOTS).toFixed(2));
-console.log('  COMBOS (cascadas)       ', (combos * 100 / SHOTS).toFixed(1) + '% de los disparos', comboHist);
-console.log('  -> a un disparo cada ~1,6 s, un combo cada',
-            (1.6 * SHOTS / Math.max(combos, 1)).toFixed(0), 'segundos');
+console.log('  colours in play       ', NCOL);
+console.log('  pair bias             ', BIAS, ' cascade preference', PREF, ' gun', GUN);
+console.log('  shots simulated       ', SHOTS);
+console.log('  shots that match      ', ((SHOTS - noMatch) * 100 / SHOTS).toFixed(1) + '%');
+console.log('  orbs burst per shot   ', (popped / SHOTS).toFixed(2));
+console.log('  COMBOS (cascades)     ', (combos * 100 / SHOTS).toFixed(1) + '% of the shots', comboHist);
+console.log('  -> at one shot every ~1.6 s, a combo every',
+            (1.6 * SHOTS / Math.max(combos, 1)).toFixed(0), 'seconds');
